@@ -1,28 +1,42 @@
 import { screen, BrowserWindow, ipcMain } from "electron";
-import path from "node:path";
 import { createRegionOverlayWindow } from "./windows";
-import { RegionGeometry, RegionAdjustment, type Rect, type RegionHandle } from "../capture/regionGeometry";
+import { RegionGeometry, type Rect } from "../capture/regionGeometry";
 import { getPref, setPref } from "../preferences";
-import { performCapture } from "../capture/orchestrator";
 
 /**
- * Port of Sources/Capture/RegionSelectionOverlay.swift — the SelectionView logic
- * (drag-to-select, 8 handles + move, ghost reuse, guide lines, key handling)
- * lives in the renderer (src/overlay/RegionSelectionOverlay.tsx); this module
- * owns the windows and the completion protocol.
+ * Port of Sources/Capture/RegionSelectionOverlay.swift — window layer + completion protocol.
  */
-interface RegionSelectionOutcome {
+
+export type RegionMode = "capture" | "ocr" | "select";
+
+export interface RegionSelectionOutcome {
   kind: "region" | "window" | "cancelled";
   rect?: Rect;
   displayId?: number;
 }
 
+type CompleteHandler = (outcome: RegionSelectionOutcome, mode: RegionMode) => void;
+
 let active: BrowserWindow[] = [];
 let resolver: ((o: RegionSelectionOutcome) => void) | null = null;
+let currentMode: RegionMode = "capture";
+let onComplete: CompleteHandler | null = null;
 
-export function startRegionSelection(allowsWindowSelection = true): Promise<RegionSelectionOutcome> {
+/** Main registers capture routing here to avoid a circular import with orchestrator. */
+export function setRegionCompleteHandler(fn: CompleteHandler) {
+  onComplete = fn;
+}
+
+export function startRegionSelection(
+  allowsWindowSelection = true,
+  mode: RegionMode = "capture",
+): Promise<RegionSelectionOutcome> {
   return new Promise((resolve) => {
+    if (resolver) {
+      finish({ kind: "cancelled" });
+    }
     resolver = resolve;
+    currentMode = mode;
     active = [];
     const displays = screen.getAllDisplays();
     const lastRegion = getPref("lastRegionRect");
@@ -33,7 +47,7 @@ export function startRegionSelection(allowsWindowSelection = true): Promise<Regi
           displayId: display.id,
           bounds: display.bounds,
           scaleFactor: display.scaleFactor,
-          allowsWindowSelection,
+          allowsWindowSelection: allowsWindowSelection && mode === "capture",
           ghost:
             lastRegion && RegionGeometry.contains(display.bounds, lastRegion)
               ? RegionGeometry.localRect(lastRegion, display.bounds)
@@ -49,11 +63,16 @@ export function startRegionSelection(allowsWindowSelection = true): Promise<Regi
 
 function finish(outcome: RegionSelectionOutcome) {
   for (const win of active) {
-    win.destroy();
+    if (!win.isDestroyed()) win.destroy();
   }
   active = [];
-  resolver?.(outcome);
+  const resolve = resolver;
+  const mode = currentMode;
   resolver = null;
+  resolve?.(outcome);
+  if (outcome.kind !== "cancelled") {
+    onComplete?.(outcome, mode);
+  }
 }
 
 export function registerRegionOverlayHandlers() {
@@ -63,7 +82,8 @@ export function registerRegionOverlayHandlers() {
       if (display) {
         const global = RegionGeometry.globalRect(payload.rect, display.bounds);
         setPref("lastRegionRect", global);
-        void performCapture({ kind: "region", rect: global, displayId: payload.displayId });
+        finish({ ...payload, rect: global });
+        return;
       }
     }
     finish(payload);

@@ -1,6 +1,6 @@
-import { Tray, Menu, nativeImage, BrowserWindow, screen, app } from "electron";
+import { Tray, Menu, nativeImage, BrowserWindow, screen, app, ipcMain } from "electron";
 import path from "node:path";
-import { emitBus } from "./bus";
+import { preloadPath } from "./paths";
 
 /**
  * Port of Sources/Views/MenuBarPopoverController.swift.
@@ -12,13 +12,13 @@ let tray: Tray | null = null;
 let popover: BrowserWindow | null = null;
 
 const POPOVER_WIDTH = 296 + 16; // content 296 + 8pt horizontal padding each side
-const POPOVER_BODY_HEIGHT = 460; // measured content height; refined at runtime
+const POPOVER_BODY_HEIGHT = 480;
 const ARROW_HEIGHT = 9;
 
 export function createTray(): Tray {
-  const iconPath = path.join(__dirname, "../build/tray.ico");
+  const iconPath = path.join(__dirname, "../build/tray.png");
   const icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 });
-  tray = new Tray(icon.isEmpty() ? nativeImage.createEmpty() : icon);
+  tray = new Tray(icon.isEmpty() ? nativeImage.createFromDataURL("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAhklEQVQoz2NgGDTgPxTjBf+hgImJCawGqAakGqBqmBqAahhqAKphqAGghqEGgBqGGgBqGGoAqGGoAaCGoQaAGoYaAGoYagCoYagBoIahBoAahhoAahhqAKhhqAGghqEGgBqGGgBqGGoAqGGoAaCGoQaAGoYaAGoYagCoYagBoIahBgYpAAC7WxGZb0zqUQAAAABJRU5ErkJggg==") : icon);
   tray.setToolTip("Reflecto");
 
   // Native context menu shown on right-click. Left click opens the popover,
@@ -53,7 +53,7 @@ function showPopover() {
       skipTaskbar: true, // PLATFORM GAP: LSUIElement equivalent on Windows
       alwaysOnTop: true,
       webPreferences: {
-        preload: path.join(__dirname, "../preload/index.js"),
+        preload: preloadPath(),
         contextIsolation: true,
       },
     });
@@ -63,10 +63,15 @@ function showPopover() {
     popover.on("blur", () => popover?.hide()); // dismiss on focus loss, like NSPopover
   }
 
-  const [trayX] = getTrayBounds();
+  const [trayX, trayY] = getTrayBounds();
   const { workArea } = screen.getPrimaryDisplay();
   const x = Math.round(Math.min(Math.max(trayX - POPOVER_WIDTH / 2, workArea.x), workArea.x + workArea.width - POPOVER_WIDTH));
-  const y = workArea.y; // just below taskbar; arrow points up at the icon
+  // Windows taskbar is usually bottom; place the panel just above the tray icon.
+  const y = Math.round(
+    trayY > workArea.y + workArea.height / 2
+      ? Math.min(trayY - POPOVER_BODY_HEIGHT, workArea.y + workArea.height - POPOVER_BODY_HEIGHT)
+      : Math.max(trayY + 8, workArea.y),
+  );
   popover.setPosition(x, y, false);
   popover.show();
   popover.focus();
@@ -99,4 +104,18 @@ export function dismissAndRun(action: () => void) {
   setTimeout(action, 200);
 }
 
-export { emitBus };
+let captureHandler: ((kind: string) => void) | null = null;
+
+/** Main registers one handler for tray-initiated capture kinds. */
+export function setCaptureHandler(fn: (kind: string) => void) {
+  captureHandler = fn;
+}
+
+export function registerTrayIpc() {
+  ipcMain.on("tray:dismiss", () => dismissPopover());
+  ipcMain.on("tray:dismissAndRun", (_e, kind: string) => {
+    dismissAndRun(() => captureHandler?.(kind));
+  });
+}
+
+export { ARROW_HEIGHT };

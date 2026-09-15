@@ -1,5 +1,5 @@
 import { globalShortcut } from "electron";
-import { getPref, setPref } from "./preferences";
+import { getPref } from "./preferences";
 
 /**
  * Port of Sources/Services/ShortcutCatalog.swift + ShortcutService.swift.
@@ -40,7 +40,6 @@ export enum Action {
   closePreviews = 52,
 }
 
-// Windows VK codes (subset used by defaults)
 export const VK = {
   A: 0x41, C: 0x43, B: 0x42, H: 0x48, L: 0x4c, O: 0x4f, P: 0x50, R: 0x52,
   S: 0x53, T: 0x54, V: 0x56, X: 0x58, Z: 0x5a,
@@ -53,11 +52,10 @@ const MOD_ALT = 1, MOD_CTRL = 2, MOD_SHIFT = 4, MOD_WIN = 8;
 
 export interface Shortcut {
   keyCode: number;
-  modifiers: number; // bitfield: 1 alt, 2 ctrl, 4 shift, 8 win
+  modifiers: number;
   enabled: boolean;
 }
 
-/** Electron accelerator string from a Shortcut. */
 export function toAccelerator(s: Shortcut): string {
   const parts: string[] = [];
   if (s.modifiers & MOD_CTRL) parts.push("Control");
@@ -78,7 +76,6 @@ function vkName(vk: number): string {
   return map[vk] ?? `Key${vk}`;
 }
 
-/** Human-readable display string, e.g. "Ctrl+Shift+C". */
 export function displayString(s: Shortcut): string {
   const parts: string[] = [];
   if (s.modifiers & MOD_CTRL) parts.push("Ctrl");
@@ -92,11 +89,11 @@ export function displayString(s: Shortcut): string {
 /** Default shortcuts — exact port of ShortcutCatalog.defaultShortcut, Cmd→Ctrl. */
 export function defaultShortcut(action: Action): Shortcut | null {
   switch (action) {
-    case Action.region: return { keyCode: VK.A, modifiers: MOD_SHIFT, enabled: true };           // was ⇧⌘A
+    case Action.region: return { keyCode: VK.A, modifiers: MOD_SHIFT, enabled: true };
     case Action.fullscreen: return { keyCode: VK.A, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
-    case Action.ocr: return { keyCode: VK.O, modifiers: MOD_SHIFT, enabled: true };               // was ⇧⌘O
-    case Action.colorPicker: return { keyCode: VK.C, modifiers: MOD_SHIFT, enabled: true };       // was ⇧⌘C
-    case Action.recording: return { keyCode: VK.R, modifiers: MOD_SHIFT, enabled: true };         // was ⇧⌘R
+    case Action.ocr: return { keyCode: VK.O, modifiers: MOD_SHIFT, enabled: true };
+    case Action.colorPicker: return { keyCode: VK.C, modifiers: MOD_SHIFT, enabled: true };
+    case Action.recording: return { keyCode: VK.R, modifiers: MOD_SHIFT, enabled: true };
     case Action.recordingOptions: return { keyCode: VK.R, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
     default: return null;
   }
@@ -108,36 +105,38 @@ export function effectiveShortcut(action: Action): Shortcut | null {
 }
 
 type Handler = () => void;
-const registered: Array<{ id: Action; accel: string; handler: Handler }> = [];
+const handlers = new Map<Action, Handler>();
+const registeredAccels: string[] = [];
 
+/** Bind an action handler. Call registerShortcuts() after all bindings. */
 export function onShortcut(action: Action, handler: Handler) {
-  const s = effectiveShortcut(action);
-  if (!s || !s.enabled) return;
-  const accel = toAccelerator(s);
-  try {
-    globalShortcut.register(accel, handler);
-    registered.push({ id: action, accel, handler });
-  } catch (e) {
-    console.warn(`[Reflecto] failed to register ${accel} for action ${action}:`, e);
-  }
+  handlers.set(action, handler);
 }
 
 export function registerShortcuts() {
-  onShortcut(Action.region, () => emit("capture", { kind: "region" }));
-  onShortcut(Action.fullscreen, () => emit("capture", { kind: "fullscreen" }));
-  onShortcut(Action.window, () => emit("capture", { kind: "window" }));
-  onShortcut(Action.ocr, () => emit("capture", { kind: "ocr" }));
-  onShortcut(Action.colorPicker, () => emit("capture", { kind: "colorPicker" }));
-  onShortcut(Action.recording, () => emit("recording", { kind: "start" }));
+  unregisterShortcuts();
+  for (const [action, handler] of handlers) {
+    const s = effectiveShortcut(action);
+    if (!s || !s.enabled) continue;
+    const accel = toAccelerator(s);
+    try {
+      const ok = globalShortcut.register(accel, handler);
+      if (ok) registeredAccels.push(accel);
+      else console.warn(`[Reflecto] accelerator in use: ${accel} (action ${action})`);
+    } catch (e) {
+      console.warn(`[Reflecto] failed to register ${accel} for action ${action}:`, e);
+    }
+  }
 }
 
 export function unregisterShortcuts() {
-  globalShortcut.unregisterAll();
-  registered.length = 0;
+  for (const accel of registeredAccels) {
+    try { globalShortcut.unregister(accel); } catch { /* ignore */ }
+  }
+  registeredAccels.length = 0;
 }
 
-// Simple event bus: renderer windows subscribe via IPC.
-type Emit = (channel: string, payload: unknown) => void;
-const listeners: Emit[] = [];
-export function onBusEvent(fn: Emit) { listeners.push(fn); }
-function emit(channel: string, payload: unknown) { listeners.forEach((fn) => fn(channel, payload)); }
+export function shortcutLabel(action: Action): string | undefined {
+  const s = effectiveShortcut(action);
+  return s ? displayString(s) : undefined;
+}

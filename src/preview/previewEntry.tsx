@@ -1,9 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import "../theme/chrome.css";
+import { PreviewDeck } from "./components/PreviewDeck";
 
-function PreviewEntry() {
-  return <div style={{ minWidth: 160, minHeight: 130 }} />;
-}
 const root = document.getElementById("root");
-if (root) createRoot(root).render(<PreviewEntry />);
+if (root) createRoot(root).render(<PreviewDeck />);

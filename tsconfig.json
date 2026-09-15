@@ -12,5 +12,5 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "electron", "preload"]
+  "include": ["src", "electron", "preload", "types"]
 }

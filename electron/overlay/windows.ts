@@ -1,5 +1,6 @@
 import { BrowserWindow, screen, desktopCapturer } from "electron";
 import path from "node:path";
+import { preloadPath } from "../paths";
 
 /**
  * Port of Sources/Capture/RegionSelectionOverlay.swift — overlay window layer.
@@ -20,7 +21,7 @@ export function createRegionOverlayWindow(display: Electron.Display): BrowserWin
     alwaysOnTop: true,
     hasShadow: false,
     webPreferences: {
-      preload: path.join(__dirname, "../preload/index.js"),
+      preload: preloadPath(),
       contextIsolation: true,
     },
   });
