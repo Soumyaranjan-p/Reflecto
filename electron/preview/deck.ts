@@ -12,10 +12,11 @@ import {
   type OverlayCardSize,
   type OverlayTool,
 } from "./overlayLayout";
-import { decodeThumbnail } from "../history/store";
+import { decodeThumbnail, HistoryStore } from "../history/store";
 import { showToast } from "../toast/toast";
 import { pinCapture } from "./pin";
 import { openAnnotateEditor as openEditorWindow } from "../editor/annotatePresenter";
+import { openVideoEditor } from "../editor/videoPresenter";
 import { preloadPath } from "../paths";
 import { isR2Configured, uploadShare } from "../sharing/r2";
 
@@ -228,6 +229,10 @@ export function editItem(filePath: string) {
     return;
   }
   removeFromDeck(filePath);
+  if (isVideo(retained)) {
+    openVideoEditor(retained);
+    return;
+  }
   // Image editor window — opened in a follow-up feature; for now open via shell preview path toast.
   void openAnnotateEditor(retained);
 }
@@ -295,6 +300,7 @@ export async function shareItem(filePath: string) {
   try {
     const url = await uploadShare(retained);
     clipboard.writeText(url);
+    HistoryStore.shared.setShareURL(retained, url);
     showToast({
       title: "Link copied",
       message: url,

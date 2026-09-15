@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "../theme/chrome.css";
 
-type Tab = "general" | "look" | "overlay" | "shortcuts" | "sharing";
+type Tab = "general" | "look" | "overlay" | "recording" | "shortcuts" | "sharing";
 
 const GRADIENTS = [
   ["soft-blush", "Blush"],
@@ -51,6 +51,7 @@ function SettingsApp() {
           ["general", "General"],
           ["look", "Default Look"],
           ["overlay", "Capture Deck"],
+          ["recording", "Recording"],
           ["shortcuts", "Shortcuts"],
           ["sharing", "Sharing"],
         ] as const).map(([id, label]) => (
@@ -125,6 +126,20 @@ function SettingsApp() {
                 {prefs.exportDirectory || prefs.saveFolder || "Choose folder…"}
               </button>
             </Row>
+            <Row label="Export format">
+              <select value={prefs.exportFormat || "png"} onChange={(e) => set("exportFormat", e.target.value)} style={selectStyle}>
+                <option value="png">PNG</option>
+                <option value="jpeg">JPEG</option>
+              </select>
+            </Row>
+            <Row label={`JPEG quality (${Math.round((prefs.exportQuality ?? 0.9) * 100)}%)`}>
+              <input
+                type="range" min={50} max={100} step={1}
+                value={Math.round((prefs.exportQuality ?? 0.9) * 100)}
+                onChange={(e) => set("exportQuality", Number(e.target.value) / 100)}
+                style={{ width: 180 }}
+              />
+            </Row>
           </Section>
         )}
 
@@ -195,6 +210,25 @@ function SettingsApp() {
           </Section>
         )}
 
+        {tab === "recording" && (
+          <Section title="Recording">
+            <Toggle
+              label="Show cursor"
+              checked={Boolean(prefs.recordingShowCursor)}
+              onChange={(v) => set("recordingShowCursor", v)}
+            />
+            <Row label="Frame rate">
+              <select value={prefs.recordingFps || 30} onChange={(e) => set("recordingFps", Number(e.target.value))} style={selectStyle}>
+                <option value={30}>30 fps</option>
+                <option value={60}>60 fps</option>
+              </select>
+            </Row>
+            <p style={{ fontSize: 12, color: "var(--reflecto-secondary)" }}>
+              Microphone, camera, and display/window/area are chosen on the capture bar (Ctrl+Shift+2 / Recording options). Pause writes a new segment and stitches on stop.
+            </p>
+          </Section>
+        )}
+
         {tab === "overlay" && (
           <Section title="Capture Deck">
             <Row label="Card size">
@@ -255,14 +289,18 @@ function SettingsApp() {
         {tab === "shortcuts" && (
           <Section title="Shortcuts">
             <p style={{ fontSize: 12, color: "var(--reflecto-secondary)", marginTop: 0 }}>
-              Defaults map ⌘ to Ctrl on Windows. Customize bindings in a later pass; labels below show the active accelerators.
+              Click a binding, then press a key combination. Global shortcuts need Ctrl, Alt, or Win. Esc clears a custom binding back to default.
             </p>
             {Object.entries(snap.shortcuts as Record<string, { label: string; enabled: boolean } | null>).map(([id, s]) => (
-              s ? (
-                <Row key={id} label={actionTitle(Number(id))}>
-                  <kbd style={kbdStyle}>{s.label}</kbd>
-                </Row>
-              ) : null
+              <Row key={id} label={actionTitle(Number(id))}>
+                <button
+                  type="button"
+                  className="editor-button bordered"
+                  onClick={() => captureShortcut(Number(id), reload)}
+                >
+                  <kbd style={kbdStyle}>{s?.label ?? "Unassigned"}</kbd>
+                </button>
+              </Row>
             ))}
           </Section>
         )}
@@ -385,9 +423,38 @@ function actionTitle(id: number): string {
   const map: Record<number, string> = {
     1: "Capture Region", 2: "Capture Fullscreen", 3: "Capture Window",
     4: "Capture Text", 5: "Pick Color", 6: "Capture & Recording Bar",
-    7: "Recording Options", 10: "Open Media Gallery", 14: "Open Settings",
+    7: "Recording Options", 10: "Open Media Gallery", 11: "Restore Last Capture",
+    12: "Pin Last Capture", 13: "Open Image from File", 14: "Open Settings",
+    16: "Unpin All Captures", 20: "Capture Previous Region", 21: "Capture Region with Timer",
+    22: "Capture Region & Copy", 23: "Capture Region & Save", 24: "Capture Region & Annotate",
+    25: "Capture Region & Pin", 30: "Capture Text without Line Breaks",
+    40: "Record Area", 41: "Stop & Save Recording", 42: "Pause / Resume Recording",
+    43: "Restart Recording", 44: "Discard Recording",
+    50: "Hide / Show Capture Deck", 51: "Save All Captures in Deck", 52: "Close All Captures in Deck",
   };
   return map[id] ?? `Action ${id}`;
+}
+
+async function captureShortcut(action: number, reload: () => Promise<void>) {
+  const onKey = async (e: KeyboardEvent) => {
+    e.preventDefault();
+    window.removeEventListener("keydown", onKey, true);
+    if (e.key === "Escape") {
+      await window.reflecto?.settingsSetShortcut?.(action, null);
+      await reload();
+      return;
+    }
+    let modifiers = 0;
+    if (e.altKey) modifiers |= 1;
+    if (e.ctrlKey) modifiers |= 2;
+    if (e.shiftKey) modifiers |= 4;
+    if (e.metaKey) modifiers |= 8;
+    const keyCode = e.keyCode;
+    if (!modifiers) return;
+    await window.reflecto?.settingsSetShortcut?.(action, { keyCode, modifiers, enabled: true });
+    await reload();
+  };
+  window.addEventListener("keydown", onKey, true);
 }
 
 const root = document.getElementById("root");

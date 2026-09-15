@@ -92,6 +92,16 @@ export class HistoryStore {
     return this.urlForRecord(record);
   }
 
+  setShareURL(filePath: string, url: string): boolean {
+    const record = this.recordMatching(filePath);
+    if (!record) return false;
+    const index = this.records.findIndex((r) => r.id === record.id);
+    if (index < 0) return false;
+    this.records[index] = { ...this.records[index], shareURL: url };
+    this.saveRecords();
+    return true;
+  }
+
   recordMatching(filePath: string): CaptureRecord | null {
     const normalized = path.normalize(filePath);
     return this.records.find((record) => {
@@ -119,7 +129,17 @@ export class HistoryStore {
   private insert(record: CaptureRecord) {
     this.records.unshift(record);
     if (this.records.length > MAX_RETENTION) {
+      const evicted = this.records.slice(MAX_RETENTION);
       this.records = this.records.slice(0, MAX_RETENTION);
+      for (const old of evicted) {
+        try {
+          const file = this.urlForRecord(old);
+          if (file.startsWith(this.storageDir) && fs.existsSync(file)) fs.unlinkSync(file);
+          if (old.beautifiedPath?.startsWith(this.storageDir) && fs.existsSync(old.beautifiedPath)) {
+            fs.unlinkSync(old.beautifiedPath);
+          }
+        } catch { /* ignore */ }
+      }
     }
     this.saveRecords();
   }

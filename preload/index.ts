@@ -1,14 +1,12 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 const api = {
-  // Tray
   dismissPopover: () => ipcRenderer.send("tray:dismiss"),
   dismissAndRun: (kind: string) => ipcRenderer.send("tray:dismissAndRun", kind),
   openSettings: () => ipcRenderer.send("tray:openSettings"),
   openGallery: () => ipcRenderer.send("tray:openGallery"),
   quitApp: () => ipcRenderer.send("app:quit"),
 
-  // Capture / region
   startRegionSelection: (allowsWindowSelection?: boolean) =>
     ipcRenderer.invoke("capture:startRegionSelection", allowsWindowSelection),
   completeRegion: (payload: unknown) => ipcRenderer.invoke("regionoverlay:complete", payload),
@@ -20,6 +18,9 @@ const api = {
   windowPickerCancel: () => ipcRenderer.send("windowpicker:cancel"),
   copyDataUrl: (dataUrl: string) => ipcRenderer.invoke("files:copyDataUrl", dataUrl),
   saveDataUrl: (dataUrl: string) => ipcRenderer.invoke("files:saveDataUrl", dataUrl),
+  exportDataUrl: (dataUrl: string) => ipcRenderer.invoke("files:exportDataUrl", dataUrl),
+  shareDataUrl: (dataUrl: string) => ipcRenderer.invoke("files:shareDataUrl", dataUrl),
+  revealPath: (filePath: string) => ipcRenderer.invoke("files:reveal", filePath),
   onRegionStart: (callback: (...args: unknown[]) => void) => {
     const listener = (_e: Electron.IpcRendererEvent, ...args: unknown[]) => callback(...args);
     ipcRenderer.on("regionoverlay:start", listener);
@@ -28,7 +29,6 @@ const api = {
   offRegionStart: (callback: (...args: unknown[]) => void) =>
     ipcRenderer.removeListener("regionoverlay:start", callback as never),
 
-  // Deck
   getDeckState: () => ipcRenderer.invoke("deck:getState"),
   deckTool: (url: string, tool: string) => ipcRenderer.send("deck:tool", url, tool),
   deckSaveAll: () => ipcRenderer.send("deck:save-all"),
@@ -42,17 +42,16 @@ const api = {
     return () => ipcRenderer.removeListener("deck:state", listener);
   },
 
-  // History / pins
   historyRecents: () => ipcRenderer.invoke("history:recents"),
   historyOpen: (filePath: string) => ipcRenderer.invoke("history:open", filePath),
   pinsHasAny: () => ipcRenderer.invoke("pins:hasAny"),
   pinsUnpinAll: () => ipcRenderer.invoke("pins:unpinAll"),
 
-  // Settings / gallery / recording
   settingsSnapshot: () => ipcRenderer.invoke("settings:snapshot"),
   settingsSetPref: (key: string, value: unknown) => ipcRenderer.invoke("settings:setPref", key, value),
   settingsSetLaunchAtLogin: (enabled: boolean) => ipcRenderer.invoke("settings:setLaunchAtLogin", enabled),
   settingsResetOverlay: () => ipcRenderer.invoke("settings:resetOverlay"),
+  settingsSetShortcut: (action: number, shortcut: unknown) => ipcRenderer.invoke("settings:setShortcut", action, shortcut),
   r2TestConnection: () => ipcRenderer.invoke("settings:r2Test"),
   galleryList: (filter?: { kind?: string; query?: string }) => ipcRenderer.invoke("gallery:list", filter),
   galleryOpen: (filePath: string) => ipcRenderer.invoke("gallery:open", filePath),
@@ -64,19 +63,33 @@ const api = {
   },
 
   recordingStart: () => ipcRenderer.send("recording:start"),
+  recordingStartDisplay: (displayId?: number) => ipcRenderer.send("recording:startDisplay", displayId),
+  recordingStartWindow: (title: string) => ipcRenderer.send("recording:startWindow", title),
+  recordingStartArea: () => ipcRenderer.send("recording:startArea"),
   recordingStop: () => ipcRenderer.send("recording:stop"),
   recordingDiscard: () => ipcRenderer.send("recording:discard"),
   recordingPause: () => ipcRenderer.send("recording:pause"),
   recordingResume: () => ipcRenderer.send("recording:resume"),
   recordingRestart: () => ipcRenderer.send("recording:restart"),
   recordingHide: () => ipcRenderer.send("recording:hide"),
+  recordingSetOptionsMode: (v: boolean) => ipcRenderer.send("recording:setOptionsMode", v),
+  recordingListScreens: () => ipcRenderer.invoke("recording:listScreens"),
+  recordingListWindows: () => ipcRenderer.invoke("recording:listWindows"),
+  recordingListDevices: () => ipcRenderer.invoke("recording:listDevices"),
+  captureBarAction: (kind: string) => ipcRenderer.send("capturebar:action", kind),
   onRecordingState: (callback: (state: unknown) => void) => {
     const listener = (_e: Electron.IpcRendererEvent, state: unknown) => callback(state);
     ipcRenderer.on("recording:state", listener);
     return () => ipcRenderer.removeListener("recording:state", listener);
   },
 
-  // Prefs / app
+  exportVideo: (req: unknown) => ipcRenderer.invoke("video:export", req),
+  onVideoLoad: (callback: (payload: { url: string }) => void) => {
+    const listener = (_e: Electron.IpcRendererEvent, p: { url: string }) => callback(p);
+    ipcRenderer.on("video:load", listener);
+    return () => ipcRenderer.removeListener("video:load", listener);
+  },
+
   getPrefs: () => ipcRenderer.invoke("prefs:get"),
   setPref: (key: string, value: unknown) => ipcRenderer.invoke("prefs:set", key, value),
   getAppVersion: () => ipcRenderer.invoke("app:version"),

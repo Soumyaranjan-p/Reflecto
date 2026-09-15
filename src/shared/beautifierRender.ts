@@ -1,4 +1,9 @@
-import { GRADIENT_PRESETS, type BeautifierConfig, type BackgroundStyle } from "./beautifierTypes";
+import {
+  GRADIENT_PRESETS,
+  beautifierNeedsCanvas,
+  type BeautifierConfig,
+  type BackgroundStyle,
+} from "./beautifierTypes";
 
 function aspectValue(r: BeautifierConfig["aspectRatio"]): number | null {
   switch (r) {
@@ -20,7 +25,7 @@ export function renderBeautifierToDataURL(
     const img = new Image();
     img.onload = () => {
       try {
-        if (config.style.kind === "none") {
+        if (!beautifierNeedsCanvas(config)) {
           resolve(sourceDataURL);
           return;
         }
@@ -72,6 +77,7 @@ export function renderBeautifierToDataURL(
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(img, x, y);
         ctx.restore();
+        drawBorder(ctx, x, y, W, H, R, config);
         resolve(canvas.toDataURL("image/png"));
       } catch (err) {
         reject(err);
@@ -80,6 +86,71 @@ export function renderBeautifierToDataURL(
     img.onerror = () => reject(new Error("Failed to load image for beautifier"));
     img.src = sourceDataURL;
   });
+}
+
+/** Same framing as BetterShot's BeautifierRenderer, for live editor preview. */
+export function renderBeautifierFromImage(
+  img: CanvasImageSource,
+  srcW: number,
+  srcH: number,
+  config: BeautifierConfig,
+): HTMLCanvasElement {
+  const W = srcW;
+  const H = srcH;
+  if (!beautifierNeedsCanvas(config)) {
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext("2d")!;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, 0, 0);
+    return canvas;
+  }
+  const S = Math.min(W, H);
+  const pad = S * config.padding;
+  let cW = W + 2 * pad;
+  let cH = H + 2 * pad;
+  const ratio = aspectValue(config.aspectRatio);
+  if (ratio) {
+    if (cW / cH < ratio) cW = cH * ratio;
+    else cH = cW / ratio;
+  }
+  cW = Math.ceil(cW);
+  cH = Math.ceil(cH);
+  const x = Math.round(0.5 * (cW - W));
+  const y = Math.round(0.5 * (cH - H));
+  const R = config.cornerRadius * S;
+  const canvas = document.createElement("canvas");
+  canvas.width = cW;
+  canvas.height = cH;
+  const ctx = canvas.getContext("2d")!;
+  drawBackground(ctx, cW, cH, config.style);
+  if (config.shadowStrength > 0 && config.style.kind !== "none") {
+    const blur = Math.max(2, S * (0.035 + config.shadowStrength * 0.035));
+    const yOff = S * (0.012 + config.shadowStrength * 0.018);
+    ctx.save();
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = yOff;
+    ctx.shadowBlur = blur;
+    ctx.shadowColor = `rgba(0,0,0,${config.shadowStrength * 0.36})`;
+    roundedRect(ctx, x, y, W, H, R);
+    ctx.fillStyle = "#000";
+    ctx.fill();
+    ctx.restore();
+    ctx.save();
+    roundedRect(ctx, x, y, W, H, R);
+    ctx.clip();
+    ctx.clearRect(x, y, W, H);
+    ctx.restore();
+  }
+  ctx.save();
+  roundedRect(ctx, x, y, W, H, R);
+  ctx.clip();
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(img, x, y);
+  ctx.restore();
+  drawBorder(ctx, x, y, W, H, R, config);
+  return canvas;
 }
 
 function drawBackground(
@@ -112,6 +183,24 @@ function drawBackground(
       ctx.fillRect(0, 0, w, h);
     }
   }
+}
+
+function drawBorder(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, w: number, h: number, r: number,
+  config: BeautifierConfig,
+) {
+  const border = config.border;
+  if (!border?.enabled || border.thickness <= 0) return;
+  const S = Math.min(w, h);
+  const t = Math.max(1, border.thickness * S);
+  ctx.save();
+  ctx.globalAlpha = border.opacity;
+  ctx.strokeStyle = border.color;
+  ctx.lineWidth = t;
+  roundedRect(ctx, x + t / 2, y + t / 2, w - t, h - t, Math.max(0, r - t / 2));
+  ctx.stroke();
+  ctx.restore();
 }
 
 function roundedRect(

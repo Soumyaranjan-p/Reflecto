@@ -29,6 +29,11 @@ export interface ReflectoPreferences {
   exportFormat: "png" | "jpeg";
   exportQuality: number;
   selfTimerDelay: number;
+  recordingMicrophone: string;
+  recordingSystemAudio: boolean;
+  recordingShowCursor: boolean;
+  recordingCamera: string;
+  recordingFps: number;
   /** Default Look — bs_defaultBeautifierConfig */
   defaultBeautifierConfig: BeautifierConfig;
   /** Cloudflare R2 sharing (R2CredentialStore keys). */
@@ -60,6 +65,11 @@ export const defaultPreferences: ReflectoPreferences = {
   exportFormat: "png",
   exportQuality: 0.9,
   selfTimerDelay: 0,
+  recordingMicrophone: "",
+  recordingSystemAudio: false,
+  recordingShowCursor: true,
+  recordingCamera: "",
+  recordingFps: 30,
   defaultBeautifierConfig: { ...defaultBeautifierConfig },
   r2AccountID: "",
   r2Bucket: "",

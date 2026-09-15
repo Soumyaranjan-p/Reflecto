@@ -3,6 +3,8 @@ import path from "node:path";
 import fs from "node:fs";
 import { HistoryStore, decodeThumbnail } from "../history/store";
 import { showOnDeck } from "../preview/deck";
+import { openVideoEditor } from "../editor/videoPresenter";
+import { openAnnotateEditor } from "../editor/annotatePresenter";
 import { preloadPath } from "../paths";
 
 /**
@@ -65,7 +67,11 @@ export function registerGalleryIpc() {
     });
   });
   ipcMain.handle("gallery:open", (_e, filePath: string) => {
-    if (fs.existsSync(filePath)) showOnDeck(filePath);
+    if (!fs.existsSync(filePath)) return;
+    const ext = path.extname(filePath).toLowerCase();
+    if (ext === ".mp4" || ext === ".mov" || ext === ".webm") openVideoEditor(filePath);
+    else if (/\.(png|jpe?g|webp|gif)$/i.test(ext)) openAnnotateEditor(filePath);
+    else showOnDeck(filePath);
   });
   ipcMain.handle("gallery:delete", (_e, id: string) => {
     const record = HistoryStore.shared.records.find((r) => r.id === id);

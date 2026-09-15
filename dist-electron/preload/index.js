@@ -18,13 +18,11 @@ var index_exports = {};
 module.exports = __toCommonJS(index_exports);
 var import_electron = require("electron");
 var api = {
-  // Tray
   dismissPopover: () => import_electron.ipcRenderer.send("tray:dismiss"),
   dismissAndRun: (kind) => import_electron.ipcRenderer.send("tray:dismissAndRun", kind),
   openSettings: () => import_electron.ipcRenderer.send("tray:openSettings"),
   openGallery: () => import_electron.ipcRenderer.send("tray:openGallery"),
   quitApp: () => import_electron.ipcRenderer.send("app:quit"),
-  // Capture / region
   startRegionSelection: (allowsWindowSelection) => import_electron.ipcRenderer.invoke("capture:startRegionSelection", allowsWindowSelection),
   completeRegion: (payload) => import_electron.ipcRenderer.invoke("regionoverlay:complete", payload),
   cancelRegion: () => import_electron.ipcRenderer.invoke("regionoverlay:cancel"),
@@ -35,13 +33,15 @@ var api = {
   windowPickerCancel: () => import_electron.ipcRenderer.send("windowpicker:cancel"),
   copyDataUrl: (dataUrl) => import_electron.ipcRenderer.invoke("files:copyDataUrl", dataUrl),
   saveDataUrl: (dataUrl) => import_electron.ipcRenderer.invoke("files:saveDataUrl", dataUrl),
+  exportDataUrl: (dataUrl) => import_electron.ipcRenderer.invoke("files:exportDataUrl", dataUrl),
+  shareDataUrl: (dataUrl) => import_electron.ipcRenderer.invoke("files:shareDataUrl", dataUrl),
+  revealPath: (filePath) => import_electron.ipcRenderer.invoke("files:reveal", filePath),
   onRegionStart: (callback) => {
     const listener = (_e, ...args) => callback(...args);
     import_electron.ipcRenderer.on("regionoverlay:start", listener);
     return () => import_electron.ipcRenderer.removeListener("regionoverlay:start", listener);
   },
   offRegionStart: (callback) => import_electron.ipcRenderer.removeListener("regionoverlay:start", callback),
-  // Deck
   getDeckState: () => import_electron.ipcRenderer.invoke("deck:getState"),
   deckTool: (url, tool) => import_electron.ipcRenderer.send("deck:tool", url, tool),
   deckSaveAll: () => import_electron.ipcRenderer.send("deck:save-all"),
@@ -54,16 +54,15 @@ var api = {
     import_electron.ipcRenderer.on("deck:state", listener);
     return () => import_electron.ipcRenderer.removeListener("deck:state", listener);
   },
-  // History / pins
   historyRecents: () => import_electron.ipcRenderer.invoke("history:recents"),
   historyOpen: (filePath) => import_electron.ipcRenderer.invoke("history:open", filePath),
   pinsHasAny: () => import_electron.ipcRenderer.invoke("pins:hasAny"),
   pinsUnpinAll: () => import_electron.ipcRenderer.invoke("pins:unpinAll"),
-  // Settings / gallery / recording
   settingsSnapshot: () => import_electron.ipcRenderer.invoke("settings:snapshot"),
   settingsSetPref: (key, value) => import_electron.ipcRenderer.invoke("settings:setPref", key, value),
   settingsSetLaunchAtLogin: (enabled) => import_electron.ipcRenderer.invoke("settings:setLaunchAtLogin", enabled),
   settingsResetOverlay: () => import_electron.ipcRenderer.invoke("settings:resetOverlay"),
+  settingsSetShortcut: (action, shortcut) => import_electron.ipcRenderer.invoke("settings:setShortcut", action, shortcut),
   r2TestConnection: () => import_electron.ipcRenderer.invoke("settings:r2Test"),
   galleryList: (filter) => import_electron.ipcRenderer.invoke("gallery:list", filter),
   galleryOpen: (filePath) => import_electron.ipcRenderer.invoke("gallery:open", filePath),
@@ -74,18 +73,31 @@ var api = {
     return () => import_electron.ipcRenderer.removeListener("gallery:refresh", listener);
   },
   recordingStart: () => import_electron.ipcRenderer.send("recording:start"),
+  recordingStartDisplay: (displayId) => import_electron.ipcRenderer.send("recording:startDisplay", displayId),
+  recordingStartWindow: (title) => import_electron.ipcRenderer.send("recording:startWindow", title),
+  recordingStartArea: () => import_electron.ipcRenderer.send("recording:startArea"),
   recordingStop: () => import_electron.ipcRenderer.send("recording:stop"),
   recordingDiscard: () => import_electron.ipcRenderer.send("recording:discard"),
   recordingPause: () => import_electron.ipcRenderer.send("recording:pause"),
   recordingResume: () => import_electron.ipcRenderer.send("recording:resume"),
   recordingRestart: () => import_electron.ipcRenderer.send("recording:restart"),
   recordingHide: () => import_electron.ipcRenderer.send("recording:hide"),
+  recordingSetOptionsMode: (v) => import_electron.ipcRenderer.send("recording:setOptionsMode", v),
+  recordingListScreens: () => import_electron.ipcRenderer.invoke("recording:listScreens"),
+  recordingListWindows: () => import_electron.ipcRenderer.invoke("recording:listWindows"),
+  recordingListDevices: () => import_electron.ipcRenderer.invoke("recording:listDevices"),
+  captureBarAction: (kind) => import_electron.ipcRenderer.send("capturebar:action", kind),
   onRecordingState: (callback) => {
     const listener = (_e, state) => callback(state);
     import_electron.ipcRenderer.on("recording:state", listener);
     return () => import_electron.ipcRenderer.removeListener("recording:state", listener);
   },
-  // Prefs / app
+  exportVideo: (req) => import_electron.ipcRenderer.invoke("video:export", req),
+  onVideoLoad: (callback) => {
+    const listener = (_e, p) => callback(p);
+    import_electron.ipcRenderer.on("video:load", listener);
+    return () => import_electron.ipcRenderer.removeListener("video:load", listener);
+  },
   getPrefs: () => import_electron.ipcRenderer.invoke("prefs:get"),
   setPref: (key, value) => import_electron.ipcRenderer.invoke("prefs:set", key, value),
   getAppVersion: () => import_electron.ipcRenderer.invoke("app:version"),

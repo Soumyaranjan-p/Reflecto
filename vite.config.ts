@@ -19,6 +19,7 @@ export default defineConfig({
         settings: path.resolve(__dirname, "src/entries/settings.html"),
         gallery: path.resolve(__dirname, "src/entries/gallery.html"),
         editor: path.resolve(__dirname, "src/entries/editor.html"),
+        video: path.resolve(__dirname, "src/entries/video.html"),
         recording: path.resolve(__dirname, "src/entries/recording.html"),
         windowPicker: path.resolve(__dirname, "src/entries/windowPicker.html"),
         beautifier: path.resolve(__dirname, "src/entries/beautifier.html"),

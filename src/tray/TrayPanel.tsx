@@ -69,8 +69,8 @@ export function TrayPanel(props: TrayPanelProps) {
         <div style={{ width: "var(--tray-panel-width)", padding: "12px 12px 10px", display: "flex", flexDirection: "column", gap: 10 }}>
           {/* capture grid — 2 columns, gap 6 */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--tray-grid-gap)" }}>
-            <TrayGridButton title="Region" icon={<RegionIcon />} shortcut="Shift+A" onClick={() => props.onCapture("region")} />
-            <TrayGridButton title="Screen" icon={<ScreenIcon />} shortcut="Ctrl+Shift+A" onClick={() => props.onCapture("fullscreen")} />
+            <TrayGridButton title="Region" icon={<RegionIcon />} shortcut="Ctrl+Shift+4" onClick={() => props.onCapture("region")} />
+            <TrayGridButton title="Screen" icon={<ScreenIcon />} shortcut="Ctrl+Shift+3" onClick={() => props.onCapture("fullscreen")} />
             <TrayGridButton title="Window" icon={<WindowIcon />} onClick={() => props.onCapture("window")} />
             <TrayGridButton title="Record" icon={<RecordIcon />} onClick={props.onRecordingOptions} />
           </div>

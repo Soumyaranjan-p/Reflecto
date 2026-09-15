@@ -33,15 +33,27 @@ export function createRegionOverlayWindow(display: Electron.Display): BrowserWin
 }
 
 export async function captureDisplay(displayId: number): Promise<Electron.DesktopCapturerSource> {
-  const primary = screen.getAllDisplays().find((d) => d.id === displayId) ?? screen.getPrimaryDisplay();
+  const displays = screen.getAllDisplays();
+  const target = displays.find((d) => d.id === displayId) ?? screen.getPrimaryDisplay();
   const sources = await desktopCapturer.getSources({
     types: ["screen"],
     thumbnailSize: {
-      width: primary.size.width * primary.scaleFactor,
-      height: primary.size.height * primary.scaleFactor,
+      width: Math.round(target.size.width * target.scaleFactor),
+      height: Math.round(target.size.height * target.scaleFactor),
     },
   });
-  const match = sources.find((s) => s.display_id === String(displayId)) ?? sources[0];
-  if (!match) throw new Error("No screen source available");
-  return match;
+  const byId = sources.find((s) => s.display_id && s.display_id === String(displayId));
+  if (byId) return byId;
+  const index = displays.findIndex((d) => d.id === displayId);
+  if (index >= 0 && sources[index]) return sources[index];
+  const wantW = Math.round(target.size.width * target.scaleFactor);
+  const wantH = Math.round(target.size.height * target.scaleFactor);
+  const bySize = sources.find((s) => {
+    const size = s.thumbnail.getSize();
+    return Math.abs(size.width - wantW) <= 2 && Math.abs(size.height - wantH) <= 2;
+  });
+  if (bySize) return bySize;
+  const fallback = sources[0];
+  if (!fallback) throw new Error("No screen source available");
+  return fallback;
 }

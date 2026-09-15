@@ -41,7 +41,7 @@ export async function beautifyPNG(
   png: Buffer,
   config: BeautifierConfig = defaultBeautifierConfig,
 ): Promise<Buffer> {
-  if (config.style.kind === "none") return png;
+  if (config.style.kind === "none" && !config.border?.enabled) return png;
   const win = await ensureWorker();
   const dataUrl = nativeImage.createFromBuffer(png).toDataURL();
   const result = await win.webContents.executeJavaScript(

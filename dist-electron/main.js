@@ -160,8 +160,8 @@ var require_dot_prop = __commonJS({
       "constructor"
     ]);
     var isValidPath = (pathSegments) => !pathSegments.some((segment) => disallowedKeys.has(segment));
-    function getPathSegments(path16) {
-      const pathArray = path16.split(".");
+    function getPathSegments(path20) {
+      const pathArray = path20.split(".");
       const parts = [];
       for (let i = 0; i < pathArray.length; i++) {
         let p = pathArray[i];
@@ -177,11 +177,11 @@ var require_dot_prop = __commonJS({
       return parts;
     }
     module2.exports = {
-      get(object, path16, value) {
-        if (!isObj(object) || typeof path16 !== "string") {
+      get(object, path20, value) {
+        if (!isObj(object) || typeof path20 !== "string") {
           return value === void 0 ? object : value;
         }
-        const pathArray = getPathSegments(path16);
+        const pathArray = getPathSegments(path20);
         if (pathArray.length === 0) {
           return;
         }
@@ -196,12 +196,12 @@ var require_dot_prop = __commonJS({
         }
         return object === void 0 ? value : object;
       },
-      set(object, path16, value) {
-        if (!isObj(object) || typeof path16 !== "string") {
+      set(object, path20, value) {
+        if (!isObj(object) || typeof path20 !== "string") {
           return object;
         }
         const root = object;
-        const pathArray = getPathSegments(path16);
+        const pathArray = getPathSegments(path20);
         for (let i = 0; i < pathArray.length; i++) {
           const p = pathArray[i];
           if (!isObj(object[p])) {
@@ -214,11 +214,11 @@ var require_dot_prop = __commonJS({
         }
         return root;
       },
-      delete(object, path16) {
-        if (!isObj(object) || typeof path16 !== "string") {
+      delete(object, path20) {
+        if (!isObj(object) || typeof path20 !== "string") {
           return false;
         }
-        const pathArray = getPathSegments(path16);
+        const pathArray = getPathSegments(path20);
         for (let i = 0; i < pathArray.length; i++) {
           const p = pathArray[i];
           if (i === pathArray.length - 1) {
@@ -231,11 +231,11 @@ var require_dot_prop = __commonJS({
           }
         }
       },
-      has(object, path16) {
-        if (!isObj(object) || typeof path16 !== "string") {
+      has(object, path20) {
+        if (!isObj(object) || typeof path20 !== "string") {
           return false;
         }
-        const pathArray = getPathSegments(path16);
+        const pathArray = getPathSegments(path20);
         if (pathArray.length === 0) {
           return false;
         }
@@ -259,15 +259,15 @@ var require_dot_prop = __commonJS({
 var require_path_exists = __commonJS({
   "node_modules/path-exists/index.js"(exports2, module2) {
     "use strict";
-    var fs11 = require("fs");
+    var fs12 = require("fs");
     module2.exports = (fp) => new Promise((resolve) => {
-      fs11.access(fp, (err) => {
+      fs12.access(fp, (err) => {
         resolve(!err);
       });
     });
     module2.exports.sync = (fp) => {
       try {
-        fs11.accessSync(fp);
+        fs12.accessSync(fp);
         return true;
       } catch (err) {
         return false;
@@ -370,21 +370,21 @@ var require_p_locate = __commonJS({
 var require_locate_path = __commonJS({
   "node_modules/locate-path/index.js"(exports2, module2) {
     "use strict";
-    var path16 = require("path");
+    var path20 = require("path");
     var pathExists = require_path_exists();
     var pLocate = require_p_locate();
     module2.exports = (iterable, options) => {
       options = Object.assign({
         cwd: process.cwd()
       }, options);
-      return pLocate(iterable, (el) => pathExists(path16.resolve(options.cwd, el)), options);
+      return pLocate(iterable, (el) => pathExists(path20.resolve(options.cwd, el)), options);
     };
     module2.exports.sync = (iterable, options) => {
       options = Object.assign({
         cwd: process.cwd()
       }, options);
       for (const el of iterable) {
-        if (pathExists.sync(path16.resolve(options.cwd, el))) {
+        if (pathExists.sync(path20.resolve(options.cwd, el))) {
           return el;
         }
       }
@@ -396,39 +396,39 @@ var require_locate_path = __commonJS({
 var require_find_up = __commonJS({
   "node_modules/find-up/index.js"(exports2, module2) {
     "use strict";
-    var path16 = require("path");
+    var path20 = require("path");
     var locatePath = require_locate_path();
     module2.exports = (filename, opts = {}) => {
-      const startDir = path16.resolve(opts.cwd || "");
-      const { root } = path16.parse(startDir);
+      const startDir = path20.resolve(opts.cwd || "");
+      const { root } = path20.parse(startDir);
       const filenames = [].concat(filename);
       return new Promise((resolve) => {
         (function find(dir) {
           locatePath(filenames, { cwd: dir }).then((file) => {
             if (file) {
-              resolve(path16.join(dir, file));
+              resolve(path20.join(dir, file));
             } else if (dir === root) {
               resolve(null);
             } else {
-              find(path16.dirname(dir));
+              find(path20.dirname(dir));
             }
           });
         })(startDir);
       });
     };
     module2.exports.sync = (filename, opts = {}) => {
-      let dir = path16.resolve(opts.cwd || "");
-      const { root } = path16.parse(dir);
+      let dir = path20.resolve(opts.cwd || "");
+      const { root } = path20.parse(dir);
       const filenames = [].concat(filename);
       while (true) {
         const file = locatePath.sync(filenames, { cwd: dir });
         if (file) {
-          return path16.join(dir, file);
+          return path20.join(dir, file);
         }
         if (dir === root) {
           return null;
         }
-        dir = path16.dirname(dir);
+        dir = path20.dirname(dir);
       }
     };
   }
@@ -448,42 +448,42 @@ var require_pkg_up = __commonJS({
 var require_env_paths = __commonJS({
   "node_modules/env-paths/index.js"(exports2, module2) {
     "use strict";
-    var path16 = require("path");
+    var path20 = require("path");
     var os = require("os");
     var homedir = os.homedir();
     var tmpdir = os.tmpdir();
     var { env } = process;
     var macos = (name) => {
-      const library = path16.join(homedir, "Library");
+      const library = path20.join(homedir, "Library");
       return {
-        data: path16.join(library, "Application Support", name),
-        config: path16.join(library, "Preferences", name),
-        cache: path16.join(library, "Caches", name),
-        log: path16.join(library, "Logs", name),
-        temp: path16.join(tmpdir, name)
+        data: path20.join(library, "Application Support", name),
+        config: path20.join(library, "Preferences", name),
+        cache: path20.join(library, "Caches", name),
+        log: path20.join(library, "Logs", name),
+        temp: path20.join(tmpdir, name)
       };
     };
     var windows = (name) => {
-      const appData = env.APPDATA || path16.join(homedir, "AppData", "Roaming");
-      const localAppData = env.LOCALAPPDATA || path16.join(homedir, "AppData", "Local");
+      const appData = env.APPDATA || path20.join(homedir, "AppData", "Roaming");
+      const localAppData = env.LOCALAPPDATA || path20.join(homedir, "AppData", "Local");
       return {
         // Data/config/cache/log are invented by me as Windows isn't opinionated about this
-        data: path16.join(localAppData, name, "Data"),
-        config: path16.join(appData, name, "Config"),
-        cache: path16.join(localAppData, name, "Cache"),
-        log: path16.join(localAppData, name, "Log"),
-        temp: path16.join(tmpdir, name)
+        data: path20.join(localAppData, name, "Data"),
+        config: path20.join(appData, name, "Config"),
+        cache: path20.join(localAppData, name, "Cache"),
+        log: path20.join(localAppData, name, "Log"),
+        temp: path20.join(tmpdir, name)
       };
     };
     var linux = (name) => {
-      const username = path16.basename(homedir);
+      const username = path20.basename(homedir);
       return {
-        data: path16.join(env.XDG_DATA_HOME || path16.join(homedir, ".local", "share"), name),
-        config: path16.join(env.XDG_CONFIG_HOME || path16.join(homedir, ".config"), name),
-        cache: path16.join(env.XDG_CACHE_HOME || path16.join(homedir, ".cache"), name),
+        data: path20.join(env.XDG_DATA_HOME || path20.join(homedir, ".local", "share"), name),
+        config: path20.join(env.XDG_CONFIG_HOME || path20.join(homedir, ".config"), name),
+        cache: path20.join(env.XDG_CACHE_HOME || path20.join(homedir, ".cache"), name),
         // https://wiki.debian.org/XDGBaseDirectorySpecification#state
-        log: path16.join(env.XDG_STATE_HOME || path16.join(homedir, ".local", "state"), name),
-        temp: path16.join(tmpdir, username, name)
+        log: path20.join(env.XDG_STATE_HOME || path20.join(homedir, ".local", "state"), name),
+        temp: path20.join(tmpdir, username, name)
       };
     };
     var envPaths = (name, options) => {
@@ -711,41 +711,41 @@ var require_fs = __commonJS({
   "node_modules/atomically/dist/utils/fs.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    var fs11 = require("fs");
+    var fs12 = require("fs");
     var util_1 = require("util");
     var attemptify_1 = require_attemptify();
     var fs_handlers_1 = require_fs_handlers();
     var retryify_1 = require_retryify();
     var FS = {
-      chmodAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs11.chmod), fs_handlers_1.default.onChangeError),
-      chownAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs11.chown), fs_handlers_1.default.onChangeError),
-      closeAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs11.close)),
-      fsyncAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs11.fsync)),
-      mkdirAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs11.mkdir)),
-      realpathAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs11.realpath)),
-      statAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs11.stat)),
-      unlinkAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs11.unlink)),
-      closeRetry: retryify_1.retryifyAsync(util_1.promisify(fs11.close), fs_handlers_1.default.isRetriableError),
-      fsyncRetry: retryify_1.retryifyAsync(util_1.promisify(fs11.fsync), fs_handlers_1.default.isRetriableError),
-      openRetry: retryify_1.retryifyAsync(util_1.promisify(fs11.open), fs_handlers_1.default.isRetriableError),
-      readFileRetry: retryify_1.retryifyAsync(util_1.promisify(fs11.readFile), fs_handlers_1.default.isRetriableError),
-      renameRetry: retryify_1.retryifyAsync(util_1.promisify(fs11.rename), fs_handlers_1.default.isRetriableError),
-      statRetry: retryify_1.retryifyAsync(util_1.promisify(fs11.stat), fs_handlers_1.default.isRetriableError),
-      writeRetry: retryify_1.retryifyAsync(util_1.promisify(fs11.write), fs_handlers_1.default.isRetriableError),
-      chmodSyncAttempt: attemptify_1.attemptifySync(fs11.chmodSync, fs_handlers_1.default.onChangeError),
-      chownSyncAttempt: attemptify_1.attemptifySync(fs11.chownSync, fs_handlers_1.default.onChangeError),
-      closeSyncAttempt: attemptify_1.attemptifySync(fs11.closeSync),
-      mkdirSyncAttempt: attemptify_1.attemptifySync(fs11.mkdirSync),
-      realpathSyncAttempt: attemptify_1.attemptifySync(fs11.realpathSync),
-      statSyncAttempt: attemptify_1.attemptifySync(fs11.statSync),
-      unlinkSyncAttempt: attemptify_1.attemptifySync(fs11.unlinkSync),
-      closeSyncRetry: retryify_1.retryifySync(fs11.closeSync, fs_handlers_1.default.isRetriableError),
-      fsyncSyncRetry: retryify_1.retryifySync(fs11.fsyncSync, fs_handlers_1.default.isRetriableError),
-      openSyncRetry: retryify_1.retryifySync(fs11.openSync, fs_handlers_1.default.isRetriableError),
-      readFileSyncRetry: retryify_1.retryifySync(fs11.readFileSync, fs_handlers_1.default.isRetriableError),
-      renameSyncRetry: retryify_1.retryifySync(fs11.renameSync, fs_handlers_1.default.isRetriableError),
-      statSyncRetry: retryify_1.retryifySync(fs11.statSync, fs_handlers_1.default.isRetriableError),
-      writeSyncRetry: retryify_1.retryifySync(fs11.writeSync, fs_handlers_1.default.isRetriableError)
+      chmodAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs12.chmod), fs_handlers_1.default.onChangeError),
+      chownAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs12.chown), fs_handlers_1.default.onChangeError),
+      closeAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs12.close)),
+      fsyncAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs12.fsync)),
+      mkdirAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs12.mkdir)),
+      realpathAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs12.realpath)),
+      statAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs12.stat)),
+      unlinkAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs12.unlink)),
+      closeRetry: retryify_1.retryifyAsync(util_1.promisify(fs12.close), fs_handlers_1.default.isRetriableError),
+      fsyncRetry: retryify_1.retryifyAsync(util_1.promisify(fs12.fsync), fs_handlers_1.default.isRetriableError),
+      openRetry: retryify_1.retryifyAsync(util_1.promisify(fs12.open), fs_handlers_1.default.isRetriableError),
+      readFileRetry: retryify_1.retryifyAsync(util_1.promisify(fs12.readFile), fs_handlers_1.default.isRetriableError),
+      renameRetry: retryify_1.retryifyAsync(util_1.promisify(fs12.rename), fs_handlers_1.default.isRetriableError),
+      statRetry: retryify_1.retryifyAsync(util_1.promisify(fs12.stat), fs_handlers_1.default.isRetriableError),
+      writeRetry: retryify_1.retryifyAsync(util_1.promisify(fs12.write), fs_handlers_1.default.isRetriableError),
+      chmodSyncAttempt: attemptify_1.attemptifySync(fs12.chmodSync, fs_handlers_1.default.onChangeError),
+      chownSyncAttempt: attemptify_1.attemptifySync(fs12.chownSync, fs_handlers_1.default.onChangeError),
+      closeSyncAttempt: attemptify_1.attemptifySync(fs12.closeSync),
+      mkdirSyncAttempt: attemptify_1.attemptifySync(fs12.mkdirSync),
+      realpathSyncAttempt: attemptify_1.attemptifySync(fs12.realpathSync),
+      statSyncAttempt: attemptify_1.attemptifySync(fs12.statSync),
+      unlinkSyncAttempt: attemptify_1.attemptifySync(fs12.unlinkSync),
+      closeSyncRetry: retryify_1.retryifySync(fs12.closeSync, fs_handlers_1.default.isRetriableError),
+      fsyncSyncRetry: retryify_1.retryifySync(fs12.fsyncSync, fs_handlers_1.default.isRetriableError),
+      openSyncRetry: retryify_1.retryifySync(fs12.openSync, fs_handlers_1.default.isRetriableError),
+      readFileSyncRetry: retryify_1.retryifySync(fs12.readFileSync, fs_handlers_1.default.isRetriableError),
+      renameSyncRetry: retryify_1.retryifySync(fs12.renameSync, fs_handlers_1.default.isRetriableError),
+      statSyncRetry: retryify_1.retryifySync(fs12.statSync, fs_handlers_1.default.isRetriableError),
+      writeSyncRetry: retryify_1.retryifySync(fs12.writeSync, fs_handlers_1.default.isRetriableError)
     };
     exports2.default = FS;
   }
@@ -811,7 +811,7 @@ var require_temp = __commonJS({
   "node_modules/atomically/dist/utils/temp.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    var path16 = require("path");
+    var path20 = require("path");
     var consts_1 = require_consts();
     var fs_1 = require_fs();
     var Temp = {
@@ -846,7 +846,7 @@ var require_temp = __commonJS({
         }
       },
       truncate: (filePath) => {
-        const basename = path16.basename(filePath);
+        const basename = path20.basename(filePath);
         if (basename.length <= consts_1.LIMIT_BASENAME_LENGTH)
           return filePath;
         const truncable = /^(\.?)(.*?)((?:\.[^.]+)?(?:\.tmp-\d{10}[a-f0-9]{6})?)$/.exec(basename);
@@ -867,7 +867,7 @@ var require_dist = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.writeFileSync = exports2.writeFile = exports2.readFileSync = exports2.readFile = void 0;
-    var path16 = require("path");
+    var path20 = require("path");
     var consts_1 = require_consts();
     var fs_1 = require_fs();
     var lang_1 = require_lang();
@@ -921,7 +921,7 @@ var require_dist = __commonJS({
               options.mode = stat.mode;
           }
         }
-        const parentPath = path16.dirname(filePath);
+        const parentPath = path20.dirname(filePath);
         await fs_1.default.mkdirAttempt(parentPath, {
           mode: consts_1.DEFAULT_FOLDER_MODE,
           recursive: true
@@ -987,7 +987,7 @@ var require_dist = __commonJS({
               options.mode = stat.mode;
           }
         }
-        const parentPath = path16.dirname(filePath);
+        const parentPath = path20.dirname(filePath);
         fs_1.default.mkdirSyncAttempt(parentPath, {
           mode: consts_1.DEFAULT_FOLDER_MODE,
           recursive: true
@@ -4262,8 +4262,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path16) {
-      let input = path16;
+    function removeDotSegments(path20) {
+      let input = path20;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -4672,8 +4672,8 @@ var require_schemes = __commonJS({
       }
       if (wsComponent.resourceName) {
         const queryIndex = wsComponent.resourceName.indexOf("?");
-        const path16 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
-        wsComponent.path = path16 && path16 !== "/" ? path16 : void 0;
+        const path20 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
+        wsComponent.path = path20 && path20 !== "/" ? path20 : void 0;
         wsComponent.query = queryIndex === -1 ? void 0 : wsComponent.resourceName.slice(queryIndex + 1);
         wsComponent.resourceName = void 0;
       }
@@ -13844,12 +13844,12 @@ var require_dist2 = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs11, exportName) {
+    function addFormats(ajv, list, fs12, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = codegen_1._`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs11[f]);
+        ajv.addFormat(f, fs12[f]);
     }
     module2.exports = exports2 = formatsPlugin;
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -16006,16 +16006,16 @@ var require_onetime = __commonJS({
 var require_source = __commonJS({
   "node_modules/conf/dist/source/index.js"(exports2, module2) {
     "use strict";
-    var __classPrivateFieldSet = exports2 && exports2.__classPrivateFieldSet || function(receiver, state2, value, kind, f) {
+    var __classPrivateFieldSet = exports2 && exports2.__classPrivateFieldSet || function(receiver, state, value, kind, f) {
       if (kind === "m") throw new TypeError("Private method is not writable");
       if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-      if (typeof state2 === "function" ? receiver !== state2 || !f : !state2.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-      return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state2.set(receiver, value), value;
+      if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+      return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
     };
-    var __classPrivateFieldGet = exports2 && exports2.__classPrivateFieldGet || function(receiver, state2, kind, f) {
+    var __classPrivateFieldGet = exports2 && exports2.__classPrivateFieldGet || function(receiver, state, kind, f) {
       if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-      if (typeof state2 === "function" ? receiver !== state2 || !f : !state2.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-      return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state2.get(receiver);
+      if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+      return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
     };
     var _a;
     var _b;
@@ -16025,8 +16025,8 @@ var require_source = __commonJS({
     var _Conf_defaultValues;
     Object.defineProperty(exports2, "__esModule", { value: true });
     var util_1 = require("util");
-    var fs11 = require("fs");
-    var path16 = require("path");
+    var fs12 = require("fs");
+    var path20 = require("path");
     var crypto2 = require("crypto");
     var assert = require("assert");
     var events_1 = require("events");
@@ -16049,7 +16049,7 @@ var require_source = __commonJS({
     var parentDir = "";
     try {
       delete require.cache[__filename];
-      parentDir = path16.dirname((_b = (_a = module2.parent) === null || _a === void 0 ? void 0 : _a.filename) !== null && _b !== void 0 ? _b : ".");
+      parentDir = path20.dirname((_b = (_a = module2.parent) === null || _a === void 0 ? void 0 : _a.filename) !== null && _b !== void 0 ? _b : ".");
     } catch (_c) {
     }
     var checkValueType = (key, value) => {
@@ -16085,7 +16085,7 @@ var require_source = __commonJS({
         };
         const getPackageData = onetime(() => {
           const packagePath = pkgUp.sync({ cwd: parentDir });
-          const packageData = packagePath && JSON.parse(fs11.readFileSync(packagePath, "utf8"));
+          const packageData = packagePath && JSON.parse(fs12.readFileSync(packagePath, "utf8"));
           return packageData !== null && packageData !== void 0 ? packageData : {};
         });
         if (!options.cwd) {
@@ -16133,7 +16133,7 @@ var require_source = __commonJS({
         this.events = new events_1.EventEmitter();
         __classPrivateFieldSet(this, _Conf_encryptionKey, options.encryptionKey, "f");
         const fileExtension = options.fileExtension ? `.${options.fileExtension}` : "";
-        this.path = path16.resolve(options.cwd, `${(_a2 = options.configName) !== null && _a2 !== void 0 ? _a2 : "config"}${fileExtension}`);
+        this.path = path20.resolve(options.cwd, `${(_a2 = options.configName) !== null && _a2 !== void 0 ? _a2 : "config"}${fileExtension}`);
         const fileStore = this.store;
         const store2 = Object.assign(createPlainObject(), options.defaults, fileStore);
         this._validate(store2);
@@ -16274,7 +16274,7 @@ var require_source = __commonJS({
       }
       get store() {
         try {
-          const data = fs11.readFileSync(this.path, __classPrivateFieldGet(this, _Conf_encryptionKey, "f") ? null : "utf8");
+          const data = fs12.readFileSync(this.path, __classPrivateFieldGet(this, _Conf_encryptionKey, "f") ? null : "utf8");
           const dataString = this._encryptData(data);
           const deserializedData = this._deserialize(dataString);
           this._validate(deserializedData);
@@ -16350,7 +16350,7 @@ var require_source = __commonJS({
         throw new Error("Config schema violation: " + errors.join("; "));
       }
       _ensureDirectory() {
-        fs11.mkdirSync(path16.dirname(this.path), { recursive: true });
+        fs12.mkdirSync(path20.dirname(this.path), { recursive: true });
       }
       _write(value) {
         let data = this._serialize(value);
@@ -16361,13 +16361,13 @@ var require_source = __commonJS({
           data = Buffer.concat([initializationVector, Buffer.from(":"), cipher.update(Buffer.from(data)), cipher.final()]);
         }
         if (process.env.SNAP) {
-          fs11.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
+          fs12.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
         } else {
           try {
             atomically.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
           } catch (error) {
             if ((error === null || error === void 0 ? void 0 : error.code) === "EXDEV") {
-              fs11.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
+              fs12.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
               return;
             }
             throw error;
@@ -16376,15 +16376,15 @@ var require_source = __commonJS({
       }
       _watch() {
         this._ensureDirectory();
-        if (!fs11.existsSync(this.path)) {
+        if (!fs12.existsSync(this.path)) {
           this._write(createPlainObject());
         }
         if (process.platform === "win32") {
-          fs11.watch(this.path, { persistent: false }, debounceFn(() => {
+          fs12.watch(this.path, { persistent: false }, debounceFn(() => {
             this.events.emit("change");
           }, { wait: 100 }));
         } else {
-          fs11.watchFile(this.path, { persistent: false }, debounceFn(() => {
+          fs12.watchFile(this.path, { persistent: false }, debounceFn(() => {
             this.events.emit("change");
           }, { wait: 5e3 }));
         }
@@ -16472,17 +16472,17 @@ var require_source = __commonJS({
 var require_electron_store = __commonJS({
   "node_modules/electron-store/index.js"(exports2, module2) {
     "use strict";
-    var path16 = require("path");
-    var { app: app8, ipcMain: ipcMain11, ipcRenderer, shell: shell2 } = require("electron");
+    var path20 = require("path");
+    var { app: app9, ipcMain: ipcMain11, ipcRenderer, shell: shell2 } = require("electron");
     var Conf = require_source();
     var isInitialized = false;
     var initDataListener = () => {
-      if (!ipcMain11 || !app8) {
+      if (!ipcMain11 || !app9) {
         throw new Error("Electron Store: You need to call `.initRenderer()` from the main process.");
       }
       const appData = {
-        defaultCwd: app8.getPath("userData"),
-        appVersion: app8.getVersion()
+        defaultCwd: app9.getPath("userData"),
+        appVersion: app9.getVersion()
       };
       if (isInitialized) {
         return appData;
@@ -16503,7 +16503,7 @@ var require_electron_store = __commonJS({
             throw new Error("Electron Store: You need to call `.initRenderer()` from the main process.");
           }
           ({ defaultCwd, appVersion } = appData);
-        } else if (ipcMain11 && app8) {
+        } else if (ipcMain11 && app9) {
           ({ defaultCwd, appVersion } = initDataListener());
         }
         options = {
@@ -16514,7 +16514,7 @@ var require_electron_store = __commonJS({
           options.projectVersion = appVersion;
         }
         if (options.cwd) {
-          options.cwd = path16.isAbsolute(options.cwd) ? options.cwd : path16.join(defaultCwd, options.cwd);
+          options.cwd = path20.isAbsolute(options.cwd) ? options.cwd : path20.join(defaultCwd, options.cwd);
         } else {
           options.cwd = defaultCwd;
         }
@@ -16546,7 +16546,8 @@ var init_beautifierTypes = __esm({
       padding: 0.08,
       cornerRadius: 0.018,
       shadowStrength: 0.36,
-      aspectRatio: "auto"
+      aspectRatio: "auto",
+      border: { enabled: false, color: "#ffffff", thickness: 0.012, opacity: 1 }
     };
   }
 });
@@ -16591,6 +16592,11 @@ var init_preferences = __esm({
       exportFormat: "png",
       exportQuality: 0.9,
       selfTimerDelay: 0,
+      recordingMicrophone: "",
+      recordingSystemAudio: false,
+      recordingShowCursor: true,
+      recordingCamera: "",
+      recordingFps: 30,
       defaultBeautifierConfig: { ...defaultBeautifierConfig },
       r2AccountID: "",
       r2Bucket: "",
@@ -17528,6 +17534,52 @@ var init_annotatePresenter = __esm({
   }
 });
 
+// electron/editor/videoPresenter.ts
+function openVideoEditor(filePath) {
+  if (videoWin && !videoWin.isDestroyed()) {
+    videoWin.focus();
+    videoWin.webContents.send("video:load", { url: filePath });
+    return;
+  }
+  videoWin = new import_electron12.BrowserWindow({
+    width: 1180,
+    height: 780,
+    minWidth: 900,
+    minHeight: 640,
+    show: false,
+    title: "Reflecto Studio",
+    backgroundColor: "#1e1e1e",
+    webPreferences: {
+      preload: preloadPath(),
+      contextIsolation: true,
+      webSecurity: false
+    }
+  });
+  videoWin.setMenuBarVisibility(false);
+  const devURL = process.env.VITE_DEV_SERVER_URL;
+  if (devURL) videoWin.loadURL(`${devURL}/src/entries/video.html?src=${encodeURIComponent(filePath)}`);
+  else videoWin.loadFile(import_node_path7.default.join(__dirname, "../dist/src/entries/video.html"), {
+    search: `src=${encodeURIComponent(filePath)}`
+  });
+  videoWin.once("ready-to-show", () => {
+    videoWin?.show();
+    videoWin?.webContents.send("video:load", { url: filePath });
+  });
+  videoWin.on("closed", () => {
+    videoWin = null;
+  });
+}
+var import_electron12, import_node_path7, videoWin;
+var init_videoPresenter = __esm({
+  "electron/editor/videoPresenter.ts"() {
+    "use strict";
+    import_electron12 = require("electron");
+    import_node_path7 = __toESM(require("node:path"));
+    init_paths();
+    videoWin = null;
+  }
+});
+
 // electron/sharing/r2.ts
 var r2_exports = {};
 __export(r2_exports, {
@@ -17608,7 +17660,7 @@ function signR2(opts) {
   return { amzDate, contentSHA256: payloadHash, authorizationHeader };
 }
 function contentTypeFor(filePath) {
-  const ext = import_node_path7.default.extname(filePath).toLowerCase();
+  const ext = import_node_path8.default.extname(filePath).toLowerCase();
   if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
   if (ext === ".png") return "image/png";
   if (ext === ".mp4") return "video/mp4";
@@ -17651,13 +17703,13 @@ async function uploadShare(filePath) {
   }
   if (!import_node_fs5.default.existsSync(filePath)) throw new Error("File not found for upload.");
   const slug = (0, import_node_crypto4.randomUUID)().replace(/-/g, "").slice(0, 12);
-  const ext = import_node_path7.default.extname(filePath) || ".png";
+  const ext = import_node_path8.default.extname(filePath) || ".png";
   const mediaKey = `shares/${slug}/media${ext}`;
   const body = import_node_fs5.default.readFileSync(filePath);
   await putObject(creds, mediaKey, body, contentTypeFor(filePath));
   const manifest = {
     version: 1,
-    title: import_node_path7.default.basename(filePath),
+    title: import_node_path8.default.basename(filePath),
     media: `media${ext}`,
     createdAt: (/* @__PURE__ */ new Date()).toISOString()
   };
@@ -17697,13 +17749,13 @@ async function testR2Connection(creds = getR2Credentials()) {
   const text = await res.text().catch(() => "");
   throw new Error(`R2 connection failed (${res.status}): ${text.slice(0, 200) || res.statusText}`);
 }
-var import_node_crypto3, import_node_fs5, import_node_path7, import_node_crypto4, REGION, SERVICE, ALGORITHM, UNSIGNED;
+var import_node_crypto3, import_node_fs5, import_node_path8, import_node_crypto4, REGION, SERVICE, ALGORITHM, UNSIGNED;
 var init_r2 = __esm({
   "electron/sharing/r2.ts"() {
     "use strict";
     import_node_crypto3 = __toESM(require("node:crypto"));
     import_node_fs5 = __toESM(require("node:fs"));
-    import_node_path7 = __toESM(require("node:path"));
+    import_node_path8 = __toESM(require("node:path"));
     import_node_crypto4 = require("node:crypto");
     init_preferences();
     REGION = "auto";
@@ -17793,7 +17845,7 @@ function toggleDeckVisibility() {
   }
 }
 function isVideo(filePath) {
-  const ext = import_node_path8.default.extname(filePath).toLowerCase();
+  const ext = import_node_path9.default.extname(filePath).toLowerCase();
   return ext === ".mov" || ext === ".mp4" || ext === ".webm";
 }
 function hasStagedItems() {
@@ -17894,6 +17946,10 @@ function editItem(filePath) {
     return;
   }
   removeFromDeck(filePath);
+  if (isVideo(retained)) {
+    openVideoEditor(retained);
+    return;
+  }
   void openAnnotateEditor2(retained);
 }
 async function openAnnotateEditor2(filePath) {
@@ -17967,7 +18023,7 @@ async function shareItem(filePath) {
   });
   try {
     const url = await uploadShare(retained);
-    import_electron12.clipboard.writeText(url);
+    import_electron13.clipboard.writeText(url);
     showToast({
       title: "Link copied",
       message: url,
@@ -18035,7 +18091,7 @@ function pushState() {
 }
 function ensurePanel() {
   if (panel && !panel.isDestroyed()) return;
-  panel = new import_electron12.BrowserWindow({
+  panel = new import_electron13.BrowserWindow({
     width: 174,
     height: 142,
     show: false,
@@ -18055,7 +18111,7 @@ function ensurePanel() {
   panel.setAlwaysOnTop(true, "floating");
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) panel.loadURL(`${devURL}/src/entries/preview.html`);
-  else panel.loadFile(import_node_path8.default.join(__dirname, "../dist/src/entries/preview.html"));
+  else panel.loadFile(import_node_path9.default.join(__dirname, "../dist/src/entries/preview.html"));
   panel.webContents.on("did-finish-load", () => pushState());
   panel.on("closed", () => {
     panel = null;
@@ -18066,7 +18122,7 @@ function positionPanel() {
   const cardSize = getPref("overlayCardSize") || "small";
   const edgeMargin = getPref("overlayEdgeMargin") ?? 20;
   const size = panelSizeForCount(cardSize, edgeMargin, Math.max(items.length, 1));
-  const display = import_electron12.screen.getAllDisplays().find((d) => d.id === targetDisplayId) ?? import_electron12.screen.getDisplayNearestPoint(import_electron12.screen.getCursorScreenPoint());
+  const display = import_electron13.screen.getAllDisplays().find((d) => d.id === targetDisplayId) ?? import_electron13.screen.getDisplayNearestPoint(import_electron13.screen.getCursorScreenPoint());
   const { workArea } = display;
   const position = getPref("overlayPosition") ?? "bottomRight";
   const x = position === "bottomLeft" ? workArea.x : workArea.x + workArea.width - size.width;
@@ -18074,15 +18130,15 @@ function positionPanel() {
   panel.setBounds({ x: Math.round(x), y: Math.round(y), width: Math.round(size.width), height: Math.round(size.height) });
 }
 function registerDeckIpc() {
-  import_electron12.ipcMain.handle("deck:getState", () => buildState());
-  import_electron12.ipcMain.on("deck:tool", (_e, url, tool) => performTool(url, tool));
-  import_electron12.ipcMain.on("deck:save-all", () => saveAll());
-  import_electron12.ipcMain.on("deck:clear-all", () => clearAll());
-  import_electron12.ipcMain.on("deck:hover", (_e, url, hovering) => {
+  import_electron13.ipcMain.handle("deck:getState", () => buildState());
+  import_electron13.ipcMain.on("deck:tool", (_e, url, tool) => performTool(url, tool));
+  import_electron13.ipcMain.on("deck:save-all", () => saveAll());
+  import_electron13.ipcMain.on("deck:clear-all", () => clearAll());
+  import_electron13.ipcMain.on("deck:hover", (_e, url, hovering) => {
     if (hovering) cancelScheduledDismiss(url);
     else scheduleDismiss(url);
   });
-  import_electron12.ipcMain.on("deck:drag-start", (e, url) => {
+  import_electron13.ipcMain.on("deck:drag-start", (e, url) => {
     const retained = DeckStaging.retain(url);
     if (!DeckStaging.isStaged(retained) && import_node_fs6.default.existsSync(retained)) {
       e.sender.startDrag({
@@ -18091,16 +18147,16 @@ function registerDeckIpc() {
       });
     }
   });
-  import_electron12.ipcMain.handle("deck:open-edit", (_e, url) => {
+  import_electron13.ipcMain.handle("deck:open-edit", (_e, url) => {
     editItem(url);
   });
 }
-var import_electron12, import_node_path8, import_node_fs6, panel, items, savingItems, dismissTimers, targetDisplayId, lastCaptureUrl;
+var import_electron13, import_node_path9, import_node_fs6, panel, items, savingItems, dismissTimers, targetDisplayId, lastCaptureUrl;
 var init_deck = __esm({
   "electron/preview/deck.ts"() {
     "use strict";
-    import_electron12 = require("electron");
-    import_node_path8 = __toESM(require("node:path"));
+    import_electron13 = require("electron");
+    import_node_path9 = __toESM(require("node:path"));
     import_node_fs6 = __toESM(require("node:fs"));
     init_preferences();
     init_deckStaging();
@@ -18110,6 +18166,7 @@ var init_deck = __esm({
     init_toast();
     init_pin();
     init_annotatePresenter();
+    init_videoPresenter();
     init_paths();
     init_r2();
     panel = null;
@@ -18123,9 +18180,9 @@ var init_deck = __esm({
 // electron/overlay/countdown.ts
 async function showCountdown(seconds, displayId) {
   if (seconds <= 0) return;
-  const displays = displayId != null ? import_electron13.screen.getAllDisplays().filter((d) => d.id === displayId) : [import_electron13.screen.getDisplayNearestPoint(import_electron13.screen.getCursorScreenPoint())];
+  const displays = displayId != null ? import_electron14.screen.getAllDisplays().filter((d) => d.id === displayId) : [import_electron14.screen.getDisplayNearestPoint(import_electron14.screen.getCursorScreenPoint())];
   for (const display of displays) {
-    const win = new import_electron13.BrowserWindow({
+    const win = new import_electron14.BrowserWindow({
       x: display.bounds.x,
       y: display.bounds.y,
       width: display.bounds.width,
@@ -18187,11 +18244,11 @@ ipcRenderer.on('countdown:tick', (_e, n) => {
 });
 </script></body></html>`;
 }
-var import_electron13, wins;
+var import_electron14, wins;
 var init_countdown = __esm({
   "electron/overlay/countdown.ts"() {
     "use strict";
-    import_electron13 = require("electron");
+    import_electron14 = require("electron");
     wins = [];
   }
 });
@@ -18201,7 +18258,7 @@ function ensureWorker() {
   if (worker && !worker.isDestroyed() && ready) {
     return ready.then(() => worker);
   }
-  worker = new import_electron14.BrowserWindow({
+  worker = new import_electron15.BrowserWindow({
     width: 64,
     height: 64,
     show: false,
@@ -18216,14 +18273,14 @@ function ensureWorker() {
     worker.webContents.once("did-finish-load", () => resolve());
     const devURL = process.env.VITE_DEV_SERVER_URL;
     if (devURL) worker.loadURL(`${devURL}/src/entries/beautifier.html`);
-    else worker.loadFile(import_node_path9.default.join(__dirname, "../dist/src/entries/beautifier.html"));
+    else worker.loadFile(import_node_path10.default.join(__dirname, "../dist/src/entries/beautifier.html"));
   });
   return ready.then(() => worker);
 }
 async function beautifyPNG(png, config = defaultBeautifierConfig) {
-  if (config.style.kind === "none") return png;
+  if (config.style.kind === "none" && !config.border?.enabled) return png;
   const win = await ensureWorker();
-  const dataUrl = import_electron14.nativeImage.createFromBuffer(png).toDataURL();
+  const dataUrl = import_electron15.nativeImage.createFromBuffer(png).toDataURL();
   const result = await win.webContents.executeJavaScript(
     `window.__reflectoBeautify(${JSON.stringify(dataUrl)}, ${JSON.stringify(config)})`,
     true
@@ -18231,12 +18288,12 @@ async function beautifyPNG(png, config = defaultBeautifierConfig) {
   const base64 = result.replace(/^data:image\/\w+;base64,/, "");
   return Buffer.from(base64, "base64");
 }
-var import_electron14, import_node_path9, worker, ready;
+var import_electron15, import_node_path10, worker, ready;
 var init_beautifier = __esm({
   "electron/preview/beautifier.ts"() {
     "use strict";
-    import_electron14 = require("electron");
-    import_node_path9 = __toESM(require("node:path"));
+    import_electron15 = require("electron");
+    import_node_path10 = __toESM(require("node:path"));
     init_paths();
     init_beautifierTypes();
     worker = null;
@@ -18255,7 +18312,7 @@ function openWindowPicker() {
     pickerWin.focus();
     return;
   }
-  pickerWin = new import_electron15.BrowserWindow({
+  pickerWin = new import_electron16.BrowserWindow({
     width: 720,
     height: 480,
     show: false,
@@ -18269,25 +18326,25 @@ function openWindowPicker() {
   pickerWin.setMenuBarVisibility(false);
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) pickerWin.loadURL(`${devURL}/src/entries/windowPicker.html`);
-  else pickerWin.loadFile(import_node_path10.default.join(__dirname, "../dist/src/entries/windowPicker.html"));
+  else pickerWin.loadFile(import_node_path11.default.join(__dirname, "../dist/src/entries/windowPicker.html"));
   pickerWin.once("ready-to-show", () => pickerWin?.show());
   pickerWin.on("closed", () => {
     pickerWin = null;
   });
 }
 function registerWindowPickerIpc() {
-  import_electron15.ipcMain.on("windowpicker:select", (_e, id) => {
+  import_electron16.ipcMain.on("windowpicker:select", (_e, id) => {
     pickerWin?.close();
     void performCapture({ kind: "window", windowId: id });
   });
-  import_electron15.ipcMain.on("windowpicker:cancel", () => pickerWin?.close());
+  import_electron16.ipcMain.on("windowpicker:cancel", () => pickerWin?.close());
 }
-var import_electron15, import_node_path10, pickerWin;
+var import_electron16, import_node_path11, pickerWin;
 var init_windowPicker = __esm({
   "electron/overlay/windowPicker.ts"() {
     "use strict";
-    import_electron15 = require("electron");
-    import_node_path10 = __toESM(require("node:path"));
+    import_electron16 = require("electron");
+    import_node_path11 = __toESM(require("node:path"));
     init_paths();
     init_orchestrator();
     pickerWin = null;
@@ -18329,13 +18386,13 @@ async function executeCapture(req) {
     case "previousRegion": {
       const last = getPref("lastRegionRect");
       if (!last) return;
-      await captureAndProcess({ ...req, kind: "region", rect: last, displayId: req.displayId ?? import_electron16.screen.getPrimaryDisplay().id });
+      await captureAndProcess({ ...req, kind: "region", rect: last, displayId: req.displayId ?? import_electron17.screen.getPrimaryDisplay().id });
       break;
     }
     case "fullscreen": {
-      const displayId = req.displayId ?? import_electron16.screen.getPrimaryDisplay().id;
+      const displayId = req.displayId ?? import_electron17.screen.getDisplayNearestPoint(import_electron17.screen.getCursorScreenPoint()).id;
       const source = await captureDisplay(displayId);
-      const img = import_electron16.nativeImage.createFromDataURL(source.thumbnail.toDataURL());
+      const img = import_electron17.nativeImage.createFromDataURL(source.thumbnail.toDataURL());
       await processCapturedImage(img, req, displayId);
       break;
     }
@@ -18346,7 +18403,7 @@ async function executeCapture(req) {
         return;
       }
       const source = await captureWindowById(req.windowId);
-      const img = import_electron16.nativeImage.createFromDataURL(source.thumbnail.toDataURL());
+      const img = import_electron17.nativeImage.createFromDataURL(source.thumbnail.toDataURL());
       await processCapturedImage(img, req);
       break;
     }
@@ -18355,10 +18412,10 @@ async function executeCapture(req) {
       const outcome = await startRegionSelection(false, "ocr");
       if (outcome.kind !== "region" || !outcome.rect || outcome.displayId == null) return;
       const source = await captureDisplay(outcome.displayId);
-      const full = import_electron16.nativeImage.createFromDataURL(source.thumbnail.toDataURL());
+      const full = import_electron17.nativeImage.createFromDataURL(source.thumbnail.toDataURL());
       const cropped = cropImage(full, toLocalCrop(outcome.rect, outcome.displayId));
       const text = await runOCR(cropped.toPNG(), req.kind === "ocrSingleLine");
-      import_electron16.clipboard.writeText(text);
+      import_electron17.clipboard.writeText(text);
       showToast({ title: "Copied", message: "Text copied to clipboard", icon: "ocr", displayId: outcome.displayId });
       break;
     }
@@ -18369,19 +18426,19 @@ async function executeCapture(req) {
   }
 }
 async function captureAndProcess(req) {
-  const displayId = req.displayId ?? import_electron16.screen.getPrimaryDisplay().id;
+  const displayId = req.displayId ?? import_electron17.screen.getPrimaryDisplay().id;
   const delay = req.kind === "timedRegion" ? Math.max(3, getPref("selfTimerDelay") || 3) : getPref("selfTimerDelay");
   if (delay > 0) {
     await countdown(delay, displayId);
   }
   const source = await captureDisplay(displayId);
-  const full = import_electron16.nativeImage.createFromDataURL(source.thumbnail.toDataURL());
+  const full = import_electron17.nativeImage.createFromDataURL(source.thumbnail.toDataURL());
   const img = req.rect ? cropImage(full, toLocalCrop(req.rect, displayId)) : full;
   if (req.rect) setPref("lastRegionRect", req.rect);
   await processCapturedImage(img, req, displayId);
 }
 function toLocalCrop(global2, displayId) {
-  const display = import_electron16.screen.getAllDisplays().find((d) => d.id === displayId) ?? import_electron16.screen.getPrimaryDisplay();
+  const display = import_electron17.screen.getAllDisplays().find((d) => d.id === displayId) ?? import_electron17.screen.getPrimaryDisplay();
   const scale = display.scaleFactor;
   return {
     x: Math.round((global2.x - display.bounds.x) * scale),
@@ -18426,7 +18483,7 @@ async function stageCapture(img) {
   DeckStaging.prepareDirectory();
   const format = getPref("exportFormat") || "png";
   const ext = format === "jpeg" ? "jpg" : "png";
-  const staged = import_node_path11.default.join(DeckStaging.directory, `reflecto_${(0, import_node_crypto5.randomUUID)()}.${ext}`);
+  const staged = import_node_path12.default.join(DeckStaging.directory, `reflecto_${(0, import_node_crypto5.randomUUID)()}.${ext}`);
   const raw = DeckStaging.rawURL(staged);
   const png = img.toPNG();
   import_node_fs7.default.writeFileSync(raw, png);
@@ -18443,16 +18500,16 @@ async function stageCapture(img) {
     });
   }
   if (format === "jpeg") {
-    import_node_fs7.default.writeFileSync(staged, import_electron16.nativeImage.createFromBuffer(out).toJPEG(Math.round((getPref("exportQuality") || 0.9) * 100)));
+    import_node_fs7.default.writeFileSync(staged, import_electron17.nativeImage.createFromBuffer(out).toJPEG(Math.round((getPref("exportQuality") || 0.9) * 100)));
   } else {
     import_node_fs7.default.writeFileSync(staged, out);
   }
   return staged;
 }
 async function captureWindowById(id) {
-  const sources = await import_electron16.desktopCapturer.getSources({
+  const sources = await import_electron17.desktopCapturer.getSources({
     types: ["window"],
-    thumbnailSize: { width: 2560, height: 1440 }
+    thumbnailSize: { width: 4096, height: 4096 }
   });
   const match = sources.find((s) => s.id === id);
   if (!match) throw new Error("Window not found");
@@ -18469,13 +18526,13 @@ function cropImage(img, rect) {
 async function countdown(seconds, displayId) {
   await showCountdown(seconds, displayId);
 }
-var import_electron16, import_node_fs7, import_node_path11, import_node_crypto5, captureInProgress, pending;
+var import_electron17, import_node_fs7, import_node_path12, import_node_crypto5, captureInProgress, pending;
 var init_orchestrator = __esm({
   "electron/capture/orchestrator.ts"() {
     "use strict";
-    import_electron16 = require("electron");
+    import_electron17 = require("electron");
     import_node_fs7 = __toESM(require("node:fs"));
-    import_node_path11 = __toESM(require("node:path"));
+    import_node_path12 = __toESM(require("node:path"));
     import_node_crypto5 = require("node:crypto");
     init_windows();
     init_preferences();
@@ -18548,54 +18605,54 @@ var require_polyfills = __commonJS({
     }
     var chdir;
     module2.exports = patch;
-    function patch(fs11) {
+    function patch(fs12) {
       if (constants.hasOwnProperty("O_SYMLINK") && process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-        patchLchmod(fs11);
+        patchLchmod(fs12);
       }
-      if (!fs11.lutimes) {
-        patchLutimes(fs11);
+      if (!fs12.lutimes) {
+        patchLutimes(fs12);
       }
-      fs11.chown = chownFix(fs11.chown);
-      fs11.fchown = chownFix(fs11.fchown);
-      fs11.lchown = chownFix(fs11.lchown);
-      fs11.chmod = chmodFix(fs11.chmod);
-      fs11.fchmod = chmodFix(fs11.fchmod);
-      fs11.lchmod = chmodFix(fs11.lchmod);
-      fs11.chownSync = chownFixSync(fs11.chownSync);
-      fs11.fchownSync = chownFixSync(fs11.fchownSync);
-      fs11.lchownSync = chownFixSync(fs11.lchownSync);
-      fs11.chmodSync = chmodFixSync(fs11.chmodSync);
-      fs11.fchmodSync = chmodFixSync(fs11.fchmodSync);
-      fs11.lchmodSync = chmodFixSync(fs11.lchmodSync);
-      fs11.stat = statFix(fs11.stat);
-      fs11.fstat = statFix(fs11.fstat);
-      fs11.lstat = statFix(fs11.lstat);
-      fs11.statSync = statFixSync(fs11.statSync);
-      fs11.fstatSync = statFixSync(fs11.fstatSync);
-      fs11.lstatSync = statFixSync(fs11.lstatSync);
-      if (fs11.chmod && !fs11.lchmod) {
-        fs11.lchmod = function(path16, mode, cb) {
+      fs12.chown = chownFix(fs12.chown);
+      fs12.fchown = chownFix(fs12.fchown);
+      fs12.lchown = chownFix(fs12.lchown);
+      fs12.chmod = chmodFix(fs12.chmod);
+      fs12.fchmod = chmodFix(fs12.fchmod);
+      fs12.lchmod = chmodFix(fs12.lchmod);
+      fs12.chownSync = chownFixSync(fs12.chownSync);
+      fs12.fchownSync = chownFixSync(fs12.fchownSync);
+      fs12.lchownSync = chownFixSync(fs12.lchownSync);
+      fs12.chmodSync = chmodFixSync(fs12.chmodSync);
+      fs12.fchmodSync = chmodFixSync(fs12.fchmodSync);
+      fs12.lchmodSync = chmodFixSync(fs12.lchmodSync);
+      fs12.stat = statFix(fs12.stat);
+      fs12.fstat = statFix(fs12.fstat);
+      fs12.lstat = statFix(fs12.lstat);
+      fs12.statSync = statFixSync(fs12.statSync);
+      fs12.fstatSync = statFixSync(fs12.fstatSync);
+      fs12.lstatSync = statFixSync(fs12.lstatSync);
+      if (fs12.chmod && !fs12.lchmod) {
+        fs12.lchmod = function(path20, mode, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs11.lchmodSync = function() {
+        fs12.lchmodSync = function() {
         };
       }
-      if (fs11.chown && !fs11.lchown) {
-        fs11.lchown = function(path16, uid, gid, cb) {
+      if (fs12.chown && !fs12.lchown) {
+        fs12.lchown = function(path20, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs11.lchownSync = function() {
+        fs12.lchownSync = function() {
         };
       }
       if (platform === "win32") {
-        fs11.rename = typeof fs11.rename !== "function" ? fs11.rename : function(fs$rename) {
+        fs12.rename = typeof fs12.rename !== "function" ? fs12.rename : function(fs$rename) {
           function rename(from, to, cb) {
             var start = Date.now();
             var backoff = 0;
             fs$rename(from, to, function CB(er) {
               if (er && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY") && Date.now() - start < 6e4) {
                 setTimeout(function() {
-                  fs11.stat(to, function(stater, st) {
+                  fs12.stat(to, function(stater, st) {
                     if (stater && stater.code === "ENOENT")
                       fs$rename(from, to, CB);
                     else
@@ -18611,9 +18668,9 @@ var require_polyfills = __commonJS({
           }
           if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
           return rename;
-        }(fs11.rename);
+        }(fs12.rename);
       }
-      fs11.read = typeof fs11.read !== "function" ? fs11.read : function(fs$read) {
+      fs12.read = typeof fs12.read !== "function" ? fs12.read : function(fs$read) {
         function read(fd, buffer, offset, length, position, callback_) {
           var callback;
           if (callback_ && typeof callback_ === "function") {
@@ -18621,22 +18678,22 @@ var require_polyfills = __commonJS({
             callback = function(er, _, __) {
               if (er && er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
-                return fs$read.call(fs11, fd, buffer, offset, length, position, callback);
+                return fs$read.call(fs12, fd, buffer, offset, length, position, callback);
               }
               callback_.apply(this, arguments);
             };
           }
-          return fs$read.call(fs11, fd, buffer, offset, length, position, callback);
+          return fs$read.call(fs12, fd, buffer, offset, length, position, callback);
         }
         if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
         return read;
-      }(fs11.read);
-      fs11.readSync = typeof fs11.readSync !== "function" ? fs11.readSync : /* @__PURE__ */ function(fs$readSync) {
+      }(fs12.read);
+      fs12.readSync = typeof fs12.readSync !== "function" ? fs12.readSync : /* @__PURE__ */ function(fs$readSync) {
         return function(fd, buffer, offset, length, position) {
           var eagCounter = 0;
           while (true) {
             try {
-              return fs$readSync.call(fs11, fd, buffer, offset, length, position);
+              return fs$readSync.call(fs12, fd, buffer, offset, length, position);
             } catch (er) {
               if (er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
@@ -18646,11 +18703,11 @@ var require_polyfills = __commonJS({
             }
           }
         };
-      }(fs11.readSync);
-      function patchLchmod(fs12) {
-        fs12.lchmod = function(path16, mode, callback) {
-          fs12.open(
-            path16,
+      }(fs12.readSync);
+      function patchLchmod(fs13) {
+        fs13.lchmod = function(path20, mode, callback) {
+          fs13.open(
+            path20,
             constants.O_WRONLY | constants.O_SYMLINK,
             mode,
             function(err, fd) {
@@ -18658,80 +18715,80 @@ var require_polyfills = __commonJS({
                 if (callback) callback(err);
                 return;
               }
-              fs12.fchmod(fd, mode, function(err2) {
-                fs12.close(fd, function(err22) {
+              fs13.fchmod(fd, mode, function(err2) {
+                fs13.close(fd, function(err22) {
                   if (callback) callback(err2 || err22);
                 });
               });
             }
           );
         };
-        fs12.lchmodSync = function(path16, mode) {
-          var fd = fs12.openSync(path16, constants.O_WRONLY | constants.O_SYMLINK, mode);
+        fs13.lchmodSync = function(path20, mode) {
+          var fd = fs13.openSync(path20, constants.O_WRONLY | constants.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
-            ret = fs12.fchmodSync(fd, mode);
+            ret = fs13.fchmodSync(fd, mode);
             threw = false;
           } finally {
             if (threw) {
               try {
-                fs12.closeSync(fd);
+                fs13.closeSync(fd);
               } catch (er) {
               }
             } else {
-              fs12.closeSync(fd);
+              fs13.closeSync(fd);
             }
           }
           return ret;
         };
       }
-      function patchLutimes(fs12) {
-        if (constants.hasOwnProperty("O_SYMLINK") && fs12.futimes) {
-          fs12.lutimes = function(path16, at, mt, cb) {
-            fs12.open(path16, constants.O_SYMLINK, function(er, fd) {
+      function patchLutimes(fs13) {
+        if (constants.hasOwnProperty("O_SYMLINK") && fs13.futimes) {
+          fs13.lutimes = function(path20, at, mt, cb) {
+            fs13.open(path20, constants.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
               }
-              fs12.futimes(fd, at, mt, function(er2) {
-                fs12.close(fd, function(er22) {
+              fs13.futimes(fd, at, mt, function(er2) {
+                fs13.close(fd, function(er22) {
                   if (cb) cb(er2 || er22);
                 });
               });
             });
           };
-          fs12.lutimesSync = function(path16, at, mt) {
-            var fd = fs12.openSync(path16, constants.O_SYMLINK);
+          fs13.lutimesSync = function(path20, at, mt) {
+            var fd = fs13.openSync(path20, constants.O_SYMLINK);
             var ret;
             var threw = true;
             try {
-              ret = fs12.futimesSync(fd, at, mt);
+              ret = fs13.futimesSync(fd, at, mt);
               threw = false;
             } finally {
               if (threw) {
                 try {
-                  fs12.closeSync(fd);
+                  fs13.closeSync(fd);
                 } catch (er) {
                 }
               } else {
-                fs12.closeSync(fd);
+                fs13.closeSync(fd);
               }
             }
             return ret;
           };
-        } else if (fs12.futimes) {
-          fs12.lutimes = function(_a, _b, _c, cb) {
+        } else if (fs13.futimes) {
+          fs13.lutimes = function(_a, _b, _c, cb) {
             if (cb) process.nextTick(cb);
           };
-          fs12.lutimesSync = function() {
+          fs13.lutimesSync = function() {
           };
         }
       }
       function chmodFix(orig) {
         if (!orig) return orig;
         return function(target, mode, cb) {
-          return orig.call(fs11, target, mode, function(er) {
+          return orig.call(fs12, target, mode, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -18741,7 +18798,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, mode) {
           try {
-            return orig.call(fs11, target, mode);
+            return orig.call(fs12, target, mode);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -18750,7 +18807,7 @@ var require_polyfills = __commonJS({
       function chownFix(orig) {
         if (!orig) return orig;
         return function(target, uid, gid, cb) {
-          return orig.call(fs11, target, uid, gid, function(er) {
+          return orig.call(fs12, target, uid, gid, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -18760,7 +18817,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, uid, gid) {
           try {
-            return orig.call(fs11, target, uid, gid);
+            return orig.call(fs12, target, uid, gid);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -18780,13 +18837,13 @@ var require_polyfills = __commonJS({
             }
             if (cb) cb.apply(this, arguments);
           }
-          return options ? orig.call(fs11, target, options, callback) : orig.call(fs11, target, callback);
+          return options ? orig.call(fs12, target, options, callback) : orig.call(fs12, target, callback);
         };
       }
       function statFixSync(orig) {
         if (!orig) return orig;
         return function(target, options) {
-          var stats = options ? orig.call(fs11, target, options) : orig.call(fs11, target);
+          var stats = options ? orig.call(fs12, target, options) : orig.call(fs12, target);
           if (stats) {
             if (stats.uid < 0) stats.uid += 4294967296;
             if (stats.gid < 0) stats.gid += 4294967296;
@@ -18815,16 +18872,16 @@ var require_legacy_streams = __commonJS({
   "node_modules/graceful-fs/legacy-streams.js"(exports2, module2) {
     var Stream = require("stream").Stream;
     module2.exports = legacy;
-    function legacy(fs11) {
+    function legacy(fs12) {
       return {
         ReadStream,
         WriteStream
       };
-      function ReadStream(path16, options) {
-        if (!(this instanceof ReadStream)) return new ReadStream(path16, options);
+      function ReadStream(path20, options) {
+        if (!(this instanceof ReadStream)) return new ReadStream(path20, options);
         Stream.call(this);
         var self2 = this;
-        this.path = path16;
+        this.path = path20;
         this.fd = null;
         this.readable = true;
         this.paused = false;
@@ -18858,7 +18915,7 @@ var require_legacy_streams = __commonJS({
           });
           return;
         }
-        fs11.open(this.path, this.flags, this.mode, function(err, fd) {
+        fs12.open(this.path, this.flags, this.mode, function(err, fd) {
           if (err) {
             self2.emit("error", err);
             self2.readable = false;
@@ -18869,10 +18926,10 @@ var require_legacy_streams = __commonJS({
           self2._read();
         });
       }
-      function WriteStream(path16, options) {
-        if (!(this instanceof WriteStream)) return new WriteStream(path16, options);
+      function WriteStream(path20, options) {
+        if (!(this instanceof WriteStream)) return new WriteStream(path20, options);
         Stream.call(this);
-        this.path = path16;
+        this.path = path20;
         this.fd = null;
         this.writable = true;
         this.flags = "w";
@@ -18897,7 +18954,7 @@ var require_legacy_streams = __commonJS({
         this.busy = false;
         this._queue = [];
         if (this.fd === null) {
-          this._open = fs11.open;
+          this._open = fs12.open;
           this._queue.push([this._open, this.path, this.flags, this.mode, void 0]);
           this.flush();
         }
@@ -18932,7 +18989,7 @@ var require_clone = __commonJS({
 // node_modules/graceful-fs/graceful-fs.js
 var require_graceful_fs = __commonJS({
   "node_modules/graceful-fs/graceful-fs.js"(exports2, module2) {
-    var fs11 = require("fs");
+    var fs12 = require("fs");
     var polyfills = require_polyfills();
     var legacy = require_legacy_streams();
     var clone = require_clone();
@@ -18964,12 +19021,12 @@ var require_graceful_fs = __commonJS({
         m = "GFS4: " + m.split(/\n/).join("\nGFS4: ");
         console.error(m);
       };
-    if (!fs11[gracefulQueue]) {
+    if (!fs12[gracefulQueue]) {
       queue = global[gracefulQueue] || [];
-      publishQueue(fs11, queue);
-      fs11.close = function(fs$close) {
+      publishQueue(fs12, queue);
+      fs12.close = function(fs$close) {
         function close(fd, cb) {
-          return fs$close.call(fs11, fd, function(err) {
+          return fs$close.call(fs12, fd, function(err) {
             if (!err) {
               resetQueue();
             }
@@ -18981,48 +19038,48 @@ var require_graceful_fs = __commonJS({
           value: fs$close
         });
         return close;
-      }(fs11.close);
-      fs11.closeSync = function(fs$closeSync) {
+      }(fs12.close);
+      fs12.closeSync = function(fs$closeSync) {
         function closeSync(fd) {
-          fs$closeSync.apply(fs11, arguments);
+          fs$closeSync.apply(fs12, arguments);
           resetQueue();
         }
         Object.defineProperty(closeSync, previousSymbol, {
           value: fs$closeSync
         });
         return closeSync;
-      }(fs11.closeSync);
+      }(fs12.closeSync);
       if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || "")) {
         process.on("exit", function() {
-          debug(fs11[gracefulQueue]);
-          require("assert").equal(fs11[gracefulQueue].length, 0);
+          debug(fs12[gracefulQueue]);
+          require("assert").equal(fs12[gracefulQueue].length, 0);
         });
       }
     }
     var queue;
     if (!global[gracefulQueue]) {
-      publishQueue(global, fs11[gracefulQueue]);
+      publishQueue(global, fs12[gracefulQueue]);
     }
-    module2.exports = patch(clone(fs11));
-    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs11.__patched) {
-      module2.exports = patch(fs11);
-      fs11.__patched = true;
+    module2.exports = patch(clone(fs12));
+    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs12.__patched) {
+      module2.exports = patch(fs12);
+      fs12.__patched = true;
     }
-    function patch(fs12) {
-      polyfills(fs12);
-      fs12.gracefulify = patch;
-      fs12.createReadStream = createReadStream;
-      fs12.createWriteStream = createWriteStream;
-      var fs$readFile = fs12.readFile;
-      fs12.readFile = readFile;
-      function readFile(path16, options, cb) {
+    function patch(fs13) {
+      polyfills(fs13);
+      fs13.gracefulify = patch;
+      fs13.createReadStream = createReadStream;
+      fs13.createWriteStream = createWriteStream;
+      var fs$readFile = fs13.readFile;
+      fs13.readFile = readFile;
+      function readFile(path20, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$readFile(path16, options, cb);
-        function go$readFile(path17, options2, cb2, startTime) {
-          return fs$readFile(path17, options2, function(err) {
+        return go$readFile(path20, options, cb);
+        function go$readFile(path21, options2, cb2, startTime) {
+          return fs$readFile(path21, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$readFile, [path17, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$readFile, [path21, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19030,16 +19087,16 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$writeFile = fs12.writeFile;
-      fs12.writeFile = writeFile;
-      function writeFile(path16, data, options, cb) {
+      var fs$writeFile = fs13.writeFile;
+      fs13.writeFile = writeFile;
+      function writeFile(path20, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$writeFile(path16, data, options, cb);
-        function go$writeFile(path17, data2, options2, cb2, startTime) {
-          return fs$writeFile(path17, data2, options2, function(err) {
+        return go$writeFile(path20, data, options, cb);
+        function go$writeFile(path21, data2, options2, cb2, startTime) {
+          return fs$writeFile(path21, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$writeFile, [path17, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$writeFile, [path21, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19047,17 +19104,17 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$appendFile = fs12.appendFile;
+      var fs$appendFile = fs13.appendFile;
       if (fs$appendFile)
-        fs12.appendFile = appendFile;
-      function appendFile(path16, data, options, cb) {
+        fs13.appendFile = appendFile;
+      function appendFile(path20, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$appendFile(path16, data, options, cb);
-        function go$appendFile(path17, data2, options2, cb2, startTime) {
-          return fs$appendFile(path17, data2, options2, function(err) {
+        return go$appendFile(path20, data, options, cb);
+        function go$appendFile(path21, data2, options2, cb2, startTime) {
+          return fs$appendFile(path21, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$appendFile, [path17, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$appendFile, [path21, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19065,9 +19122,9 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$copyFile = fs12.copyFile;
+      var fs$copyFile = fs13.copyFile;
       if (fs$copyFile)
-        fs12.copyFile = copyFile;
+        fs13.copyFile = copyFile;
       function copyFile(src, dest, flags, cb) {
         if (typeof flags === "function") {
           cb = flags;
@@ -19085,34 +19142,34 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$readdir = fs12.readdir;
-      fs12.readdir = readdir;
+      var fs$readdir = fs13.readdir;
+      fs13.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path16, options, cb) {
+      function readdir(path20, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path17, options2, cb2, startTime) {
-          return fs$readdir(path17, fs$readdirCallback(
-            path17,
+        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path21, options2, cb2, startTime) {
+          return fs$readdir(path21, fs$readdirCallback(
+            path21,
             options2,
             cb2,
             startTime
           ));
-        } : function go$readdir2(path17, options2, cb2, startTime) {
-          return fs$readdir(path17, options2, fs$readdirCallback(
-            path17,
+        } : function go$readdir2(path21, options2, cb2, startTime) {
+          return fs$readdir(path21, options2, fs$readdirCallback(
+            path21,
             options2,
             cb2,
             startTime
           ));
         };
-        return go$readdir(path16, options, cb);
-        function fs$readdirCallback(path17, options2, cb2, startTime) {
+        return go$readdir(path20, options, cb);
+        function fs$readdirCallback(path21, options2, cb2, startTime) {
           return function(err, files) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
               enqueue([
                 go$readdir,
-                [path17, options2, cb2],
+                [path21, options2, cb2],
                 err,
                 startTime || Date.now(),
                 Date.now()
@@ -19127,21 +19184,21 @@ var require_graceful_fs = __commonJS({
         }
       }
       if (process.version.substr(0, 4) === "v0.8") {
-        var legStreams = legacy(fs12);
+        var legStreams = legacy(fs13);
         ReadStream = legStreams.ReadStream;
         WriteStream = legStreams.WriteStream;
       }
-      var fs$ReadStream = fs12.ReadStream;
+      var fs$ReadStream = fs13.ReadStream;
       if (fs$ReadStream) {
         ReadStream.prototype = Object.create(fs$ReadStream.prototype);
         ReadStream.prototype.open = ReadStream$open;
       }
-      var fs$WriteStream = fs12.WriteStream;
+      var fs$WriteStream = fs13.WriteStream;
       if (fs$WriteStream) {
         WriteStream.prototype = Object.create(fs$WriteStream.prototype);
         WriteStream.prototype.open = WriteStream$open;
       }
-      Object.defineProperty(fs12, "ReadStream", {
+      Object.defineProperty(fs13, "ReadStream", {
         get: function() {
           return ReadStream;
         },
@@ -19151,7 +19208,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      Object.defineProperty(fs12, "WriteStream", {
+      Object.defineProperty(fs13, "WriteStream", {
         get: function() {
           return WriteStream;
         },
@@ -19162,7 +19219,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileReadStream = ReadStream;
-      Object.defineProperty(fs12, "FileReadStream", {
+      Object.defineProperty(fs13, "FileReadStream", {
         get: function() {
           return FileReadStream;
         },
@@ -19173,7 +19230,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileWriteStream = WriteStream;
-      Object.defineProperty(fs12, "FileWriteStream", {
+      Object.defineProperty(fs13, "FileWriteStream", {
         get: function() {
           return FileWriteStream;
         },
@@ -19183,7 +19240,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      function ReadStream(path16, options) {
+      function ReadStream(path20, options) {
         if (this instanceof ReadStream)
           return fs$ReadStream.apply(this, arguments), this;
         else
@@ -19203,7 +19260,7 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function WriteStream(path16, options) {
+      function WriteStream(path20, options) {
         if (this instanceof WriteStream)
           return fs$WriteStream.apply(this, arguments), this;
         else
@@ -19221,22 +19278,22 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function createReadStream(path16, options) {
-        return new fs12.ReadStream(path16, options);
+      function createReadStream(path20, options) {
+        return new fs13.ReadStream(path20, options);
       }
-      function createWriteStream(path16, options) {
-        return new fs12.WriteStream(path16, options);
+      function createWriteStream(path20, options) {
+        return new fs13.WriteStream(path20, options);
       }
-      var fs$open = fs12.open;
-      fs12.open = open;
-      function open(path16, flags, mode, cb) {
+      var fs$open = fs13.open;
+      fs13.open = open;
+      function open(path20, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
-        return go$open(path16, flags, mode, cb);
-        function go$open(path17, flags2, mode2, cb2, startTime) {
-          return fs$open(path17, flags2, mode2, function(err, fd) {
+        return go$open(path20, flags, mode, cb);
+        function go$open(path21, flags2, mode2, cb2, startTime) {
+          return fs$open(path21, flags2, mode2, function(err, fd) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$open, [path17, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$open, [path21, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19244,20 +19301,20 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      return fs12;
+      return fs13;
     }
     function enqueue(elem) {
       debug("ENQUEUE", elem[0].name, elem[1]);
-      fs11[gracefulQueue].push(elem);
+      fs12[gracefulQueue].push(elem);
       retry();
     }
     var retryTimer;
     function resetQueue() {
       var now = Date.now();
-      for (var i = 0; i < fs11[gracefulQueue].length; ++i) {
-        if (fs11[gracefulQueue][i].length > 2) {
-          fs11[gracefulQueue][i][3] = now;
-          fs11[gracefulQueue][i][4] = now;
+      for (var i = 0; i < fs12[gracefulQueue].length; ++i) {
+        if (fs12[gracefulQueue][i].length > 2) {
+          fs12[gracefulQueue][i][3] = now;
+          fs12[gracefulQueue][i][4] = now;
         }
       }
       retry();
@@ -19265,9 +19322,9 @@ var require_graceful_fs = __commonJS({
     function retry() {
       clearTimeout(retryTimer);
       retryTimer = void 0;
-      if (fs11[gracefulQueue].length === 0)
+      if (fs12[gracefulQueue].length === 0)
         return;
-      var elem = fs11[gracefulQueue].shift();
+      var elem = fs12[gracefulQueue].shift();
       var fn = elem[0];
       var args = elem[1];
       var err = elem[2];
@@ -19289,7 +19346,7 @@ var require_graceful_fs = __commonJS({
           debug("RETRY", fn.name, args);
           fn.apply(null, args.concat([startTime]));
         } else {
-          fs11[gracefulQueue].push(elem);
+          fs12[gracefulQueue].push(elem);
         }
       }
       if (retryTimer === void 0) {
@@ -19304,7 +19361,7 @@ var require_fs2 = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/fs/index.js"(exports2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var fs11 = require_graceful_fs();
+    var fs12 = require_graceful_fs();
     var api = [
       "access",
       "appendFile",
@@ -19341,26 +19398,26 @@ var require_fs2 = __commonJS({
       "utimes",
       "writeFile"
     ].filter((key) => {
-      return typeof fs11[key] === "function";
+      return typeof fs12[key] === "function";
     });
-    Object.assign(exports2, fs11);
+    Object.assign(exports2, fs12);
     api.forEach((method) => {
-      exports2[method] = u(fs11[method]);
+      exports2[method] = u(fs12[method]);
     });
     exports2.exists = function(filename, callback) {
       if (typeof callback === "function") {
-        return fs11.exists(filename, callback);
+        return fs12.exists(filename, callback);
       }
       return new Promise((resolve) => {
-        return fs11.exists(filename, resolve);
+        return fs12.exists(filename, resolve);
       });
     };
     exports2.read = function(fd, buffer, offset, length, position, callback) {
       if (typeof callback === "function") {
-        return fs11.read(fd, buffer, offset, length, position, callback);
+        return fs12.read(fd, buffer, offset, length, position, callback);
       }
       return new Promise((resolve, reject) => {
-        fs11.read(fd, buffer, offset, length, position, (err, bytesRead, buffer2) => {
+        fs12.read(fd, buffer, offset, length, position, (err, bytesRead, buffer2) => {
           if (err) return reject(err);
           resolve({ bytesRead, buffer: buffer2 });
         });
@@ -19368,30 +19425,30 @@ var require_fs2 = __commonJS({
     };
     exports2.write = function(fd, buffer, ...args) {
       if (typeof args[args.length - 1] === "function") {
-        return fs11.write(fd, buffer, ...args);
+        return fs12.write(fd, buffer, ...args);
       }
       return new Promise((resolve, reject) => {
-        fs11.write(fd, buffer, ...args, (err, bytesWritten, buffer2) => {
+        fs12.write(fd, buffer, ...args, (err, bytesWritten, buffer2) => {
           if (err) return reject(err);
           resolve({ bytesWritten, buffer: buffer2 });
         });
       });
     };
-    if (typeof fs11.writev === "function") {
+    if (typeof fs12.writev === "function") {
       exports2.writev = function(fd, buffers, ...args) {
         if (typeof args[args.length - 1] === "function") {
-          return fs11.writev(fd, buffers, ...args);
+          return fs12.writev(fd, buffers, ...args);
         }
         return new Promise((resolve, reject) => {
-          fs11.writev(fd, buffers, ...args, (err, bytesWritten, buffers2) => {
+          fs12.writev(fd, buffers, ...args, (err, bytesWritten, buffers2) => {
             if (err) return reject(err);
             resolve({ bytesWritten, buffers: buffers2 });
           });
         });
       };
     }
-    if (typeof fs11.realpath.native === "function") {
-      exports2.realpath.native = u(fs11.realpath.native);
+    if (typeof fs12.realpath.native === "function") {
+      exports2.realpath.native = u(fs12.realpath.native);
     } else {
       process.emitWarning(
         "fs.realpath.native is not a function. Is fs being monkey-patched?",
@@ -19406,10 +19463,10 @@ var require_fs2 = __commonJS({
 var require_utils2 = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/mkdirs/utils.js"(exports2, module2) {
     "use strict";
-    var path16 = require("path");
+    var path20 = require("path");
     module2.exports.checkPath = function checkPath(pth) {
       if (process.platform === "win32") {
-        const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path16.parse(pth).root, ""));
+        const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path20.parse(pth).root, ""));
         if (pathHasInvalidWinCharacters) {
           const error = new Error(`Path contains invalid characters: ${pth}`);
           error.code = "EINVAL";
@@ -19424,7 +19481,7 @@ var require_utils2 = __commonJS({
 var require_make_dir = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/mkdirs/make-dir.js"(exports2, module2) {
     "use strict";
-    var fs11 = require_fs2();
+    var fs12 = require_fs2();
     var { checkPath } = require_utils2();
     var getMode = (options) => {
       const defaults = { mode: 511 };
@@ -19433,14 +19490,14 @@ var require_make_dir = __commonJS({
     };
     module2.exports.makeDir = async (dir, options) => {
       checkPath(dir);
-      return fs11.mkdir(dir, {
+      return fs12.mkdir(dir, {
         mode: getMode(options),
         recursive: true
       });
     };
     module2.exports.makeDirSync = (dir, options) => {
       checkPath(dir);
-      return fs11.mkdirSync(dir, {
+      return fs12.mkdirSync(dir, {
         mode: getMode(options),
         recursive: true
       });
@@ -19472,13 +19529,13 @@ var require_path_exists2 = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/path-exists/index.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var fs11 = require_fs2();
-    function pathExists(path16) {
-      return fs11.access(path16).then(() => true).catch(() => false);
+    var fs12 = require_fs2();
+    function pathExists(path20) {
+      return fs12.access(path20).then(() => true).catch(() => false);
     }
     module2.exports = {
       pathExists: u(pathExists),
-      pathExistsSync: fs11.existsSync
+      pathExistsSync: fs12.existsSync
     };
   }
 });
@@ -19487,21 +19544,21 @@ var require_path_exists2 = __commonJS({
 var require_utimes = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/util/utimes.js"(exports2, module2) {
     "use strict";
-    var fs11 = require_graceful_fs();
-    function utimesMillis(path16, atime, mtime, callback) {
-      fs11.open(path16, "r+", (err, fd) => {
+    var fs12 = require_graceful_fs();
+    function utimesMillis(path20, atime, mtime, callback) {
+      fs12.open(path20, "r+", (err, fd) => {
         if (err) return callback(err);
-        fs11.futimes(fd, atime, mtime, (futimesErr) => {
-          fs11.close(fd, (closeErr) => {
+        fs12.futimes(fd, atime, mtime, (futimesErr) => {
+          fs12.close(fd, (closeErr) => {
             if (callback) callback(futimesErr || closeErr);
           });
         });
       });
     }
-    function utimesMillisSync(path16, atime, mtime) {
-      const fd = fs11.openSync(path16, "r+");
-      fs11.futimesSync(fd, atime, mtime);
-      return fs11.closeSync(fd);
+    function utimesMillisSync(path20, atime, mtime) {
+      const fd = fs12.openSync(path20, "r+");
+      fs12.futimesSync(fd, atime, mtime);
+      return fs12.closeSync(fd);
     }
     module2.exports = {
       utimesMillis,
@@ -19514,11 +19571,11 @@ var require_utimes = __commonJS({
 var require_stat = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/util/stat.js"(exports2, module2) {
     "use strict";
-    var fs11 = require_fs2();
-    var path16 = require("path");
+    var fs12 = require_fs2();
+    var path20 = require("path");
     var util = require("util");
     function getStats(src, dest, opts) {
-      const statFunc = opts.dereference ? (file) => fs11.stat(file, { bigint: true }) : (file) => fs11.lstat(file, { bigint: true });
+      const statFunc = opts.dereference ? (file) => fs12.stat(file, { bigint: true }) : (file) => fs12.lstat(file, { bigint: true });
       return Promise.all([
         statFunc(src),
         statFunc(dest).catch((err) => {
@@ -19529,7 +19586,7 @@ var require_stat = __commonJS({
     }
     function getStatsSync(src, dest, opts) {
       let destStat;
-      const statFunc = opts.dereference ? (file) => fs11.statSync(file, { bigint: true }) : (file) => fs11.lstatSync(file, { bigint: true });
+      const statFunc = opts.dereference ? (file) => fs12.statSync(file, { bigint: true }) : (file) => fs12.lstatSync(file, { bigint: true });
       const srcStat = statFunc(src);
       try {
         destStat = statFunc(dest);
@@ -19545,8 +19602,8 @@ var require_stat = __commonJS({
         const { srcStat, destStat } = stats;
         if (destStat) {
           if (areIdentical(srcStat, destStat)) {
-            const srcBaseName = path16.basename(src);
-            const destBaseName = path16.basename(dest);
+            const srcBaseName = path20.basename(src);
+            const destBaseName = path20.basename(dest);
             if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
               return cb(null, { srcStat, destStat, isChangingCase: true });
             }
@@ -19569,8 +19626,8 @@ var require_stat = __commonJS({
       const { srcStat, destStat } = getStatsSync(src, dest, opts);
       if (destStat) {
         if (areIdentical(srcStat, destStat)) {
-          const srcBaseName = path16.basename(src);
-          const destBaseName = path16.basename(dest);
+          const srcBaseName = path20.basename(src);
+          const destBaseName = path20.basename(dest);
           if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
             return { srcStat, destStat, isChangingCase: true };
           }
@@ -19589,10 +19646,10 @@ var require_stat = __commonJS({
       return { srcStat, destStat };
     }
     function checkParentPaths(src, srcStat, dest, funcName, cb) {
-      const srcParent = path16.resolve(path16.dirname(src));
-      const destParent = path16.resolve(path16.dirname(dest));
-      if (destParent === srcParent || destParent === path16.parse(destParent).root) return cb();
-      fs11.stat(destParent, { bigint: true }, (err, destStat) => {
+      const srcParent = path20.resolve(path20.dirname(src));
+      const destParent = path20.resolve(path20.dirname(dest));
+      if (destParent === srcParent || destParent === path20.parse(destParent).root) return cb();
+      fs12.stat(destParent, { bigint: true }, (err, destStat) => {
         if (err) {
           if (err.code === "ENOENT") return cb();
           return cb(err);
@@ -19604,12 +19661,12 @@ var require_stat = __commonJS({
       });
     }
     function checkParentPathsSync(src, srcStat, dest, funcName) {
-      const srcParent = path16.resolve(path16.dirname(src));
-      const destParent = path16.resolve(path16.dirname(dest));
-      if (destParent === srcParent || destParent === path16.parse(destParent).root) return;
+      const srcParent = path20.resolve(path20.dirname(src));
+      const destParent = path20.resolve(path20.dirname(dest));
+      if (destParent === srcParent || destParent === path20.parse(destParent).root) return;
       let destStat;
       try {
-        destStat = fs11.statSync(destParent, { bigint: true });
+        destStat = fs12.statSync(destParent, { bigint: true });
       } catch (err) {
         if (err.code === "ENOENT") return;
         throw err;
@@ -19623,8 +19680,8 @@ var require_stat = __commonJS({
       return destStat.ino && destStat.dev && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev;
     }
     function isSrcSubdir(src, dest) {
-      const srcArr = path16.resolve(src).split(path16.sep).filter((i) => i);
-      const destArr = path16.resolve(dest).split(path16.sep).filter((i) => i);
+      const srcArr = path20.resolve(src).split(path20.sep).filter((i) => i);
+      const destArr = path20.resolve(dest).split(path20.sep).filter((i) => i);
       return srcArr.reduce((acc, cur, i) => acc && destArr[i] === cur, true);
     }
     function errMsg(src, dest, funcName) {
@@ -19645,8 +19702,8 @@ var require_stat = __commonJS({
 var require_copy = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/copy/copy.js"(exports2, module2) {
     "use strict";
-    var fs11 = require_graceful_fs();
-    var path16 = require("path");
+    var fs12 = require_graceful_fs();
+    var path20 = require("path");
     var mkdirs = require_mkdirs().mkdirs;
     var pathExists = require_path_exists2().pathExists;
     var utimesMillis = require_utimes().utimesMillis;
@@ -19681,7 +19738,7 @@ var require_copy = __commonJS({
       });
     }
     function checkParentDir(destStat, src, dest, opts, cb) {
-      const destParent = path16.dirname(dest);
+      const destParent = path20.dirname(dest);
       pathExists(destParent, (err, dirExists) => {
         if (err) return cb(err);
         if (dirExists) return getStats(destStat, src, dest, opts, cb);
@@ -19702,7 +19759,7 @@ var require_copy = __commonJS({
       return getStats(destStat, src, dest, opts, cb);
     }
     function getStats(destStat, src, dest, opts, cb) {
-      const stat2 = opts.dereference ? fs11.stat : fs11.lstat;
+      const stat2 = opts.dereference ? fs12.stat : fs12.lstat;
       stat2(src, (err, srcStat) => {
         if (err) return cb(err);
         if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts, cb);
@@ -19719,7 +19776,7 @@ var require_copy = __commonJS({
     }
     function mayCopyFile(srcStat, src, dest, opts, cb) {
       if (opts.overwrite) {
-        fs11.unlink(dest, (err) => {
+        fs12.unlink(dest, (err) => {
           if (err) return cb(err);
           return copyFile(srcStat, src, dest, opts, cb);
         });
@@ -19728,7 +19785,7 @@ var require_copy = __commonJS({
       } else return cb();
     }
     function copyFile(srcStat, src, dest, opts, cb) {
-      fs11.copyFile(src, dest, (err) => {
+      fs12.copyFile(src, dest, (err) => {
         if (err) return cb(err);
         if (opts.preserveTimestamps) return handleTimestampsAndMode(srcStat.mode, src, dest, cb);
         return setDestMode(dest, srcStat.mode, cb);
@@ -19756,10 +19813,10 @@ var require_copy = __commonJS({
       });
     }
     function setDestMode(dest, srcMode, cb) {
-      return fs11.chmod(dest, srcMode, cb);
+      return fs12.chmod(dest, srcMode, cb);
     }
     function setDestTimestamps(src, dest, cb) {
-      fs11.stat(src, (err, updatedSrcStat) => {
+      fs12.stat(src, (err, updatedSrcStat) => {
         if (err) return cb(err);
         return utimesMillis(dest, updatedSrcStat.atime, updatedSrcStat.mtime, cb);
       });
@@ -19769,7 +19826,7 @@ var require_copy = __commonJS({
       return copyDir(src, dest, opts, cb);
     }
     function mkDirAndCopy(srcMode, src, dest, opts, cb) {
-      fs11.mkdir(dest, (err) => {
+      fs12.mkdir(dest, (err) => {
         if (err) return cb(err);
         copyDir(src, dest, opts, (err2) => {
           if (err2) return cb(err2);
@@ -19778,7 +19835,7 @@ var require_copy = __commonJS({
       });
     }
     function copyDir(src, dest, opts, cb) {
-      fs11.readdir(src, (err, items2) => {
+      fs12.readdir(src, (err, items2) => {
         if (err) return cb(err);
         return copyDirItems(items2, src, dest, opts, cb);
       });
@@ -19789,8 +19846,8 @@ var require_copy = __commonJS({
       return copyDirItem(items2, item, src, dest, opts, cb);
     }
     function copyDirItem(items2, item, src, dest, opts, cb) {
-      const srcItem = path16.join(src, item);
-      const destItem = path16.join(dest, item);
+      const srcItem = path20.join(src, item);
+      const destItem = path20.join(dest, item);
       stat.checkPaths(srcItem, destItem, "copy", opts, (err, stats) => {
         if (err) return cb(err);
         const { destStat } = stats;
@@ -19801,21 +19858,21 @@ var require_copy = __commonJS({
       });
     }
     function onLink(destStat, src, dest, opts, cb) {
-      fs11.readlink(src, (err, resolvedSrc) => {
+      fs12.readlink(src, (err, resolvedSrc) => {
         if (err) return cb(err);
         if (opts.dereference) {
-          resolvedSrc = path16.resolve(process.cwd(), resolvedSrc);
+          resolvedSrc = path20.resolve(process.cwd(), resolvedSrc);
         }
         if (!destStat) {
-          return fs11.symlink(resolvedSrc, dest, cb);
+          return fs12.symlink(resolvedSrc, dest, cb);
         } else {
-          fs11.readlink(dest, (err2, resolvedDest) => {
+          fs12.readlink(dest, (err2, resolvedDest) => {
             if (err2) {
-              if (err2.code === "EINVAL" || err2.code === "UNKNOWN") return fs11.symlink(resolvedSrc, dest, cb);
+              if (err2.code === "EINVAL" || err2.code === "UNKNOWN") return fs12.symlink(resolvedSrc, dest, cb);
               return cb(err2);
             }
             if (opts.dereference) {
-              resolvedDest = path16.resolve(process.cwd(), resolvedDest);
+              resolvedDest = path20.resolve(process.cwd(), resolvedDest);
             }
             if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
               return cb(new Error(`Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`));
@@ -19829,9 +19886,9 @@ var require_copy = __commonJS({
       });
     }
     function copyLink(resolvedSrc, dest, cb) {
-      fs11.unlink(dest, (err) => {
+      fs12.unlink(dest, (err) => {
         if (err) return cb(err);
-        return fs11.symlink(resolvedSrc, dest, cb);
+        return fs12.symlink(resolvedSrc, dest, cb);
       });
     }
     module2.exports = copy;
@@ -19842,8 +19899,8 @@ var require_copy = __commonJS({
 var require_copy_sync = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/copy/copy-sync.js"(exports2, module2) {
     "use strict";
-    var fs11 = require_graceful_fs();
-    var path16 = require("path");
+    var fs12 = require_graceful_fs();
+    var path20 = require("path");
     var mkdirsSync = require_mkdirs().mkdirsSync;
     var utimesMillisSync = require_utimes().utimesMillisSync;
     var stat = require_stat();
@@ -19867,8 +19924,8 @@ var require_copy_sync = __commonJS({
     }
     function handleFilterAndCopy(destStat, src, dest, opts) {
       if (opts.filter && !opts.filter(src, dest)) return;
-      const destParent = path16.dirname(dest);
-      if (!fs11.existsSync(destParent)) mkdirsSync(destParent);
+      const destParent = path20.dirname(dest);
+      if (!fs12.existsSync(destParent)) mkdirsSync(destParent);
       return getStats(destStat, src, dest, opts);
     }
     function startCopy(destStat, src, dest, opts) {
@@ -19876,7 +19933,7 @@ var require_copy_sync = __commonJS({
       return getStats(destStat, src, dest, opts);
     }
     function getStats(destStat, src, dest, opts) {
-      const statSync = opts.dereference ? fs11.statSync : fs11.lstatSync;
+      const statSync = opts.dereference ? fs12.statSync : fs12.lstatSync;
       const srcStat = statSync(src);
       if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts);
       else if (srcStat.isFile() || srcStat.isCharacterDevice() || srcStat.isBlockDevice()) return onFile(srcStat, destStat, src, dest, opts);
@@ -19891,14 +19948,14 @@ var require_copy_sync = __commonJS({
     }
     function mayCopyFile(srcStat, src, dest, opts) {
       if (opts.overwrite) {
-        fs11.unlinkSync(dest);
+        fs12.unlinkSync(dest);
         return copyFile(srcStat, src, dest, opts);
       } else if (opts.errorOnExist) {
         throw new Error(`'${dest}' already exists`);
       }
     }
     function copyFile(srcStat, src, dest, opts) {
-      fs11.copyFileSync(src, dest);
+      fs12.copyFileSync(src, dest);
       if (opts.preserveTimestamps) handleTimestamps(srcStat.mode, src, dest);
       return setDestMode(dest, srcStat.mode);
     }
@@ -19913,10 +19970,10 @@ var require_copy_sync = __commonJS({
       return setDestMode(dest, srcMode | 128);
     }
     function setDestMode(dest, srcMode) {
-      return fs11.chmodSync(dest, srcMode);
+      return fs12.chmodSync(dest, srcMode);
     }
     function setDestTimestamps(src, dest) {
-      const updatedSrcStat = fs11.statSync(src);
+      const updatedSrcStat = fs12.statSync(src);
       return utimesMillisSync(dest, updatedSrcStat.atime, updatedSrcStat.mtime);
     }
     function onDir(srcStat, destStat, src, dest, opts) {
@@ -19924,49 +19981,49 @@ var require_copy_sync = __commonJS({
       return copyDir(src, dest, opts);
     }
     function mkDirAndCopy(srcMode, src, dest, opts) {
-      fs11.mkdirSync(dest);
+      fs12.mkdirSync(dest);
       copyDir(src, dest, opts);
       return setDestMode(dest, srcMode);
     }
     function copyDir(src, dest, opts) {
-      fs11.readdirSync(src).forEach((item) => copyDirItem(item, src, dest, opts));
+      fs12.readdirSync(src).forEach((item) => copyDirItem(item, src, dest, opts));
     }
     function copyDirItem(item, src, dest, opts) {
-      const srcItem = path16.join(src, item);
-      const destItem = path16.join(dest, item);
+      const srcItem = path20.join(src, item);
+      const destItem = path20.join(dest, item);
       const { destStat } = stat.checkPathsSync(srcItem, destItem, "copy", opts);
       return startCopy(destStat, srcItem, destItem, opts);
     }
     function onLink(destStat, src, dest, opts) {
-      let resolvedSrc = fs11.readlinkSync(src);
+      let resolvedSrc = fs12.readlinkSync(src);
       if (opts.dereference) {
-        resolvedSrc = path16.resolve(process.cwd(), resolvedSrc);
+        resolvedSrc = path20.resolve(process.cwd(), resolvedSrc);
       }
       if (!destStat) {
-        return fs11.symlinkSync(resolvedSrc, dest);
+        return fs12.symlinkSync(resolvedSrc, dest);
       } else {
         let resolvedDest;
         try {
-          resolvedDest = fs11.readlinkSync(dest);
+          resolvedDest = fs12.readlinkSync(dest);
         } catch (err) {
-          if (err.code === "EINVAL" || err.code === "UNKNOWN") return fs11.symlinkSync(resolvedSrc, dest);
+          if (err.code === "EINVAL" || err.code === "UNKNOWN") return fs12.symlinkSync(resolvedSrc, dest);
           throw err;
         }
         if (opts.dereference) {
-          resolvedDest = path16.resolve(process.cwd(), resolvedDest);
+          resolvedDest = path20.resolve(process.cwd(), resolvedDest);
         }
         if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
           throw new Error(`Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`);
         }
-        if (fs11.statSync(dest).isDirectory() && stat.isSrcSubdir(resolvedDest, resolvedSrc)) {
+        if (fs12.statSync(dest).isDirectory() && stat.isSrcSubdir(resolvedDest, resolvedSrc)) {
           throw new Error(`Cannot overwrite '${resolvedDest}' with '${resolvedSrc}'.`);
         }
         return copyLink(resolvedSrc, dest);
       }
     }
     function copyLink(resolvedSrc, dest) {
-      fs11.unlinkSync(dest);
-      return fs11.symlinkSync(resolvedSrc, dest);
+      fs12.unlinkSync(dest);
+      return fs12.symlinkSync(resolvedSrc, dest);
     }
     module2.exports = copySync;
   }
@@ -19988,8 +20045,8 @@ var require_copy2 = __commonJS({
 var require_rimraf = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/remove/rimraf.js"(exports2, module2) {
     "use strict";
-    var fs11 = require_graceful_fs();
-    var path16 = require("path");
+    var fs12 = require_graceful_fs();
+    var path20 = require("path");
     var assert = require("assert");
     var isWindows = process.platform === "win32";
     function defaults(options) {
@@ -20002,9 +20059,9 @@ var require_rimraf = __commonJS({
         "readdir"
       ];
       methods.forEach((m) => {
-        options[m] = options[m] || fs11[m];
+        options[m] = options[m] || fs12[m];
         m = m + "Sync";
-        options[m] = options[m] || fs11[m];
+        options[m] = options[m] || fs12[m];
       });
       options.maxBusyTries = options.maxBusyTries || 3;
     }
@@ -20134,7 +20191,7 @@ var require_rimraf = __commonJS({
         let errState;
         if (n === 0) return options.rmdir(p, cb);
         files.forEach((f) => {
-          rimraf(path16.join(p, f), options, (er2) => {
+          rimraf(path20.join(p, f), options, (er2) => {
             if (errState) {
               return;
             }
@@ -20199,7 +20256,7 @@ var require_rimraf = __commonJS({
     function rmkidsSync(p, options) {
       assert(p);
       assert(options);
-      options.readdirSync(p).forEach((f) => rimrafSync(path16.join(p, f), options));
+      options.readdirSync(p).forEach((f) => rimrafSync(path20.join(p, f), options));
       if (isWindows) {
         const startTime = Date.now();
         do {
@@ -20223,16 +20280,16 @@ var require_rimraf = __commonJS({
 var require_remove = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/remove/index.js"(exports2, module2) {
     "use strict";
-    var fs11 = require_graceful_fs();
+    var fs12 = require_graceful_fs();
     var u = require_universalify().fromCallback;
     var rimraf = require_rimraf();
-    function remove(path16, callback) {
-      if (fs11.rm) return fs11.rm(path16, { recursive: true, force: true }, callback);
-      rimraf(path16, callback);
+    function remove(path20, callback) {
+      if (fs12.rm) return fs12.rm(path20, { recursive: true, force: true }, callback);
+      rimraf(path20, callback);
     }
-    function removeSync(path16) {
-      if (fs11.rmSync) return fs11.rmSync(path16, { recursive: true, force: true });
-      rimraf.sync(path16);
+    function removeSync(path20) {
+      if (fs12.rmSync) return fs12.rmSync(path20, { recursive: true, force: true });
+      rimraf.sync(path20);
     }
     module2.exports = {
       remove: u(remove),
@@ -20246,28 +20303,28 @@ var require_empty = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/empty/index.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var fs11 = require_fs2();
-    var path16 = require("path");
+    var fs12 = require_fs2();
+    var path20 = require("path");
     var mkdir = require_mkdirs();
     var remove = require_remove();
     var emptyDir = u(async function emptyDir2(dir) {
       let items2;
       try {
-        items2 = await fs11.readdir(dir);
+        items2 = await fs12.readdir(dir);
       } catch {
         return mkdir.mkdirs(dir);
       }
-      return Promise.all(items2.map((item) => remove.remove(path16.join(dir, item))));
+      return Promise.all(items2.map((item) => remove.remove(path20.join(dir, item))));
     });
     function emptyDirSync(dir) {
       let items2;
       try {
-        items2 = fs11.readdirSync(dir);
+        items2 = fs12.readdirSync(dir);
       } catch {
         return mkdir.mkdirsSync(dir);
       }
       items2.forEach((item) => {
-        item = path16.join(dir, item);
+        item = path20.join(dir, item);
         remove.removeSync(item);
       });
     }
@@ -20285,20 +20342,20 @@ var require_file = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/file.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var path16 = require("path");
-    var fs11 = require_graceful_fs();
+    var path20 = require("path");
+    var fs12 = require_graceful_fs();
     var mkdir = require_mkdirs();
     function createFile(file, callback) {
       function makeFile() {
-        fs11.writeFile(file, "", (err) => {
+        fs12.writeFile(file, "", (err) => {
           if (err) return callback(err);
           callback();
         });
       }
-      fs11.stat(file, (err, stats) => {
+      fs12.stat(file, (err, stats) => {
         if (!err && stats.isFile()) return callback();
-        const dir = path16.dirname(file);
-        fs11.stat(dir, (err2, stats2) => {
+        const dir = path20.dirname(file);
+        fs12.stat(dir, (err2, stats2) => {
           if (err2) {
             if (err2.code === "ENOENT") {
               return mkdir.mkdirs(dir, (err3) => {
@@ -20310,7 +20367,7 @@ var require_file = __commonJS({
           }
           if (stats2.isDirectory()) makeFile();
           else {
-            fs11.readdir(dir, (err3) => {
+            fs12.readdir(dir, (err3) => {
               if (err3) return callback(err3);
             });
           }
@@ -20320,20 +20377,20 @@ var require_file = __commonJS({
     function createFileSync(file) {
       let stats;
       try {
-        stats = fs11.statSync(file);
+        stats = fs12.statSync(file);
       } catch {
       }
       if (stats && stats.isFile()) return;
-      const dir = path16.dirname(file);
+      const dir = path20.dirname(file);
       try {
-        if (!fs11.statSync(dir).isDirectory()) {
-          fs11.readdirSync(dir);
+        if (!fs12.statSync(dir).isDirectory()) {
+          fs12.readdirSync(dir);
         }
       } catch (err) {
         if (err && err.code === "ENOENT") mkdir.mkdirsSync(dir);
         else throw err;
       }
-      fs11.writeFileSync(file, "");
+      fs12.writeFileSync(file, "");
     }
     module2.exports = {
       createFile: u(createFile),
@@ -20347,26 +20404,26 @@ var require_link = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/link.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var path16 = require("path");
-    var fs11 = require_graceful_fs();
+    var path20 = require("path");
+    var fs12 = require_graceful_fs();
     var mkdir = require_mkdirs();
     var pathExists = require_path_exists2().pathExists;
     var { areIdentical } = require_stat();
     function createLink(srcpath, dstpath, callback) {
       function makeLink(srcpath2, dstpath2) {
-        fs11.link(srcpath2, dstpath2, (err) => {
+        fs12.link(srcpath2, dstpath2, (err) => {
           if (err) return callback(err);
           callback(null);
         });
       }
-      fs11.lstat(dstpath, (_, dstStat) => {
-        fs11.lstat(srcpath, (err, srcStat) => {
+      fs12.lstat(dstpath, (_, dstStat) => {
+        fs12.lstat(srcpath, (err, srcStat) => {
           if (err) {
             err.message = err.message.replace("lstat", "ensureLink");
             return callback(err);
           }
           if (dstStat && areIdentical(srcStat, dstStat)) return callback(null);
-          const dir = path16.dirname(dstpath);
+          const dir = path20.dirname(dstpath);
           pathExists(dir, (err2, dirExists) => {
             if (err2) return callback(err2);
             if (dirExists) return makeLink(srcpath, dstpath);
@@ -20381,21 +20438,21 @@ var require_link = __commonJS({
     function createLinkSync(srcpath, dstpath) {
       let dstStat;
       try {
-        dstStat = fs11.lstatSync(dstpath);
+        dstStat = fs12.lstatSync(dstpath);
       } catch {
       }
       try {
-        const srcStat = fs11.lstatSync(srcpath);
+        const srcStat = fs12.lstatSync(srcpath);
         if (dstStat && areIdentical(srcStat, dstStat)) return;
       } catch (err) {
         err.message = err.message.replace("lstat", "ensureLink");
         throw err;
       }
-      const dir = path16.dirname(dstpath);
-      const dirExists = fs11.existsSync(dir);
-      if (dirExists) return fs11.linkSync(srcpath, dstpath);
+      const dir = path20.dirname(dstpath);
+      const dirExists = fs12.existsSync(dir);
+      if (dirExists) return fs12.linkSync(srcpath, dstpath);
       mkdir.mkdirsSync(dir);
-      return fs11.linkSync(srcpath, dstpath);
+      return fs12.linkSync(srcpath, dstpath);
     }
     module2.exports = {
       createLink: u(createLink),
@@ -20408,12 +20465,12 @@ var require_link = __commonJS({
 var require_symlink_paths = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/symlink-paths.js"(exports2, module2) {
     "use strict";
-    var path16 = require("path");
-    var fs11 = require_graceful_fs();
+    var path20 = require("path");
+    var fs12 = require_graceful_fs();
     var pathExists = require_path_exists2().pathExists;
     function symlinkPaths(srcpath, dstpath, callback) {
-      if (path16.isAbsolute(srcpath)) {
-        return fs11.lstat(srcpath, (err) => {
+      if (path20.isAbsolute(srcpath)) {
+        return fs12.lstat(srcpath, (err) => {
           if (err) {
             err.message = err.message.replace("lstat", "ensureSymlink");
             return callback(err);
@@ -20424,8 +20481,8 @@ var require_symlink_paths = __commonJS({
           });
         });
       } else {
-        const dstdir = path16.dirname(dstpath);
-        const relativeToDst = path16.join(dstdir, srcpath);
+        const dstdir = path20.dirname(dstpath);
+        const relativeToDst = path20.join(dstdir, srcpath);
         return pathExists(relativeToDst, (err, exists) => {
           if (err) return callback(err);
           if (exists) {
@@ -20434,14 +20491,14 @@ var require_symlink_paths = __commonJS({
               toDst: srcpath
             });
           } else {
-            return fs11.lstat(srcpath, (err2) => {
+            return fs12.lstat(srcpath, (err2) => {
               if (err2) {
                 err2.message = err2.message.replace("lstat", "ensureSymlink");
                 return callback(err2);
               }
               return callback(null, {
                 toCwd: srcpath,
-                toDst: path16.relative(dstdir, srcpath)
+                toDst: path20.relative(dstdir, srcpath)
               });
             });
           }
@@ -20450,28 +20507,28 @@ var require_symlink_paths = __commonJS({
     }
     function symlinkPathsSync(srcpath, dstpath) {
       let exists;
-      if (path16.isAbsolute(srcpath)) {
-        exists = fs11.existsSync(srcpath);
+      if (path20.isAbsolute(srcpath)) {
+        exists = fs12.existsSync(srcpath);
         if (!exists) throw new Error("absolute srcpath does not exist");
         return {
           toCwd: srcpath,
           toDst: srcpath
         };
       } else {
-        const dstdir = path16.dirname(dstpath);
-        const relativeToDst = path16.join(dstdir, srcpath);
-        exists = fs11.existsSync(relativeToDst);
+        const dstdir = path20.dirname(dstpath);
+        const relativeToDst = path20.join(dstdir, srcpath);
+        exists = fs12.existsSync(relativeToDst);
         if (exists) {
           return {
             toCwd: relativeToDst,
             toDst: srcpath
           };
         } else {
-          exists = fs11.existsSync(srcpath);
+          exists = fs12.existsSync(srcpath);
           if (!exists) throw new Error("relative srcpath does not exist");
           return {
             toCwd: srcpath,
-            toDst: path16.relative(dstdir, srcpath)
+            toDst: path20.relative(dstdir, srcpath)
           };
         }
       }
@@ -20487,12 +20544,12 @@ var require_symlink_paths = __commonJS({
 var require_symlink_type = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/symlink-type.js"(exports2, module2) {
     "use strict";
-    var fs11 = require_graceful_fs();
+    var fs12 = require_graceful_fs();
     function symlinkType(srcpath, type, callback) {
       callback = typeof type === "function" ? type : callback;
       type = typeof type === "function" ? false : type;
       if (type) return callback(null, type);
-      fs11.lstat(srcpath, (err, stats) => {
+      fs12.lstat(srcpath, (err, stats) => {
         if (err) return callback(null, "file");
         type = stats && stats.isDirectory() ? "dir" : "file";
         callback(null, type);
@@ -20502,7 +20559,7 @@ var require_symlink_type = __commonJS({
       let stats;
       if (type) return type;
       try {
-        stats = fs11.lstatSync(srcpath);
+        stats = fs12.lstatSync(srcpath);
       } catch {
         return "file";
       }
@@ -20520,8 +20577,8 @@ var require_symlink = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/symlink.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var path16 = require("path");
-    var fs11 = require_fs2();
+    var path20 = require("path");
+    var fs12 = require_fs2();
     var _mkdirs = require_mkdirs();
     var mkdirs = _mkdirs.mkdirs;
     var mkdirsSync = _mkdirs.mkdirsSync;
@@ -20536,11 +20593,11 @@ var require_symlink = __commonJS({
     function createSymlink(srcpath, dstpath, type, callback) {
       callback = typeof type === "function" ? type : callback;
       type = typeof type === "function" ? false : type;
-      fs11.lstat(dstpath, (err, stats) => {
+      fs12.lstat(dstpath, (err, stats) => {
         if (!err && stats.isSymbolicLink()) {
           Promise.all([
-            fs11.stat(srcpath),
-            fs11.stat(dstpath)
+            fs12.stat(srcpath),
+            fs12.stat(dstpath)
           ]).then(([srcStat, dstStat]) => {
             if (areIdentical(srcStat, dstStat)) return callback(null);
             _createSymlink(srcpath, dstpath, type, callback);
@@ -20554,13 +20611,13 @@ var require_symlink = __commonJS({
         srcpath = relative.toDst;
         symlinkType(relative.toCwd, type, (err2, type2) => {
           if (err2) return callback(err2);
-          const dir = path16.dirname(dstpath);
+          const dir = path20.dirname(dstpath);
           pathExists(dir, (err3, dirExists) => {
             if (err3) return callback(err3);
-            if (dirExists) return fs11.symlink(srcpath, dstpath, type2, callback);
+            if (dirExists) return fs12.symlink(srcpath, dstpath, type2, callback);
             mkdirs(dir, (err4) => {
               if (err4) return callback(err4);
-              fs11.symlink(srcpath, dstpath, type2, callback);
+              fs12.symlink(srcpath, dstpath, type2, callback);
             });
           });
         });
@@ -20569,22 +20626,22 @@ var require_symlink = __commonJS({
     function createSymlinkSync(srcpath, dstpath, type) {
       let stats;
       try {
-        stats = fs11.lstatSync(dstpath);
+        stats = fs12.lstatSync(dstpath);
       } catch {
       }
       if (stats && stats.isSymbolicLink()) {
-        const srcStat = fs11.statSync(srcpath);
-        const dstStat = fs11.statSync(dstpath);
+        const srcStat = fs12.statSync(srcpath);
+        const dstStat = fs12.statSync(dstpath);
         if (areIdentical(srcStat, dstStat)) return;
       }
       const relative = symlinkPathsSync(srcpath, dstpath);
       srcpath = relative.toDst;
       type = symlinkTypeSync(relative.toCwd, type);
-      const dir = path16.dirname(dstpath);
-      const exists = fs11.existsSync(dir);
-      if (exists) return fs11.symlinkSync(srcpath, dstpath, type);
+      const dir = path20.dirname(dstpath);
+      const exists = fs12.existsSync(dir);
+      if (exists) return fs12.symlinkSync(srcpath, dstpath, type);
       mkdirsSync(dir);
-      return fs11.symlinkSync(srcpath, dstpath, type);
+      return fs12.symlinkSync(srcpath, dstpath, type);
     }
     module2.exports = {
       createSymlink: u(createSymlink),
@@ -20654,9 +20711,9 @@ var require_jsonfile = __commonJS({
       if (typeof options === "string") {
         options = { encoding: options };
       }
-      const fs11 = options.fs || _fs;
+      const fs12 = options.fs || _fs;
       const shouldThrow = "throws" in options ? options.throws : true;
-      let data = await universalify.fromCallback(fs11.readFile)(file, options);
+      let data = await universalify.fromCallback(fs12.readFile)(file, options);
       data = stripBom(data);
       let obj;
       try {
@@ -20676,10 +20733,10 @@ var require_jsonfile = __commonJS({
       if (typeof options === "string") {
         options = { encoding: options };
       }
-      const fs11 = options.fs || _fs;
+      const fs12 = options.fs || _fs;
       const shouldThrow = "throws" in options ? options.throws : true;
       try {
-        let content = fs11.readFileSync(file, options);
+        let content = fs12.readFileSync(file, options);
         content = stripBom(content);
         return JSON.parse(content, options.reviver);
       } catch (err) {
@@ -20692,15 +20749,15 @@ var require_jsonfile = __commonJS({
       }
     }
     async function _writeFile(file, obj, options = {}) {
-      const fs11 = options.fs || _fs;
+      const fs12 = options.fs || _fs;
       const str = stringify(obj, options);
-      await universalify.fromCallback(fs11.writeFile)(file, str, options);
+      await universalify.fromCallback(fs12.writeFile)(file, str, options);
     }
     var writeFile = universalify.fromPromise(_writeFile);
     function writeFileSync(file, obj, options = {}) {
-      const fs11 = options.fs || _fs;
+      const fs12 = options.fs || _fs;
       const str = stringify(obj, options);
-      return fs11.writeFileSync(file, str, options);
+      return fs12.writeFileSync(file, str, options);
     }
     module2.exports = {
       readFile,
@@ -20731,8 +20788,8 @@ var require_output_file = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/output-file/index.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var fs11 = require_graceful_fs();
-    var path16 = require("path");
+    var fs12 = require_graceful_fs();
+    var path20 = require("path");
     var mkdir = require_mkdirs();
     var pathExists = require_path_exists2().pathExists;
     function outputFile(file, data, encoding, callback) {
@@ -20740,23 +20797,23 @@ var require_output_file = __commonJS({
         callback = encoding;
         encoding = "utf8";
       }
-      const dir = path16.dirname(file);
+      const dir = path20.dirname(file);
       pathExists(dir, (err, itDoes) => {
         if (err) return callback(err);
-        if (itDoes) return fs11.writeFile(file, data, encoding, callback);
+        if (itDoes) return fs12.writeFile(file, data, encoding, callback);
         mkdir.mkdirs(dir, (err2) => {
           if (err2) return callback(err2);
-          fs11.writeFile(file, data, encoding, callback);
+          fs12.writeFile(file, data, encoding, callback);
         });
       });
     }
     function outputFileSync(file, ...args) {
-      const dir = path16.dirname(file);
-      if (fs11.existsSync(dir)) {
-        return fs11.writeFileSync(file, ...args);
+      const dir = path20.dirname(file);
+      if (fs12.existsSync(dir)) {
+        return fs12.writeFileSync(file, ...args);
       }
       mkdir.mkdirsSync(dir);
-      fs11.writeFileSync(file, ...args);
+      fs12.writeFileSync(file, ...args);
     }
     module2.exports = {
       outputFile: u(outputFile),
@@ -20815,8 +20872,8 @@ var require_json = __commonJS({
 var require_move = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/move/move.js"(exports2, module2) {
     "use strict";
-    var fs11 = require_graceful_fs();
-    var path16 = require("path");
+    var fs12 = require_graceful_fs();
+    var path20 = require("path");
     var copy = require_copy2().copy;
     var remove = require_remove().remove;
     var mkdirp = require_mkdirs().mkdirp;
@@ -20835,7 +20892,7 @@ var require_move = __commonJS({
         stat.checkParentPaths(src, srcStat, dest, "move", (err2) => {
           if (err2) return cb(err2);
           if (isParentRoot(dest)) return doRename(src, dest, overwrite, isChangingCase, cb);
-          mkdirp(path16.dirname(dest), (err3) => {
+          mkdirp(path20.dirname(dest), (err3) => {
             if (err3) return cb(err3);
             return doRename(src, dest, overwrite, isChangingCase, cb);
           });
@@ -20843,8 +20900,8 @@ var require_move = __commonJS({
       });
     }
     function isParentRoot(dest) {
-      const parent = path16.dirname(dest);
-      const parsedPath = path16.parse(parent);
+      const parent = path20.dirname(dest);
+      const parsedPath = path20.parse(parent);
       return parsedPath.root === parent;
     }
     function doRename(src, dest, overwrite, isChangingCase, cb) {
@@ -20862,7 +20919,7 @@ var require_move = __commonJS({
       });
     }
     function rename(src, dest, overwrite, cb) {
-      fs11.rename(src, dest, (err) => {
+      fs12.rename(src, dest, (err) => {
         if (!err) return cb();
         if (err.code !== "EXDEV") return cb(err);
         return moveAcrossDevice(src, dest, overwrite, cb);
@@ -20886,8 +20943,8 @@ var require_move = __commonJS({
 var require_move_sync = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/move/move-sync.js"(exports2, module2) {
     "use strict";
-    var fs11 = require_graceful_fs();
-    var path16 = require("path");
+    var fs12 = require_graceful_fs();
+    var path20 = require("path");
     var copySync = require_copy2().copySync;
     var removeSync = require_remove().removeSync;
     var mkdirpSync = require_mkdirs().mkdirpSync;
@@ -20897,12 +20954,12 @@ var require_move_sync = __commonJS({
       const overwrite = opts.overwrite || opts.clobber || false;
       const { srcStat, isChangingCase = false } = stat.checkPathsSync(src, dest, "move", opts);
       stat.checkParentPathsSync(src, srcStat, dest, "move");
-      if (!isParentRoot(dest)) mkdirpSync(path16.dirname(dest));
+      if (!isParentRoot(dest)) mkdirpSync(path20.dirname(dest));
       return doRename(src, dest, overwrite, isChangingCase);
     }
     function isParentRoot(dest) {
-      const parent = path16.dirname(dest);
-      const parsedPath = path16.parse(parent);
+      const parent = path20.dirname(dest);
+      const parsedPath = path20.parse(parent);
       return parsedPath.root === parent;
     }
     function doRename(src, dest, overwrite, isChangingCase) {
@@ -20911,12 +20968,12 @@ var require_move_sync = __commonJS({
         removeSync(dest);
         return rename(src, dest, overwrite);
       }
-      if (fs11.existsSync(dest)) throw new Error("dest already exists.");
+      if (fs12.existsSync(dest)) throw new Error("dest already exists.");
       return rename(src, dest, overwrite);
     }
     function rename(src, dest, overwrite) {
       try {
-        fs11.renameSync(src, dest);
+        fs12.renameSync(src, dest);
       } catch (err) {
         if (err.code !== "EXDEV") throw err;
         return moveAcrossDevice(src, dest, overwrite);
@@ -22201,8 +22258,8 @@ Please double check that your authentication token is correct. Due to security r
         }
         const hostname = options.hostname;
         const port = options.port ? `:${options.port}` : "";
-        const path16 = options.path || "/";
-        return new url_1.URL(`${protocol}//${hostname}${port}${path16}`);
+        const path20 = options.path || "/";
+        return new url_1.URL(`${protocol}//${hostname}${port}${path20}`);
       }
       static isCrossOriginRedirect(originalUrl, redirectUrl) {
         if (originalUrl.hostname.toLowerCase() !== redirectUrl.hostname.toLowerCase()) {
@@ -25811,45 +25868,45 @@ var require_loader = __commonJS({
       this.documents = [];
       this.anchorMapTransactions = [];
     }
-    function generateError(state2, message) {
+    function generateError(state, message) {
       const mark = {
-        name: state2.filename,
-        buffer: state2.input.slice(0, -1),
+        name: state.filename,
+        buffer: state.input.slice(0, -1),
         // omit trailing \0
-        position: state2.position,
-        line: state2.line,
-        column: state2.position - state2.lineStart
+        position: state.position,
+        line: state.line,
+        column: state.position - state.lineStart
       };
       mark.snippet = makeSnippet(mark);
       return new YAMLException(message, mark);
     }
-    function throwError(state2, message) {
-      throw generateError(state2, message);
+    function throwError(state, message) {
+      throw generateError(state, message);
     }
-    function throwWarning(state2, message) {
-      if (state2.onWarning) {
-        state2.onWarning.call(null, generateError(state2, message));
+    function throwWarning(state, message) {
+      if (state.onWarning) {
+        state.onWarning.call(null, generateError(state, message));
       }
     }
-    function storeAnchor(state2, name, value) {
-      const transactions = state2.anchorMapTransactions;
+    function storeAnchor(state, name, value) {
+      const transactions = state.anchorMapTransactions;
       if (transactions.length !== 0) {
         const transaction = transactions[transactions.length - 1];
         if (!_hasOwnProperty.call(transaction, name)) {
           transaction[name] = {
-            existed: _hasOwnProperty.call(state2.anchorMap, name),
-            value: state2.anchorMap[name]
+            existed: _hasOwnProperty.call(state.anchorMap, name),
+            value: state.anchorMap[name]
           };
         }
       }
-      state2.anchorMap[name] = value;
+      state.anchorMap[name] = value;
     }
-    function beginAnchorTransaction(state2) {
-      state2.anchorMapTransactions.push(/* @__PURE__ */ Object.create(null));
+    function beginAnchorTransaction(state) {
+      state.anchorMapTransactions.push(/* @__PURE__ */ Object.create(null));
     }
-    function commitAnchorTransaction(state2) {
-      const transaction = state2.anchorMapTransactions.pop();
-      const transactions = state2.anchorMapTransactions;
+    function commitAnchorTransaction(state) {
+      const transaction = state.anchorMapTransactions.pop();
+      const transactions = state.anchorMapTransactions;
       if (transactions.length === 0) return;
       const parent = transactions[transactions.length - 1];
       const names = Object.keys(transaction);
@@ -25860,132 +25917,132 @@ var require_loader = __commonJS({
         }
       }
     }
-    function rollbackAnchorTransaction(state2) {
-      const transaction = state2.anchorMapTransactions.pop();
+    function rollbackAnchorTransaction(state) {
+      const transaction = state.anchorMapTransactions.pop();
       const names = Object.keys(transaction);
       for (let index = names.length - 1; index >= 0; index -= 1) {
         const entry = transaction[names[index]];
         if (entry.existed) {
-          state2.anchorMap[names[index]] = entry.value;
+          state.anchorMap[names[index]] = entry.value;
         } else {
-          delete state2.anchorMap[names[index]];
+          delete state.anchorMap[names[index]];
         }
       }
     }
-    function snapshotState(state2) {
+    function snapshotState(state) {
       return {
-        position: state2.position,
-        line: state2.line,
-        lineStart: state2.lineStart,
-        lineIndent: state2.lineIndent,
-        firstTabInLine: state2.firstTabInLine,
-        tag: state2.tag,
-        anchor: state2.anchor,
-        kind: state2.kind,
-        result: state2.result
+        position: state.position,
+        line: state.line,
+        lineStart: state.lineStart,
+        lineIndent: state.lineIndent,
+        firstTabInLine: state.firstTabInLine,
+        tag: state.tag,
+        anchor: state.anchor,
+        kind: state.kind,
+        result: state.result
       };
     }
-    function restoreState(state2, snapshot2) {
-      state2.position = snapshot2.position;
-      state2.line = snapshot2.line;
-      state2.lineStart = snapshot2.lineStart;
-      state2.lineIndent = snapshot2.lineIndent;
-      state2.firstTabInLine = snapshot2.firstTabInLine;
-      state2.tag = snapshot2.tag;
-      state2.anchor = snapshot2.anchor;
-      state2.kind = snapshot2.kind;
-      state2.result = snapshot2.result;
+    function restoreState(state, snapshot2) {
+      state.position = snapshot2.position;
+      state.line = snapshot2.line;
+      state.lineStart = snapshot2.lineStart;
+      state.lineIndent = snapshot2.lineIndent;
+      state.firstTabInLine = snapshot2.firstTabInLine;
+      state.tag = snapshot2.tag;
+      state.anchor = snapshot2.anchor;
+      state.kind = snapshot2.kind;
+      state.result = snapshot2.result;
     }
     var directiveHandlers = {
-      YAML: function handleYamlDirective(state2, name, args) {
-        if (state2.version !== null) {
-          throwError(state2, "duplication of %YAML directive");
+      YAML: function handleYamlDirective(state, name, args) {
+        if (state.version !== null) {
+          throwError(state, "duplication of %YAML directive");
         }
         if (args.length !== 1) {
-          throwError(state2, "YAML directive accepts exactly one argument");
+          throwError(state, "YAML directive accepts exactly one argument");
         }
         const match = /^([0-9]+)\.([0-9]+)$/.exec(args[0]);
         if (match === null) {
-          throwError(state2, "ill-formed argument of the YAML directive");
+          throwError(state, "ill-formed argument of the YAML directive");
         }
         const major = parseInt(match[1], 10);
         const minor = parseInt(match[2], 10);
         if (major !== 1) {
-          throwError(state2, "unacceptable YAML version of the document");
+          throwError(state, "unacceptable YAML version of the document");
         }
-        state2.version = args[0];
-        state2.checkLineBreaks = minor < 2;
+        state.version = args[0];
+        state.checkLineBreaks = minor < 2;
         if (minor !== 1 && minor !== 2) {
-          throwWarning(state2, "unsupported YAML version of the document");
+          throwWarning(state, "unsupported YAML version of the document");
         }
       },
-      TAG: function handleTagDirective(state2, name, args) {
+      TAG: function handleTagDirective(state, name, args) {
         let prefix;
         if (args.length !== 2) {
-          throwError(state2, "TAG directive accepts exactly two arguments");
+          throwError(state, "TAG directive accepts exactly two arguments");
         }
         const handle = args[0];
         prefix = args[1];
         if (!PATTERN_TAG_HANDLE.test(handle)) {
-          throwError(state2, "ill-formed tag handle (first argument) of the TAG directive");
+          throwError(state, "ill-formed tag handle (first argument) of the TAG directive");
         }
-        if (_hasOwnProperty.call(state2.tagMap, handle)) {
-          throwError(state2, 'there is a previously declared suffix for "' + handle + '" tag handle');
+        if (_hasOwnProperty.call(state.tagMap, handle)) {
+          throwError(state, 'there is a previously declared suffix for "' + handle + '" tag handle');
         }
         if (!PATTERN_TAG_URI.test(prefix)) {
-          throwError(state2, "ill-formed tag prefix (second argument) of the TAG directive");
+          throwError(state, "ill-formed tag prefix (second argument) of the TAG directive");
         }
         try {
           prefix = decodeURIComponent(prefix);
         } catch (err) {
-          throwError(state2, "tag prefix is malformed: " + prefix);
+          throwError(state, "tag prefix is malformed: " + prefix);
         }
-        state2.tagMap[handle] = prefix;
+        state.tagMap[handle] = prefix;
       }
     };
-    function captureSegment(state2, start, end, checkJson) {
+    function captureSegment(state, start, end, checkJson) {
       if (start < end) {
-        const _result = state2.input.slice(start, end);
+        const _result = state.input.slice(start, end);
         if (checkJson) {
           for (let _position = 0, _length = _result.length; _position < _length; _position += 1) {
             const _character = _result.charCodeAt(_position);
             if (!(_character === 9 || _character >= 32 && _character <= 1114111)) {
-              throwError(state2, "expected valid JSON character");
+              throwError(state, "expected valid JSON character");
             }
           }
         } else if (PATTERN_NON_PRINTABLE.test(_result)) {
-          throwError(state2, "the stream contains non-printable characters");
+          throwError(state, "the stream contains non-printable characters");
         }
-        state2.result += _result;
+        state.result += _result;
       }
     }
-    function chargeMergeWork(state2) {
-      state2.totalMergeKeys++;
-      if (state2.maxTotalMergeKeys !== -1 && state2.totalMergeKeys > state2.maxTotalMergeKeys) {
-        throwError(state2, "merge keys exceeded maxTotalMergeKeys (" + state2.maxTotalMergeKeys + ")");
+    function chargeMergeWork(state) {
+      state.totalMergeKeys++;
+      if (state.maxTotalMergeKeys !== -1 && state.totalMergeKeys > state.maxTotalMergeKeys) {
+        throwError(state, "merge keys exceeded maxTotalMergeKeys (" + state.maxTotalMergeKeys + ")");
       }
     }
-    function mergeMappings(state2, destination, source, overridableKeys) {
+    function mergeMappings(state, destination, source, overridableKeys) {
       if (!common.isObject(source)) {
-        throwError(state2, "cannot merge mappings; the provided source object is unacceptable");
+        throwError(state, "cannot merge mappings; the provided source object is unacceptable");
       }
-      chargeMergeWork(state2);
+      chargeMergeWork(state);
       const sourceKeys = Object.keys(source);
       for (let index = 0, quantity = sourceKeys.length; index < quantity; index += 1) {
         const key = sourceKeys[index];
-        chargeMergeWork(state2);
+        chargeMergeWork(state);
         if (!_hasOwnProperty.call(destination, key)) {
           setProperty(destination, key, source[key]);
           overridableKeys[key] = true;
         }
       }
     }
-    function storeMappingPair(state2, _result, overridableKeys, keyTag, keyNode, valueNode, startLine, startLineStart, startPos) {
+    function storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, startLine, startLineStart, startPos) {
       if (Array.isArray(keyNode)) {
         keyNode = Array.prototype.slice.call(keyNode);
         for (let index = 0, quantity = keyNode.length; index < quantity; index += 1) {
           if (Array.isArray(keyNode[index])) {
-            throwError(state2, "nested arrays are not supported inside keys");
+            throwError(state, "nested arrays are not supported inside keys");
           }
           if (typeof keyNode === "object" && _class(keyNode[index]) === "[object Object]") {
             keyNode[index] = "[object Object]";
@@ -26002,268 +26059,268 @@ var require_loader = __commonJS({
       if (keyTag === "tag:yaml.org,2002:merge") {
         if (Array.isArray(valueNode)) {
           if (valueNode.length > 100) {
-            throwError(state2, "abnormal merge sequence size");
+            throwError(state, "abnormal merge sequence size");
           }
           for (let index = 0, quantity = valueNode.length; index < quantity; index += 1) {
-            mergeMappings(state2, _result, valueNode[index], overridableKeys);
+            mergeMappings(state, _result, valueNode[index], overridableKeys);
           }
         } else {
-          mergeMappings(state2, _result, valueNode, overridableKeys);
+          mergeMappings(state, _result, valueNode, overridableKeys);
         }
       } else {
-        if (!state2.json && !_hasOwnProperty.call(overridableKeys, keyNode) && _hasOwnProperty.call(_result, keyNode)) {
-          state2.line = startLine || state2.line;
-          state2.lineStart = startLineStart || state2.lineStart;
-          state2.position = startPos || state2.position;
-          throwError(state2, "duplicated mapping key");
+        if (!state.json && !_hasOwnProperty.call(overridableKeys, keyNode) && _hasOwnProperty.call(_result, keyNode)) {
+          state.line = startLine || state.line;
+          state.lineStart = startLineStart || state.lineStart;
+          state.position = startPos || state.position;
+          throwError(state, "duplicated mapping key");
         }
         setProperty(_result, keyNode, valueNode);
         delete overridableKeys[keyNode];
       }
       return _result;
     }
-    function readLineBreak(state2) {
-      const ch = state2.input.charCodeAt(state2.position);
+    function readLineBreak(state) {
+      const ch = state.input.charCodeAt(state.position);
       if (ch === 10) {
-        state2.position++;
+        state.position++;
       } else if (ch === 13) {
-        state2.position++;
-        if (state2.input.charCodeAt(state2.position) === 10) {
-          state2.position++;
+        state.position++;
+        if (state.input.charCodeAt(state.position) === 10) {
+          state.position++;
         }
       } else {
-        throwError(state2, "a line break is expected");
+        throwError(state, "a line break is expected");
       }
-      state2.line += 1;
-      state2.lineStart = state2.position;
-      state2.firstTabInLine = -1;
+      state.line += 1;
+      state.lineStart = state.position;
+      state.firstTabInLine = -1;
     }
-    function skipSeparationSpace(state2, allowComments, checkIndent) {
+    function skipSeparationSpace(state, allowComments, checkIndent) {
       let lineBreaks = 0;
-      let ch = state2.input.charCodeAt(state2.position);
+      let ch = state.input.charCodeAt(state.position);
       while (ch !== 0) {
         while (isWhiteSpace(ch)) {
-          if (ch === 9 && state2.firstTabInLine === -1) {
-            state2.firstTabInLine = state2.position;
+          if (ch === 9 && state.firstTabInLine === -1) {
+            state.firstTabInLine = state.position;
           }
-          ch = state2.input.charCodeAt(++state2.position);
+          ch = state.input.charCodeAt(++state.position);
         }
         if (allowComments && ch === 35) {
           do {
-            ch = state2.input.charCodeAt(++state2.position);
+            ch = state.input.charCodeAt(++state.position);
           } while (ch !== 10 && ch !== 13 && ch !== 0);
         }
         if (isEol(ch)) {
-          readLineBreak(state2);
-          ch = state2.input.charCodeAt(state2.position);
+          readLineBreak(state);
+          ch = state.input.charCodeAt(state.position);
           lineBreaks++;
-          state2.lineIndent = 0;
+          state.lineIndent = 0;
           while (ch === 32) {
-            state2.lineIndent++;
-            ch = state2.input.charCodeAt(++state2.position);
+            state.lineIndent++;
+            ch = state.input.charCodeAt(++state.position);
           }
         } else {
           break;
         }
       }
-      if (checkIndent !== -1 && lineBreaks !== 0 && state2.lineIndent < checkIndent) {
-        throwWarning(state2, "deficient indentation");
+      if (checkIndent !== -1 && lineBreaks !== 0 && state.lineIndent < checkIndent) {
+        throwWarning(state, "deficient indentation");
       }
       return lineBreaks;
     }
-    function testDocumentSeparator(state2) {
-      let _position = state2.position;
-      let ch = state2.input.charCodeAt(_position);
-      if ((ch === 45 || ch === 46) && ch === state2.input.charCodeAt(_position + 1) && ch === state2.input.charCodeAt(_position + 2)) {
+    function testDocumentSeparator(state) {
+      let _position = state.position;
+      let ch = state.input.charCodeAt(_position);
+      if ((ch === 45 || ch === 46) && ch === state.input.charCodeAt(_position + 1) && ch === state.input.charCodeAt(_position + 2)) {
         _position += 3;
-        ch = state2.input.charCodeAt(_position);
+        ch = state.input.charCodeAt(_position);
         if (ch === 0 || isWsOrEol(ch)) {
           return true;
         }
       }
       return false;
     }
-    function writeFoldedLines(state2, count) {
+    function writeFoldedLines(state, count) {
       if (count === 1) {
-        state2.result += " ";
+        state.result += " ";
       } else if (count > 1) {
-        state2.result += common.repeat("\n", count - 1);
+        state.result += common.repeat("\n", count - 1);
       }
     }
-    function readPlainScalar(state2, nodeIndent, withinFlowCollection) {
+    function readPlainScalar(state, nodeIndent, withinFlowCollection) {
       let captureStart;
       let captureEnd;
       let hasPendingContent;
       let _line;
       let _lineStart;
       let _lineIndent;
-      const _kind = state2.kind;
-      const _result = state2.result;
-      let ch = state2.input.charCodeAt(state2.position);
+      const _kind = state.kind;
+      const _result = state.result;
+      let ch = state.input.charCodeAt(state.position);
       if (isWsOrEol(ch) || isFlowIndicator(ch) || ch === 35 || ch === 38 || ch === 42 || ch === 33 || ch === 124 || ch === 62 || ch === 39 || ch === 34 || ch === 37 || ch === 64 || ch === 96) {
         return false;
       }
       if (ch === 63 || ch === 45) {
-        const following = state2.input.charCodeAt(state2.position + 1);
+        const following = state.input.charCodeAt(state.position + 1);
         if (isWsOrEol(following) || withinFlowCollection && isFlowIndicator(following)) {
           return false;
         }
       }
-      state2.kind = "scalar";
-      state2.result = "";
-      captureStart = captureEnd = state2.position;
+      state.kind = "scalar";
+      state.result = "";
+      captureStart = captureEnd = state.position;
       hasPendingContent = false;
       while (ch !== 0) {
         if (ch === 58) {
-          const following = state2.input.charCodeAt(state2.position + 1);
+          const following = state.input.charCodeAt(state.position + 1);
           if (isWsOrEol(following) || withinFlowCollection && isFlowIndicator(following)) {
             break;
           }
         } else if (ch === 35) {
-          const preceding = state2.input.charCodeAt(state2.position - 1);
+          const preceding = state.input.charCodeAt(state.position - 1);
           if (isWsOrEol(preceding)) {
             break;
           }
-        } else if (state2.position === state2.lineStart && testDocumentSeparator(state2) || withinFlowCollection && isFlowIndicator(ch)) {
+        } else if (state.position === state.lineStart && testDocumentSeparator(state) || withinFlowCollection && isFlowIndicator(ch)) {
           break;
         } else if (isEol(ch)) {
-          _line = state2.line;
-          _lineStart = state2.lineStart;
-          _lineIndent = state2.lineIndent;
-          skipSeparationSpace(state2, false, -1);
-          if (state2.lineIndent >= nodeIndent) {
+          _line = state.line;
+          _lineStart = state.lineStart;
+          _lineIndent = state.lineIndent;
+          skipSeparationSpace(state, false, -1);
+          if (state.lineIndent >= nodeIndent) {
             hasPendingContent = true;
-            ch = state2.input.charCodeAt(state2.position);
+            ch = state.input.charCodeAt(state.position);
             continue;
           } else {
-            state2.position = captureEnd;
-            state2.line = _line;
-            state2.lineStart = _lineStart;
-            state2.lineIndent = _lineIndent;
+            state.position = captureEnd;
+            state.line = _line;
+            state.lineStart = _lineStart;
+            state.lineIndent = _lineIndent;
             break;
           }
         }
         if (hasPendingContent) {
-          captureSegment(state2, captureStart, captureEnd, false);
-          writeFoldedLines(state2, state2.line - _line);
-          captureStart = captureEnd = state2.position;
+          captureSegment(state, captureStart, captureEnd, false);
+          writeFoldedLines(state, state.line - _line);
+          captureStart = captureEnd = state.position;
           hasPendingContent = false;
         }
         if (!isWhiteSpace(ch)) {
-          captureEnd = state2.position + 1;
+          captureEnd = state.position + 1;
         }
-        ch = state2.input.charCodeAt(++state2.position);
+        ch = state.input.charCodeAt(++state.position);
       }
-      captureSegment(state2, captureStart, captureEnd, false);
-      if (state2.result) {
+      captureSegment(state, captureStart, captureEnd, false);
+      if (state.result) {
         return true;
       }
-      state2.kind = _kind;
-      state2.result = _result;
+      state.kind = _kind;
+      state.result = _result;
       return false;
     }
-    function readSingleQuotedScalar(state2, nodeIndent) {
+    function readSingleQuotedScalar(state, nodeIndent) {
       let captureStart;
       let captureEnd;
-      let ch = state2.input.charCodeAt(state2.position);
+      let ch = state.input.charCodeAt(state.position);
       if (ch !== 39) {
         return false;
       }
-      state2.kind = "scalar";
-      state2.result = "";
-      state2.position++;
-      captureStart = captureEnd = state2.position;
-      while ((ch = state2.input.charCodeAt(state2.position)) !== 0) {
+      state.kind = "scalar";
+      state.result = "";
+      state.position++;
+      captureStart = captureEnd = state.position;
+      while ((ch = state.input.charCodeAt(state.position)) !== 0) {
         if (ch === 39) {
-          captureSegment(state2, captureStart, state2.position, true);
-          ch = state2.input.charCodeAt(++state2.position);
+          captureSegment(state, captureStart, state.position, true);
+          ch = state.input.charCodeAt(++state.position);
           if (ch === 39) {
-            captureStart = state2.position;
-            state2.position++;
-            captureEnd = state2.position;
+            captureStart = state.position;
+            state.position++;
+            captureEnd = state.position;
           } else {
             return true;
           }
         } else if (isEol(ch)) {
-          captureSegment(state2, captureStart, captureEnd, true);
-          writeFoldedLines(state2, skipSeparationSpace(state2, false, nodeIndent));
-          captureStart = captureEnd = state2.position;
-        } else if (state2.position === state2.lineStart && testDocumentSeparator(state2)) {
-          throwError(state2, "unexpected end of the document within a single quoted scalar");
+          captureSegment(state, captureStart, captureEnd, true);
+          writeFoldedLines(state, skipSeparationSpace(state, false, nodeIndent));
+          captureStart = captureEnd = state.position;
+        } else if (state.position === state.lineStart && testDocumentSeparator(state)) {
+          throwError(state, "unexpected end of the document within a single quoted scalar");
         } else {
-          state2.position++;
+          state.position++;
           if (!isWhiteSpace(ch)) {
-            captureEnd = state2.position;
+            captureEnd = state.position;
           }
         }
       }
-      throwError(state2, "unexpected end of the stream within a single quoted scalar");
+      throwError(state, "unexpected end of the stream within a single quoted scalar");
     }
-    function readDoubleQuotedScalar(state2, nodeIndent) {
+    function readDoubleQuotedScalar(state, nodeIndent) {
       let captureStart;
       let captureEnd;
       let tmp;
-      let ch = state2.input.charCodeAt(state2.position);
+      let ch = state.input.charCodeAt(state.position);
       if (ch !== 34) {
         return false;
       }
-      state2.kind = "scalar";
-      state2.result = "";
-      state2.position++;
-      captureStart = captureEnd = state2.position;
-      while ((ch = state2.input.charCodeAt(state2.position)) !== 0) {
+      state.kind = "scalar";
+      state.result = "";
+      state.position++;
+      captureStart = captureEnd = state.position;
+      while ((ch = state.input.charCodeAt(state.position)) !== 0) {
         if (ch === 34) {
-          captureSegment(state2, captureStart, state2.position, true);
-          state2.position++;
+          captureSegment(state, captureStart, state.position, true);
+          state.position++;
           return true;
         } else if (ch === 92) {
-          captureSegment(state2, captureStart, state2.position, true);
-          ch = state2.input.charCodeAt(++state2.position);
+          captureSegment(state, captureStart, state.position, true);
+          ch = state.input.charCodeAt(++state.position);
           if (isEol(ch)) {
-            skipSeparationSpace(state2, false, nodeIndent);
+            skipSeparationSpace(state, false, nodeIndent);
           } else if (ch < 256 && simpleEscapeCheck[ch]) {
-            state2.result += simpleEscapeMap[ch];
-            state2.position++;
+            state.result += simpleEscapeMap[ch];
+            state.position++;
           } else if ((tmp = escapedHexLen(ch)) > 0) {
             let hexLength = tmp;
             let hexResult = 0;
             for (; hexLength > 0; hexLength--) {
-              ch = state2.input.charCodeAt(++state2.position);
+              ch = state.input.charCodeAt(++state.position);
               if ((tmp = fromHexCode(ch)) >= 0) {
                 hexResult = (hexResult << 4) + tmp;
               } else {
-                throwError(state2, "expected hexadecimal character");
+                throwError(state, "expected hexadecimal character");
               }
             }
-            state2.result += charFromCodepoint(hexResult);
-            state2.position++;
+            state.result += charFromCodepoint(hexResult);
+            state.position++;
           } else {
-            throwError(state2, "unknown escape sequence");
+            throwError(state, "unknown escape sequence");
           }
-          captureStart = captureEnd = state2.position;
+          captureStart = captureEnd = state.position;
         } else if (isEol(ch)) {
-          captureSegment(state2, captureStart, captureEnd, true);
-          writeFoldedLines(state2, skipSeparationSpace(state2, false, nodeIndent));
-          captureStart = captureEnd = state2.position;
-        } else if (state2.position === state2.lineStart && testDocumentSeparator(state2)) {
-          throwError(state2, "unexpected end of the document within a double quoted scalar");
+          captureSegment(state, captureStart, captureEnd, true);
+          writeFoldedLines(state, skipSeparationSpace(state, false, nodeIndent));
+          captureStart = captureEnd = state.position;
+        } else if (state.position === state.lineStart && testDocumentSeparator(state)) {
+          throwError(state, "unexpected end of the document within a double quoted scalar");
         } else {
-          state2.position++;
+          state.position++;
           if (!isWhiteSpace(ch)) {
-            captureEnd = state2.position;
+            captureEnd = state.position;
           }
         }
       }
-      throwError(state2, "unexpected end of the stream within a double quoted scalar");
+      throwError(state, "unexpected end of the stream within a double quoted scalar");
     }
-    function readFlowCollection(state2, nodeIndent) {
+    function readFlowCollection(state, nodeIndent) {
       let readNext = true;
       let _line;
       let _lineStart;
       let _pos;
-      const _tag = state2.tag;
+      const _tag = state.tag;
       let _result;
-      const _anchor = state2.anchor;
+      const _anchor = state.anchor;
       let terminator;
       let isPair;
       let isExplicitPair;
@@ -26272,7 +26329,7 @@ var require_loader = __commonJS({
       let keyNode;
       let keyTag;
       let valueNode;
-      let ch = state2.input.charCodeAt(state2.position);
+      let ch = state.input.charCodeAt(state.position);
       if (ch === 91) {
         terminator = 93;
         isMapping = false;
@@ -26284,69 +26341,69 @@ var require_loader = __commonJS({
       } else {
         return false;
       }
-      if (state2.anchor !== null) {
-        storeAnchor(state2, state2.anchor, _result);
+      if (state.anchor !== null) {
+        storeAnchor(state, state.anchor, _result);
       }
-      ch = state2.input.charCodeAt(++state2.position);
+      ch = state.input.charCodeAt(++state.position);
       while (ch !== 0) {
-        skipSeparationSpace(state2, true, nodeIndent);
-        ch = state2.input.charCodeAt(state2.position);
+        skipSeparationSpace(state, true, nodeIndent);
+        ch = state.input.charCodeAt(state.position);
         if (ch === terminator) {
-          state2.position++;
-          state2.tag = _tag;
-          state2.anchor = _anchor;
-          state2.kind = isMapping ? "mapping" : "sequence";
-          state2.result = _result;
+          state.position++;
+          state.tag = _tag;
+          state.anchor = _anchor;
+          state.kind = isMapping ? "mapping" : "sequence";
+          state.result = _result;
           return true;
         } else if (!readNext) {
-          throwError(state2, "missed comma between flow collection entries");
+          throwError(state, "missed comma between flow collection entries");
         } else if (ch === 44) {
-          throwError(state2, "expected the node content, but found ','");
+          throwError(state, "expected the node content, but found ','");
         }
         keyTag = keyNode = valueNode = null;
         isPair = isExplicitPair = false;
         if (ch === 63) {
-          const following = state2.input.charCodeAt(state2.position + 1);
+          const following = state.input.charCodeAt(state.position + 1);
           if (isWsOrEol(following)) {
             isPair = isExplicitPair = true;
-            state2.position++;
-            skipSeparationSpace(state2, true, nodeIndent);
+            state.position++;
+            skipSeparationSpace(state, true, nodeIndent);
           }
         }
-        _line = state2.line;
-        _lineStart = state2.lineStart;
-        _pos = state2.position;
-        composeNode(state2, nodeIndent, CONTEXT_FLOW_IN, false, true);
-        keyTag = state2.tag;
-        keyNode = state2.result;
-        skipSeparationSpace(state2, true, nodeIndent);
-        ch = state2.input.charCodeAt(state2.position);
-        if ((isExplicitPair || state2.line === _line) && ch === 58) {
+        _line = state.line;
+        _lineStart = state.lineStart;
+        _pos = state.position;
+        composeNode(state, nodeIndent, CONTEXT_FLOW_IN, false, true);
+        keyTag = state.tag;
+        keyNode = state.result;
+        skipSeparationSpace(state, true, nodeIndent);
+        ch = state.input.charCodeAt(state.position);
+        if ((isExplicitPair || state.line === _line) && ch === 58) {
           isPair = true;
-          ch = state2.input.charCodeAt(++state2.position);
-          skipSeparationSpace(state2, true, nodeIndent);
-          composeNode(state2, nodeIndent, CONTEXT_FLOW_IN, false, true);
-          valueNode = state2.result;
+          ch = state.input.charCodeAt(++state.position);
+          skipSeparationSpace(state, true, nodeIndent);
+          composeNode(state, nodeIndent, CONTEXT_FLOW_IN, false, true);
+          valueNode = state.result;
         }
         if (isMapping) {
-          storeMappingPair(state2, _result, overridableKeys, keyTag, keyNode, valueNode, _line, _lineStart, _pos);
+          storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, _line, _lineStart, _pos);
         } else if (isPair) {
-          _result.push(storeMappingPair(state2, null, overridableKeys, keyTag, keyNode, valueNode, _line, _lineStart, _pos));
+          _result.push(storeMappingPair(state, null, overridableKeys, keyTag, keyNode, valueNode, _line, _lineStart, _pos));
         } else {
           _result.push(keyNode);
         }
-        skipSeparationSpace(state2, true, nodeIndent);
-        ch = state2.input.charCodeAt(state2.position);
+        skipSeparationSpace(state, true, nodeIndent);
+        ch = state.input.charCodeAt(state.position);
         if (ch === 44) {
           readNext = true;
-          ch = state2.input.charCodeAt(++state2.position);
+          ch = state.input.charCodeAt(++state.position);
         } else {
           readNext = false;
         }
       }
-      throwError(state2, "unexpected end of the stream within a flow collection");
+      throwError(state, "unexpected end of the stream within a flow collection");
     }
-    function readBlockScalar(state2, nodeIndent) {
+    function readBlockScalar(state, nodeIndent) {
       let folding;
       let chomping = CHOMPING_CLIP;
       let didReadContent = false;
@@ -26355,7 +26412,7 @@ var require_loader = __commonJS({
       let emptyLines = 0;
       let atMoreIndented = false;
       let tmp;
-      let ch = state2.input.charCodeAt(state2.position);
+      let ch = state.input.charCodeAt(state.position);
       if (ch === 124) {
         folding = false;
       } else if (ch === 62) {
@@ -26363,24 +26420,24 @@ var require_loader = __commonJS({
       } else {
         return false;
       }
-      state2.kind = "scalar";
-      state2.result = "";
+      state.kind = "scalar";
+      state.result = "";
       while (ch !== 0) {
-        ch = state2.input.charCodeAt(++state2.position);
+        ch = state.input.charCodeAt(++state.position);
         if (ch === 43 || ch === 45) {
           if (CHOMPING_CLIP === chomping) {
             chomping = ch === 43 ? CHOMPING_KEEP : CHOMPING_STRIP;
           } else {
-            throwError(state2, "repeat of a chomping mode identifier");
+            throwError(state, "repeat of a chomping mode identifier");
           }
         } else if ((tmp = fromDecimalCode(ch)) >= 0) {
           if (tmp === 0) {
-            throwError(state2, "bad explicit indentation width of a block scalar; it cannot be less than one");
+            throwError(state, "bad explicit indentation width of a block scalar; it cannot be less than one");
           } else if (!detectedIndent) {
             textIndent = nodeIndent + tmp - 1;
             detectedIndent = true;
           } else {
-            throwError(state2, "repeat of an indentation width identifier");
+            throwError(state, "repeat of an indentation width identifier");
           }
         } else {
           break;
@@ -26388,38 +26445,38 @@ var require_loader = __commonJS({
       }
       if (isWhiteSpace(ch)) {
         do {
-          ch = state2.input.charCodeAt(++state2.position);
+          ch = state.input.charCodeAt(++state.position);
         } while (isWhiteSpace(ch));
         if (ch === 35) {
           do {
-            ch = state2.input.charCodeAt(++state2.position);
+            ch = state.input.charCodeAt(++state.position);
           } while (!isEol(ch) && ch !== 0);
         }
       }
       while (ch !== 0) {
-        readLineBreak(state2);
-        state2.lineIndent = 0;
-        ch = state2.input.charCodeAt(state2.position);
-        while ((!detectedIndent || state2.lineIndent < textIndent) && ch === 32) {
-          state2.lineIndent++;
-          ch = state2.input.charCodeAt(++state2.position);
+        readLineBreak(state);
+        state.lineIndent = 0;
+        ch = state.input.charCodeAt(state.position);
+        while ((!detectedIndent || state.lineIndent < textIndent) && ch === 32) {
+          state.lineIndent++;
+          ch = state.input.charCodeAt(++state.position);
         }
-        if (!detectedIndent && state2.lineIndent > textIndent) {
-          textIndent = state2.lineIndent;
+        if (!detectedIndent && state.lineIndent > textIndent) {
+          textIndent = state.lineIndent;
         }
         if (isEol(ch)) {
           emptyLines++;
           continue;
         }
         if (!detectedIndent && textIndent === 0) {
-          throwError(state2, "missing indentation for block scalar");
+          throwError(state, "missing indentation for block scalar");
         }
-        if (state2.lineIndent < textIndent) {
+        if (state.lineIndent < textIndent) {
           if (chomping === CHOMPING_KEEP) {
-            state2.result += common.repeat("\n", didReadContent ? 1 + emptyLines : emptyLines);
+            state.result += common.repeat("\n", didReadContent ? 1 + emptyLines : emptyLines);
           } else if (chomping === CHOMPING_CLIP) {
             if (didReadContent) {
-              state2.result += "\n";
+              state.result += "\n";
             }
           }
           break;
@@ -26427,89 +26484,89 @@ var require_loader = __commonJS({
         if (folding) {
           if (isWhiteSpace(ch)) {
             atMoreIndented = true;
-            state2.result += common.repeat("\n", didReadContent ? 1 + emptyLines : emptyLines);
+            state.result += common.repeat("\n", didReadContent ? 1 + emptyLines : emptyLines);
           } else if (atMoreIndented) {
             atMoreIndented = false;
-            state2.result += common.repeat("\n", emptyLines + 1);
+            state.result += common.repeat("\n", emptyLines + 1);
           } else if (emptyLines === 0) {
             if (didReadContent) {
-              state2.result += " ";
+              state.result += " ";
             }
           } else {
-            state2.result += common.repeat("\n", emptyLines);
+            state.result += common.repeat("\n", emptyLines);
           }
         } else {
-          state2.result += common.repeat("\n", didReadContent ? 1 + emptyLines : emptyLines);
+          state.result += common.repeat("\n", didReadContent ? 1 + emptyLines : emptyLines);
         }
         didReadContent = true;
         detectedIndent = true;
         emptyLines = 0;
-        const captureStart = state2.position;
+        const captureStart = state.position;
         while (!isEol(ch) && ch !== 0) {
-          ch = state2.input.charCodeAt(++state2.position);
+          ch = state.input.charCodeAt(++state.position);
         }
-        captureSegment(state2, captureStart, state2.position, false);
+        captureSegment(state, captureStart, state.position, false);
       }
       return true;
     }
-    function readBlockSequence(state2, nodeIndent) {
-      const _tag = state2.tag;
-      const _anchor = state2.anchor;
+    function readBlockSequence(state, nodeIndent) {
+      const _tag = state.tag;
+      const _anchor = state.anchor;
       const _result = [];
       let detected = false;
-      if (state2.firstTabInLine !== -1) return false;
-      if (state2.anchor !== null) {
-        storeAnchor(state2, state2.anchor, _result);
+      if (state.firstTabInLine !== -1) return false;
+      if (state.anchor !== null) {
+        storeAnchor(state, state.anchor, _result);
       }
-      let ch = state2.input.charCodeAt(state2.position);
+      let ch = state.input.charCodeAt(state.position);
       while (ch !== 0) {
-        if (state2.firstTabInLine !== -1) {
-          state2.position = state2.firstTabInLine;
-          throwError(state2, "tab characters must not be used in indentation");
+        if (state.firstTabInLine !== -1) {
+          state.position = state.firstTabInLine;
+          throwError(state, "tab characters must not be used in indentation");
         }
         if (ch !== 45) {
           break;
         }
-        const following = state2.input.charCodeAt(state2.position + 1);
+        const following = state.input.charCodeAt(state.position + 1);
         if (!isWsOrEol(following)) {
           break;
         }
         detected = true;
-        state2.position++;
-        if (skipSeparationSpace(state2, true, -1)) {
-          if (state2.lineIndent <= nodeIndent) {
+        state.position++;
+        if (skipSeparationSpace(state, true, -1)) {
+          if (state.lineIndent <= nodeIndent) {
             _result.push(null);
-            ch = state2.input.charCodeAt(state2.position);
+            ch = state.input.charCodeAt(state.position);
             continue;
           }
         }
-        const _line = state2.line;
-        composeNode(state2, nodeIndent, CONTEXT_BLOCK_IN, false, true);
-        _result.push(state2.result);
-        skipSeparationSpace(state2, true, -1);
-        ch = state2.input.charCodeAt(state2.position);
-        if ((state2.line === _line || state2.lineIndent > nodeIndent) && ch !== 0) {
-          throwError(state2, "bad indentation of a sequence entry");
-        } else if (state2.lineIndent < nodeIndent) {
+        const _line = state.line;
+        composeNode(state, nodeIndent, CONTEXT_BLOCK_IN, false, true);
+        _result.push(state.result);
+        skipSeparationSpace(state, true, -1);
+        ch = state.input.charCodeAt(state.position);
+        if ((state.line === _line || state.lineIndent > nodeIndent) && ch !== 0) {
+          throwError(state, "bad indentation of a sequence entry");
+        } else if (state.lineIndent < nodeIndent) {
           break;
         }
       }
       if (detected) {
-        state2.tag = _tag;
-        state2.anchor = _anchor;
-        state2.kind = "sequence";
-        state2.result = _result;
+        state.tag = _tag;
+        state.anchor = _anchor;
+        state.kind = "sequence";
+        state.result = _result;
         return true;
       }
       return false;
     }
-    function readBlockMapping(state2, nodeIndent, flowIndent) {
+    function readBlockMapping(state, nodeIndent, flowIndent) {
       let allowCompact;
       let _keyLine;
       let _keyLineStart;
       let _keyPos;
-      const _tag = state2.tag;
-      const _anchor = state2.anchor;
+      const _tag = state.tag;
+      const _anchor = state.anchor;
       const _result = {};
       const overridableKeys = /* @__PURE__ */ Object.create(null);
       let keyTag = null;
@@ -26517,22 +26574,22 @@ var require_loader = __commonJS({
       let valueNode = null;
       let atExplicitKey = false;
       let detected = false;
-      if (state2.firstTabInLine !== -1) return false;
-      if (state2.anchor !== null) {
-        storeAnchor(state2, state2.anchor, _result);
+      if (state.firstTabInLine !== -1) return false;
+      if (state.anchor !== null) {
+        storeAnchor(state, state.anchor, _result);
       }
-      let ch = state2.input.charCodeAt(state2.position);
+      let ch = state.input.charCodeAt(state.position);
       while (ch !== 0) {
-        if (!atExplicitKey && state2.firstTabInLine !== -1) {
-          state2.position = state2.firstTabInLine;
-          throwError(state2, "tab characters must not be used in indentation");
+        if (!atExplicitKey && state.firstTabInLine !== -1) {
+          state.position = state.firstTabInLine;
+          throwError(state, "tab characters must not be used in indentation");
         }
-        const following = state2.input.charCodeAt(state2.position + 1);
-        const _line = state2.line;
+        const following = state.input.charCodeAt(state.position + 1);
+        const _line = state.line;
         if ((ch === 63 || ch === 58) && isWsOrEol(following)) {
           if (ch === 63) {
             if (atExplicitKey) {
-              storeMappingPair(state2, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
+              storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
               keyTag = keyNode = valueNode = null;
             }
             detected = true;
@@ -26542,215 +26599,215 @@ var require_loader = __commonJS({
             atExplicitKey = false;
             allowCompact = true;
           } else {
-            throwError(state2, "incomplete explicit mapping pair; a key node is missed; or followed by a non-tabulated empty line");
+            throwError(state, "incomplete explicit mapping pair; a key node is missed; or followed by a non-tabulated empty line");
           }
-          state2.position += 1;
+          state.position += 1;
           ch = following;
         } else {
-          _keyLine = state2.line;
-          _keyLineStart = state2.lineStart;
-          _keyPos = state2.position;
-          if (!composeNode(state2, flowIndent, CONTEXT_FLOW_OUT, false, true)) {
+          _keyLine = state.line;
+          _keyLineStart = state.lineStart;
+          _keyPos = state.position;
+          if (!composeNode(state, flowIndent, CONTEXT_FLOW_OUT, false, true)) {
             break;
           }
-          if (state2.line === _line) {
-            ch = state2.input.charCodeAt(state2.position);
+          if (state.line === _line) {
+            ch = state.input.charCodeAt(state.position);
             while (isWhiteSpace(ch)) {
-              ch = state2.input.charCodeAt(++state2.position);
+              ch = state.input.charCodeAt(++state.position);
             }
             if (ch === 58) {
-              ch = state2.input.charCodeAt(++state2.position);
+              ch = state.input.charCodeAt(++state.position);
               if (!isWsOrEol(ch)) {
-                throwError(state2, "a whitespace character is expected after the key-value separator within a block mapping");
+                throwError(state, "a whitespace character is expected after the key-value separator within a block mapping");
               }
               if (atExplicitKey) {
-                storeMappingPair(state2, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
+                storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
                 keyTag = keyNode = valueNode = null;
               }
               detected = true;
               atExplicitKey = false;
               allowCompact = false;
-              keyTag = state2.tag;
-              keyNode = state2.result;
+              keyTag = state.tag;
+              keyNode = state.result;
             } else if (detected) {
-              throwError(state2, "can not read an implicit mapping pair; a colon is missed");
+              throwError(state, "can not read an implicit mapping pair; a colon is missed");
             } else {
-              state2.tag = _tag;
-              state2.anchor = _anchor;
+              state.tag = _tag;
+              state.anchor = _anchor;
               return true;
             }
           } else if (detected) {
-            throwError(state2, "can not read a block mapping entry; a multiline key may not be an implicit key");
+            throwError(state, "can not read a block mapping entry; a multiline key may not be an implicit key");
           } else {
-            state2.tag = _tag;
-            state2.anchor = _anchor;
+            state.tag = _tag;
+            state.anchor = _anchor;
             return true;
           }
         }
-        if (state2.line === _line || state2.lineIndent > nodeIndent) {
+        if (state.line === _line || state.lineIndent > nodeIndent) {
           if (atExplicitKey) {
-            _keyLine = state2.line;
-            _keyLineStart = state2.lineStart;
-            _keyPos = state2.position;
+            _keyLine = state.line;
+            _keyLineStart = state.lineStart;
+            _keyPos = state.position;
           }
-          if (composeNode(state2, nodeIndent, CONTEXT_BLOCK_OUT, true, allowCompact)) {
+          if (composeNode(state, nodeIndent, CONTEXT_BLOCK_OUT, true, allowCompact)) {
             if (atExplicitKey) {
-              keyNode = state2.result;
+              keyNode = state.result;
             } else {
-              valueNode = state2.result;
+              valueNode = state.result;
             }
           }
           if (!atExplicitKey) {
-            storeMappingPair(state2, _result, overridableKeys, keyTag, keyNode, valueNode, _keyLine, _keyLineStart, _keyPos);
+            storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, _keyLine, _keyLineStart, _keyPos);
             keyTag = keyNode = valueNode = null;
           }
-          skipSeparationSpace(state2, true, -1);
-          ch = state2.input.charCodeAt(state2.position);
+          skipSeparationSpace(state, true, -1);
+          ch = state.input.charCodeAt(state.position);
         }
-        if ((state2.line === _line || state2.lineIndent > nodeIndent) && ch !== 0) {
-          throwError(state2, "bad indentation of a mapping entry");
-        } else if (state2.lineIndent < nodeIndent) {
+        if ((state.line === _line || state.lineIndent > nodeIndent) && ch !== 0) {
+          throwError(state, "bad indentation of a mapping entry");
+        } else if (state.lineIndent < nodeIndent) {
           break;
         }
       }
       if (atExplicitKey) {
-        storeMappingPair(state2, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
+        storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
       }
       if (detected) {
-        state2.tag = _tag;
-        state2.anchor = _anchor;
-        state2.kind = "mapping";
-        state2.result = _result;
+        state.tag = _tag;
+        state.anchor = _anchor;
+        state.kind = "mapping";
+        state.result = _result;
       }
       return detected;
     }
-    function readTagProperty(state2) {
+    function readTagProperty(state) {
       let isVerbatim = false;
       let isNamed = false;
       let tagHandle;
       let tagName;
-      let ch = state2.input.charCodeAt(state2.position);
+      let ch = state.input.charCodeAt(state.position);
       if (ch !== 33) return false;
-      if (state2.tag !== null) {
-        throwError(state2, "duplication of a tag property");
+      if (state.tag !== null) {
+        throwError(state, "duplication of a tag property");
       }
-      ch = state2.input.charCodeAt(++state2.position);
+      ch = state.input.charCodeAt(++state.position);
       if (ch === 60) {
         isVerbatim = true;
-        ch = state2.input.charCodeAt(++state2.position);
+        ch = state.input.charCodeAt(++state.position);
       } else if (ch === 33) {
         isNamed = true;
         tagHandle = "!!";
-        ch = state2.input.charCodeAt(++state2.position);
+        ch = state.input.charCodeAt(++state.position);
       } else {
         tagHandle = "!";
       }
-      let _position = state2.position;
+      let _position = state.position;
       if (isVerbatim) {
         do {
-          ch = state2.input.charCodeAt(++state2.position);
+          ch = state.input.charCodeAt(++state.position);
         } while (ch !== 0 && ch !== 62);
-        if (state2.position < state2.length) {
-          tagName = state2.input.slice(_position, state2.position);
-          ch = state2.input.charCodeAt(++state2.position);
+        if (state.position < state.length) {
+          tagName = state.input.slice(_position, state.position);
+          ch = state.input.charCodeAt(++state.position);
         } else {
-          throwError(state2, "unexpected end of the stream within a verbatim tag");
+          throwError(state, "unexpected end of the stream within a verbatim tag");
         }
       } else {
         while (ch !== 0 && !isWsOrEol(ch)) {
           if (ch === 33) {
             if (!isNamed) {
-              tagHandle = state2.input.slice(_position - 1, state2.position + 1);
+              tagHandle = state.input.slice(_position - 1, state.position + 1);
               if (!PATTERN_TAG_HANDLE.test(tagHandle)) {
-                throwError(state2, "named tag handle cannot contain such characters");
+                throwError(state, "named tag handle cannot contain such characters");
               }
               isNamed = true;
-              _position = state2.position + 1;
+              _position = state.position + 1;
             } else {
-              throwError(state2, "tag suffix cannot contain exclamation marks");
+              throwError(state, "tag suffix cannot contain exclamation marks");
             }
           }
-          ch = state2.input.charCodeAt(++state2.position);
+          ch = state.input.charCodeAt(++state.position);
         }
-        tagName = state2.input.slice(_position, state2.position);
+        tagName = state.input.slice(_position, state.position);
         if (PATTERN_FLOW_INDICATORS.test(tagName)) {
-          throwError(state2, "tag suffix cannot contain flow indicator characters");
+          throwError(state, "tag suffix cannot contain flow indicator characters");
         }
       }
       if (tagName && !PATTERN_TAG_URI.test(tagName)) {
-        throwError(state2, "tag name cannot contain such characters: " + tagName);
+        throwError(state, "tag name cannot contain such characters: " + tagName);
       }
       try {
         tagName = decodeURIComponent(tagName);
       } catch (err) {
-        throwError(state2, "tag name is malformed: " + tagName);
+        throwError(state, "tag name is malformed: " + tagName);
       }
       if (isVerbatim) {
-        state2.tag = tagName;
-      } else if (_hasOwnProperty.call(state2.tagMap, tagHandle)) {
-        state2.tag = state2.tagMap[tagHandle] + tagName;
+        state.tag = tagName;
+      } else if (_hasOwnProperty.call(state.tagMap, tagHandle)) {
+        state.tag = state.tagMap[tagHandle] + tagName;
       } else if (tagHandle === "!") {
-        state2.tag = "!" + tagName;
+        state.tag = "!" + tagName;
       } else if (tagHandle === "!!") {
-        state2.tag = "tag:yaml.org,2002:" + tagName;
+        state.tag = "tag:yaml.org,2002:" + tagName;
       } else {
-        throwError(state2, 'undeclared tag handle "' + tagHandle + '"');
+        throwError(state, 'undeclared tag handle "' + tagHandle + '"');
       }
       return true;
     }
-    function readAnchorProperty(state2) {
-      let ch = state2.input.charCodeAt(state2.position);
+    function readAnchorProperty(state) {
+      let ch = state.input.charCodeAt(state.position);
       if (ch !== 38) return false;
-      if (state2.anchor !== null) {
-        throwError(state2, "duplication of an anchor property");
+      if (state.anchor !== null) {
+        throwError(state, "duplication of an anchor property");
       }
-      ch = state2.input.charCodeAt(++state2.position);
-      const _position = state2.position;
+      ch = state.input.charCodeAt(++state.position);
+      const _position = state.position;
       while (ch !== 0 && !isWsOrEol(ch) && !isFlowIndicator(ch)) {
-        ch = state2.input.charCodeAt(++state2.position);
+        ch = state.input.charCodeAt(++state.position);
       }
-      if (state2.position === _position) {
-        throwError(state2, "name of an anchor node must contain at least one character");
+      if (state.position === _position) {
+        throwError(state, "name of an anchor node must contain at least one character");
       }
-      state2.anchor = state2.input.slice(_position, state2.position);
+      state.anchor = state.input.slice(_position, state.position);
       return true;
     }
-    function readAlias(state2) {
-      let ch = state2.input.charCodeAt(state2.position);
+    function readAlias(state) {
+      let ch = state.input.charCodeAt(state.position);
       if (ch !== 42) return false;
-      ch = state2.input.charCodeAt(++state2.position);
-      const _position = state2.position;
+      ch = state.input.charCodeAt(++state.position);
+      const _position = state.position;
       while (ch !== 0 && !isWsOrEol(ch) && !isFlowIndicator(ch)) {
-        ch = state2.input.charCodeAt(++state2.position);
+        ch = state.input.charCodeAt(++state.position);
       }
-      if (state2.position === _position) {
-        throwError(state2, "name of an alias node must contain at least one character");
+      if (state.position === _position) {
+        throwError(state, "name of an alias node must contain at least one character");
       }
-      const alias = state2.input.slice(_position, state2.position);
-      if (!_hasOwnProperty.call(state2.anchorMap, alias)) {
-        throwError(state2, 'unidentified alias "' + alias + '"');
+      const alias = state.input.slice(_position, state.position);
+      if (!_hasOwnProperty.call(state.anchorMap, alias)) {
+        throwError(state, 'unidentified alias "' + alias + '"');
       }
-      state2.result = state2.anchorMap[alias];
-      skipSeparationSpace(state2, true, -1);
+      state.result = state.anchorMap[alias];
+      skipSeparationSpace(state, true, -1);
       return true;
     }
-    function tryReadBlockMappingFromProperty(state2, propertyStart, nodeIndent, flowIndent) {
-      const fallbackState = snapshotState(state2);
-      beginAnchorTransaction(state2);
-      restoreState(state2, propertyStart);
-      state2.tag = null;
-      state2.anchor = null;
-      state2.kind = null;
-      state2.result = null;
-      if (readBlockMapping(state2, nodeIndent, flowIndent) && state2.kind === "mapping") {
-        commitAnchorTransaction(state2);
+    function tryReadBlockMappingFromProperty(state, propertyStart, nodeIndent, flowIndent) {
+      const fallbackState = snapshotState(state);
+      beginAnchorTransaction(state);
+      restoreState(state, propertyStart);
+      state.tag = null;
+      state.anchor = null;
+      state.kind = null;
+      state.result = null;
+      if (readBlockMapping(state, nodeIndent, flowIndent) && state.kind === "mapping") {
+        commitAnchorTransaction(state);
         return true;
       }
-      rollbackAnchorTransaction(state2);
-      restoreState(state2, fallbackState);
+      rollbackAnchorTransaction(state);
+      restoreState(state, fallbackState);
       return false;
     }
-    function composeNode(state2, parentIndent, nodeContext, allowToSeek, allowCompact) {
+    function composeNode(state, parentIndent, nodeContext, allowToSeek, allowCompact) {
       let allowBlockScalars;
       let allowBlockCollections;
       let indentStatus = 1;
@@ -26760,51 +26817,51 @@ var require_loader = __commonJS({
       let type;
       let flowIndent;
       let blockIndent;
-      if (state2.depth >= state2.maxDepth) {
-        throwError(state2, "nesting exceeded maxDepth (" + state2.maxDepth + ")");
+      if (state.depth >= state.maxDepth) {
+        throwError(state, "nesting exceeded maxDepth (" + state.maxDepth + ")");
       }
-      state2.depth += 1;
-      if (state2.listener !== null) {
-        state2.listener("open", state2);
+      state.depth += 1;
+      if (state.listener !== null) {
+        state.listener("open", state);
       }
-      state2.tag = null;
-      state2.anchor = null;
-      state2.kind = null;
-      state2.result = null;
+      state.tag = null;
+      state.anchor = null;
+      state.kind = null;
+      state.result = null;
       const allowBlockStyles = allowBlockScalars = allowBlockCollections = CONTEXT_BLOCK_OUT === nodeContext || CONTEXT_BLOCK_IN === nodeContext;
       if (allowToSeek) {
-        if (skipSeparationSpace(state2, true, -1)) {
+        if (skipSeparationSpace(state, true, -1)) {
           atNewLine = true;
-          if (state2.lineIndent > parentIndent) {
+          if (state.lineIndent > parentIndent) {
             indentStatus = 1;
-          } else if (state2.lineIndent === parentIndent) {
+          } else if (state.lineIndent === parentIndent) {
             indentStatus = 0;
-          } else if (state2.lineIndent < parentIndent) {
+          } else if (state.lineIndent < parentIndent) {
             indentStatus = -1;
           }
         }
       }
       if (indentStatus === 1) {
         while (true) {
-          const ch = state2.input.charCodeAt(state2.position);
-          const propertyState = snapshotState(state2);
-          if (atNewLine && (ch === 33 && state2.tag !== null || ch === 38 && state2.anchor !== null)) {
+          const ch = state.input.charCodeAt(state.position);
+          const propertyState = snapshotState(state);
+          if (atNewLine && (ch === 33 && state.tag !== null || ch === 38 && state.anchor !== null)) {
             break;
           }
-          if (!readTagProperty(state2) && !readAnchorProperty(state2)) {
+          if (!readTagProperty(state) && !readAnchorProperty(state)) {
             break;
           }
           if (propertyStart === null) {
             propertyStart = propertyState;
           }
-          if (skipSeparationSpace(state2, true, -1)) {
+          if (skipSeparationSpace(state, true, -1)) {
             atNewLine = true;
             allowBlockCollections = allowBlockStyles;
-            if (state2.lineIndent > parentIndent) {
+            if (state.lineIndent > parentIndent) {
               indentStatus = 1;
-            } else if (state2.lineIndent === parentIndent) {
+            } else if (state.lineIndent === parentIndent) {
               indentStatus = 0;
-            } else if (state2.lineIndent < parentIndent) {
+            } else if (state.lineIndent < parentIndent) {
               indentStatus = -1;
             }
           } else {
@@ -26821,164 +26878,164 @@ var require_loader = __commonJS({
         } else {
           flowIndent = parentIndent + 1;
         }
-        blockIndent = state2.position - state2.lineStart;
+        blockIndent = state.position - state.lineStart;
         if (indentStatus === 1) {
-          if (allowBlockCollections && (readBlockSequence(state2, blockIndent) || readBlockMapping(state2, blockIndent, flowIndent)) || readFlowCollection(state2, flowIndent)) {
+          if (allowBlockCollections && (readBlockSequence(state, blockIndent) || readBlockMapping(state, blockIndent, flowIndent)) || readFlowCollection(state, flowIndent)) {
             hasContent = true;
           } else {
-            const ch = state2.input.charCodeAt(state2.position);
+            const ch = state.input.charCodeAt(state.position);
             if (propertyStart !== null && allowBlockStyles && !allowBlockCollections && ch !== 124 && ch !== 62 && tryReadBlockMappingFromProperty(
-              state2,
+              state,
               propertyStart,
               propertyStart.position - propertyStart.lineStart,
               flowIndent
             )) {
               hasContent = true;
-            } else if (allowBlockScalars && readBlockScalar(state2, flowIndent) || readSingleQuotedScalar(state2, flowIndent) || readDoubleQuotedScalar(state2, flowIndent)) {
+            } else if (allowBlockScalars && readBlockScalar(state, flowIndent) || readSingleQuotedScalar(state, flowIndent) || readDoubleQuotedScalar(state, flowIndent)) {
               hasContent = true;
-            } else if (readAlias(state2)) {
+            } else if (readAlias(state)) {
               hasContent = true;
-              if (state2.tag !== null || state2.anchor !== null) {
-                throwError(state2, "alias node should not have any properties");
+              if (state.tag !== null || state.anchor !== null) {
+                throwError(state, "alias node should not have any properties");
               }
-            } else if (readPlainScalar(state2, flowIndent, CONTEXT_FLOW_IN === nodeContext)) {
+            } else if (readPlainScalar(state, flowIndent, CONTEXT_FLOW_IN === nodeContext)) {
               hasContent = true;
-              if (state2.tag === null) {
-                state2.tag = "?";
+              if (state.tag === null) {
+                state.tag = "?";
               }
             }
-            if (state2.anchor !== null) {
-              storeAnchor(state2, state2.anchor, state2.result);
+            if (state.anchor !== null) {
+              storeAnchor(state, state.anchor, state.result);
             }
           }
         } else if (indentStatus === 0) {
-          hasContent = allowBlockCollections && readBlockSequence(state2, blockIndent);
+          hasContent = allowBlockCollections && readBlockSequence(state, blockIndent);
         }
       }
-      if (state2.tag === null) {
-        if (state2.anchor !== null) {
-          storeAnchor(state2, state2.anchor, state2.result);
+      if (state.tag === null) {
+        if (state.anchor !== null) {
+          storeAnchor(state, state.anchor, state.result);
         }
-      } else if (state2.tag === "?") {
-        if (state2.result !== null && state2.kind !== "scalar") {
-          throwError(state2, 'unacceptable node kind for !<?> tag; it should be "scalar", not "' + state2.kind + '"');
+      } else if (state.tag === "?") {
+        if (state.result !== null && state.kind !== "scalar") {
+          throwError(state, 'unacceptable node kind for !<?> tag; it should be "scalar", not "' + state.kind + '"');
         }
-        for (let typeIndex = 0, typeQuantity = state2.implicitTypes.length; typeIndex < typeQuantity; typeIndex += 1) {
-          type = state2.implicitTypes[typeIndex];
-          if (type.resolve(state2.result)) {
-            state2.result = type.construct(state2.result);
-            state2.tag = type.tag;
-            if (state2.anchor !== null) {
-              storeAnchor(state2, state2.anchor, state2.result);
+        for (let typeIndex = 0, typeQuantity = state.implicitTypes.length; typeIndex < typeQuantity; typeIndex += 1) {
+          type = state.implicitTypes[typeIndex];
+          if (type.resolve(state.result)) {
+            state.result = type.construct(state.result);
+            state.tag = type.tag;
+            if (state.anchor !== null) {
+              storeAnchor(state, state.anchor, state.result);
             }
             break;
           }
         }
-      } else if (state2.tag !== "!") {
-        if (_hasOwnProperty.call(state2.typeMap[state2.kind || "fallback"], state2.tag)) {
-          type = state2.typeMap[state2.kind || "fallback"][state2.tag];
+      } else if (state.tag !== "!") {
+        if (_hasOwnProperty.call(state.typeMap[state.kind || "fallback"], state.tag)) {
+          type = state.typeMap[state.kind || "fallback"][state.tag];
         } else {
           type = null;
-          const typeList = state2.typeMap.multi[state2.kind || "fallback"];
+          const typeList = state.typeMap.multi[state.kind || "fallback"];
           for (let typeIndex = 0, typeQuantity = typeList.length; typeIndex < typeQuantity; typeIndex += 1) {
-            if (state2.tag.slice(0, typeList[typeIndex].tag.length) === typeList[typeIndex].tag) {
+            if (state.tag.slice(0, typeList[typeIndex].tag.length) === typeList[typeIndex].tag) {
               type = typeList[typeIndex];
               break;
             }
           }
         }
         if (!type) {
-          throwError(state2, "unknown tag !<" + state2.tag + ">");
+          throwError(state, "unknown tag !<" + state.tag + ">");
         }
-        if (state2.result !== null && type.kind !== state2.kind) {
-          throwError(state2, "unacceptable node kind for !<" + state2.tag + '> tag; it should be "' + type.kind + '", not "' + state2.kind + '"');
+        if (state.result !== null && type.kind !== state.kind) {
+          throwError(state, "unacceptable node kind for !<" + state.tag + '> tag; it should be "' + type.kind + '", not "' + state.kind + '"');
         }
-        if (!type.resolve(state2.result, state2.tag)) {
-          throwError(state2, "cannot resolve a node with !<" + state2.tag + "> explicit tag");
+        if (!type.resolve(state.result, state.tag)) {
+          throwError(state, "cannot resolve a node with !<" + state.tag + "> explicit tag");
         } else {
-          state2.result = type.construct(state2.result, state2.tag);
-          if (state2.anchor !== null) {
-            storeAnchor(state2, state2.anchor, state2.result);
+          state.result = type.construct(state.result, state.tag);
+          if (state.anchor !== null) {
+            storeAnchor(state, state.anchor, state.result);
           }
         }
       }
-      if (state2.listener !== null) {
-        state2.listener("close", state2);
+      if (state.listener !== null) {
+        state.listener("close", state);
       }
-      state2.depth -= 1;
-      return state2.tag !== null || state2.anchor !== null || hasContent;
+      state.depth -= 1;
+      return state.tag !== null || state.anchor !== null || hasContent;
     }
-    function readDocument(state2) {
-      const documentStart = state2.position;
+    function readDocument(state) {
+      const documentStart = state.position;
       let hasDirectives = false;
       let ch;
-      state2.version = null;
-      state2.checkLineBreaks = state2.legacy;
-      state2.tagMap = /* @__PURE__ */ Object.create(null);
-      state2.anchorMap = /* @__PURE__ */ Object.create(null);
-      while ((ch = state2.input.charCodeAt(state2.position)) !== 0) {
-        skipSeparationSpace(state2, true, -1);
-        ch = state2.input.charCodeAt(state2.position);
-        if (state2.lineIndent > 0 || ch !== 37) {
+      state.version = null;
+      state.checkLineBreaks = state.legacy;
+      state.tagMap = /* @__PURE__ */ Object.create(null);
+      state.anchorMap = /* @__PURE__ */ Object.create(null);
+      while ((ch = state.input.charCodeAt(state.position)) !== 0) {
+        skipSeparationSpace(state, true, -1);
+        ch = state.input.charCodeAt(state.position);
+        if (state.lineIndent > 0 || ch !== 37) {
           break;
         }
         hasDirectives = true;
-        ch = state2.input.charCodeAt(++state2.position);
-        let _position = state2.position;
+        ch = state.input.charCodeAt(++state.position);
+        let _position = state.position;
         while (ch !== 0 && !isWsOrEol(ch)) {
-          ch = state2.input.charCodeAt(++state2.position);
+          ch = state.input.charCodeAt(++state.position);
         }
-        const directiveName = state2.input.slice(_position, state2.position);
+        const directiveName = state.input.slice(_position, state.position);
         const directiveArgs = [];
         if (directiveName.length < 1) {
-          throwError(state2, "directive name must not be less than one character in length");
+          throwError(state, "directive name must not be less than one character in length");
         }
         while (ch !== 0) {
           while (isWhiteSpace(ch)) {
-            ch = state2.input.charCodeAt(++state2.position);
+            ch = state.input.charCodeAt(++state.position);
           }
           if (ch === 35) {
             do {
-              ch = state2.input.charCodeAt(++state2.position);
+              ch = state.input.charCodeAt(++state.position);
             } while (ch !== 0 && !isEol(ch));
             break;
           }
           if (isEol(ch)) break;
-          _position = state2.position;
+          _position = state.position;
           while (ch !== 0 && !isWsOrEol(ch)) {
-            ch = state2.input.charCodeAt(++state2.position);
+            ch = state.input.charCodeAt(++state.position);
           }
-          directiveArgs.push(state2.input.slice(_position, state2.position));
+          directiveArgs.push(state.input.slice(_position, state.position));
         }
-        if (ch !== 0) readLineBreak(state2);
+        if (ch !== 0) readLineBreak(state);
         if (_hasOwnProperty.call(directiveHandlers, directiveName)) {
-          directiveHandlers[directiveName](state2, directiveName, directiveArgs);
+          directiveHandlers[directiveName](state, directiveName, directiveArgs);
         } else {
-          throwWarning(state2, 'unknown document directive "' + directiveName + '"');
+          throwWarning(state, 'unknown document directive "' + directiveName + '"');
         }
       }
-      skipSeparationSpace(state2, true, -1);
-      if (state2.lineIndent === 0 && state2.input.charCodeAt(state2.position) === 45 && state2.input.charCodeAt(state2.position + 1) === 45 && state2.input.charCodeAt(state2.position + 2) === 45) {
-        state2.position += 3;
-        skipSeparationSpace(state2, true, -1);
+      skipSeparationSpace(state, true, -1);
+      if (state.lineIndent === 0 && state.input.charCodeAt(state.position) === 45 && state.input.charCodeAt(state.position + 1) === 45 && state.input.charCodeAt(state.position + 2) === 45) {
+        state.position += 3;
+        skipSeparationSpace(state, true, -1);
       } else if (hasDirectives) {
-        throwError(state2, "directives end mark is expected");
+        throwError(state, "directives end mark is expected");
       }
-      composeNode(state2, state2.lineIndent - 1, CONTEXT_BLOCK_OUT, false, true);
-      skipSeparationSpace(state2, true, -1);
-      if (state2.checkLineBreaks && PATTERN_NON_ASCII_LINE_BREAKS.test(state2.input.slice(documentStart, state2.position))) {
-        throwWarning(state2, "non-ASCII line breaks are interpreted as content");
+      composeNode(state, state.lineIndent - 1, CONTEXT_BLOCK_OUT, false, true);
+      skipSeparationSpace(state, true, -1);
+      if (state.checkLineBreaks && PATTERN_NON_ASCII_LINE_BREAKS.test(state.input.slice(documentStart, state.position))) {
+        throwWarning(state, "non-ASCII line breaks are interpreted as content");
       }
-      state2.documents.push(state2.result);
-      if (state2.position === state2.lineStart && testDocumentSeparator(state2)) {
-        if (state2.input.charCodeAt(state2.position) === 46) {
-          state2.position += 3;
-          skipSeparationSpace(state2, true, -1);
+      state.documents.push(state.result);
+      if (state.position === state.lineStart && testDocumentSeparator(state)) {
+        if (state.input.charCodeAt(state.position) === 46) {
+          state.position += 3;
+          skipSeparationSpace(state, true, -1);
         }
         return;
       }
-      if (state2.position < state2.length - 1) {
-        throwError(state2, "end of the stream or a document separator is expected");
+      if (state.position < state.length - 1) {
+        throwError(state, "end of the stream or a document separator is expected");
       }
     }
     function loadDocuments(input, options) {
@@ -26992,21 +27049,21 @@ var require_loader = __commonJS({
           input = input.slice(1);
         }
       }
-      const state2 = new State(input, options);
+      const state = new State(input, options);
       const nullpos = input.indexOf("\0");
       if (nullpos !== -1) {
-        state2.position = nullpos;
-        throwError(state2, "null byte is not allowed in input");
+        state.position = nullpos;
+        throwError(state, "null byte is not allowed in input");
       }
-      state2.input += "\0";
-      while (state2.input.charCodeAt(state2.position) === 32) {
-        state2.lineIndent += 1;
-        state2.position += 1;
+      state.input += "\0";
+      while (state.input.charCodeAt(state.position) === 32) {
+        state.lineIndent += 1;
+        state.position += 1;
       }
-      while (state2.position < state2.length - 1) {
-        readDocument(state2);
+      while (state.position < state.length - 1) {
+        readDocument(state);
       }
-      return state2.documents;
+      return state.documents;
     }
     function loadAll(input, iterator, options) {
       if (iterator !== null && typeof iterator === "object" && typeof options === "undefined") {
@@ -27184,12 +27241,12 @@ var require_dumper = __commonJS({
       }
       return result;
     }
-    function generateNextLine(state2, level) {
-      return "\n" + common.repeat(" ", state2.indent * level);
+    function generateNextLine(state, level) {
+      return "\n" + common.repeat(" ", state.indent * level);
     }
-    function testImplicitResolving(state2, str) {
-      for (let index = 0, length = state2.implicitTypes.length; index < length; index += 1) {
-        const type = state2.implicitTypes[index];
+    function testImplicitResolving(state, str) {
+      for (let index = 0, length = state.implicitTypes.length; index < length; index += 1) {
+        const type = state.implicitTypes[index];
         if (type.resolve(str)) {
           return true;
         }
@@ -27300,31 +27357,31 @@ var require_dumper = __commonJS({
       }
       return quotingType === QUOTING_TYPE_DOUBLE ? STYLE_DOUBLE : STYLE_SINGLE;
     }
-    function writeScalar(state2, string, level, iskey, inblock) {
-      state2.dump = function() {
+    function writeScalar(state, string, level, iskey, inblock) {
+      state.dump = function() {
         if (string.length === 0) {
-          return state2.quotingType === QUOTING_TYPE_DOUBLE ? '""' : "''";
+          return state.quotingType === QUOTING_TYPE_DOUBLE ? '""' : "''";
         }
-        if (!state2.noCompatMode) {
+        if (!state.noCompatMode) {
           if (DEPRECATED_BOOLEANS_SYNTAX.indexOf(string) !== -1 || DEPRECATED_BASE60_SYNTAX.test(string)) {
-            return state2.quotingType === QUOTING_TYPE_DOUBLE ? '"' + string + '"' : "'" + string + "'";
+            return state.quotingType === QUOTING_TYPE_DOUBLE ? '"' + string + '"' : "'" + string + "'";
           }
         }
-        const indent = state2.indent * Math.max(1, level);
-        const lineWidth = state2.lineWidth === -1 ? -1 : Math.max(Math.min(state2.lineWidth, 40), state2.lineWidth - indent);
+        const indent = state.indent * Math.max(1, level);
+        const lineWidth = state.lineWidth === -1 ? -1 : Math.max(Math.min(state.lineWidth, 40), state.lineWidth - indent);
         const singleLineOnly = iskey || // No block styles in flow mode.
-        state2.flowLevel > -1 && level >= state2.flowLevel;
+        state.flowLevel > -1 && level >= state.flowLevel;
         function testAmbiguity(string2) {
-          return testImplicitResolving(state2, string2);
+          return testImplicitResolving(state, string2);
         }
         switch (chooseScalarStyle(
           string,
           singleLineOnly,
-          state2.indent,
+          state.indent,
           lineWidth,
           testAmbiguity,
-          state2.quotingType,
-          state2.forceQuotes && !iskey,
+          state.quotingType,
+          state.forceQuotes && !iskey,
           inblock
         )) {
           case STYLE_PLAIN:
@@ -27332,9 +27389,9 @@ var require_dumper = __commonJS({
           case STYLE_SINGLE:
             return "'" + string.replace(/'/g, "''") + "'";
           case STYLE_LITERAL:
-            return "|" + blockHeader(string, state2.indent) + dropEndingNewline(indentString(string, indent));
+            return "|" + blockHeader(string, state.indent) + dropEndingNewline(indentString(string, indent));
           case STYLE_FOLDED:
-            return ">" + blockHeader(string, state2.indent) + dropEndingNewline(indentString(foldString(string, lineWidth), indent));
+            return ">" + blockHeader(string, state.indent) + dropEndingNewline(indentString(foldString(string, lineWidth), indent));
           case STYLE_DOUBLE:
             return '"' + escapeString(string, lineWidth) + '"';
           default:
@@ -27413,138 +27470,138 @@ var require_dumper = __commonJS({
       }
       return result;
     }
-    function writeFlowSequence(state2, level, object) {
+    function writeFlowSequence(state, level, object) {
       let _result = "";
-      const _tag = state2.tag;
+      const _tag = state.tag;
       for (let index = 0, length = object.length; index < length; index += 1) {
         let value = object[index];
-        if (state2.replacer) {
-          value = state2.replacer.call(object, String(index), value);
+        if (state.replacer) {
+          value = state.replacer.call(object, String(index), value);
         }
-        if (writeNode(state2, level, value, false, false) || typeof value === "undefined" && writeNode(state2, level, null, false, false)) {
-          if (_result !== "") _result += "," + (!state2.condenseFlow ? " " : "");
-          _result += state2.dump;
+        if (writeNode(state, level, value, false, false) || typeof value === "undefined" && writeNode(state, level, null, false, false)) {
+          if (_result !== "") _result += "," + (!state.condenseFlow ? " " : "");
+          _result += state.dump;
         }
       }
-      state2.tag = _tag;
-      state2.dump = "[" + _result + "]";
+      state.tag = _tag;
+      state.dump = "[" + _result + "]";
     }
-    function writeBlockSequence(state2, level, object, compact) {
+    function writeBlockSequence(state, level, object, compact) {
       let _result = "";
-      const _tag = state2.tag;
+      const _tag = state.tag;
       for (let index = 0, length = object.length; index < length; index += 1) {
         let value = object[index];
-        if (state2.replacer) {
-          value = state2.replacer.call(object, String(index), value);
+        if (state.replacer) {
+          value = state.replacer.call(object, String(index), value);
         }
-        if (writeNode(state2, level + 1, value, true, true, false, true) || typeof value === "undefined" && writeNode(state2, level + 1, null, true, true, false, true)) {
+        if (writeNode(state, level + 1, value, true, true, false, true) || typeof value === "undefined" && writeNode(state, level + 1, null, true, true, false, true)) {
           if (!compact || _result !== "") {
-            _result += generateNextLine(state2, level);
+            _result += generateNextLine(state, level);
           }
-          if (state2.dump && CHAR_LINE_FEED === state2.dump.charCodeAt(0)) {
+          if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
             _result += "-";
           } else {
             _result += "- ";
           }
-          _result += state2.dump;
+          _result += state.dump;
         }
       }
-      state2.tag = _tag;
-      state2.dump = _result || "[]";
+      state.tag = _tag;
+      state.dump = _result || "[]";
     }
-    function writeFlowMapping(state2, level, object) {
+    function writeFlowMapping(state, level, object) {
       let _result = "";
-      const _tag = state2.tag;
+      const _tag = state.tag;
       const objectKeyList = Object.keys(object);
       for (let index = 0, length = objectKeyList.length; index < length; index += 1) {
         let pairBuffer = "";
         if (_result !== "") pairBuffer += ", ";
-        if (state2.condenseFlow) pairBuffer += '"';
+        if (state.condenseFlow) pairBuffer += '"';
         const objectKey = objectKeyList[index];
         let objectValue = object[objectKey];
-        if (state2.replacer) {
-          objectValue = state2.replacer.call(object, objectKey, objectValue);
+        if (state.replacer) {
+          objectValue = state.replacer.call(object, objectKey, objectValue);
         }
-        if (!writeNode(state2, level, objectKey, false, false)) {
+        if (!writeNode(state, level, objectKey, false, false)) {
           continue;
         }
-        if (state2.dump.length > 1024) pairBuffer += "? ";
-        pairBuffer += state2.dump + (state2.condenseFlow ? '"' : "") + ":" + (state2.condenseFlow ? "" : " ");
-        if (!writeNode(state2, level, objectValue, false, false)) {
+        if (state.dump.length > 1024) pairBuffer += "? ";
+        pairBuffer += state.dump + (state.condenseFlow ? '"' : "") + ":" + (state.condenseFlow ? "" : " ");
+        if (!writeNode(state, level, objectValue, false, false)) {
           continue;
         }
-        pairBuffer += state2.dump;
+        pairBuffer += state.dump;
         _result += pairBuffer;
       }
-      state2.tag = _tag;
-      state2.dump = "{" + _result + "}";
+      state.tag = _tag;
+      state.dump = "{" + _result + "}";
     }
-    function writeBlockMapping(state2, level, object, compact) {
+    function writeBlockMapping(state, level, object, compact) {
       let _result = "";
-      const _tag = state2.tag;
+      const _tag = state.tag;
       const objectKeyList = Object.keys(object);
-      if (state2.sortKeys === true) {
+      if (state.sortKeys === true) {
         objectKeyList.sort();
-      } else if (typeof state2.sortKeys === "function") {
-        objectKeyList.sort(state2.sortKeys);
-      } else if (state2.sortKeys) {
+      } else if (typeof state.sortKeys === "function") {
+        objectKeyList.sort(state.sortKeys);
+      } else if (state.sortKeys) {
         throw new YAMLException("sortKeys must be a boolean or a function");
       }
       for (let index = 0, length = objectKeyList.length; index < length; index += 1) {
         let pairBuffer = "";
         if (!compact || _result !== "") {
-          pairBuffer += generateNextLine(state2, level);
+          pairBuffer += generateNextLine(state, level);
         }
         const objectKey = objectKeyList[index];
         let objectValue = object[objectKey];
-        if (state2.replacer) {
-          objectValue = state2.replacer.call(object, objectKey, objectValue);
+        if (state.replacer) {
+          objectValue = state.replacer.call(object, objectKey, objectValue);
         }
-        if (!writeNode(state2, level + 1, objectKey, true, true, true)) {
+        if (!writeNode(state, level + 1, objectKey, true, true, true)) {
           continue;
         }
-        const explicitPair = state2.tag !== null && state2.tag !== "?" || state2.dump && state2.dump.length > 1024;
+        const explicitPair = state.tag !== null && state.tag !== "?" || state.dump && state.dump.length > 1024;
         if (explicitPair) {
-          if (state2.dump && CHAR_LINE_FEED === state2.dump.charCodeAt(0)) {
+          if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
             pairBuffer += "?";
           } else {
             pairBuffer += "? ";
           }
         }
-        pairBuffer += state2.dump;
+        pairBuffer += state.dump;
         if (explicitPair) {
-          pairBuffer += generateNextLine(state2, level);
+          pairBuffer += generateNextLine(state, level);
         }
-        if (!writeNode(state2, level + 1, objectValue, true, explicitPair)) {
+        if (!writeNode(state, level + 1, objectValue, true, explicitPair)) {
           continue;
         }
-        if (state2.dump && CHAR_LINE_FEED === state2.dump.charCodeAt(0)) {
+        if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
           pairBuffer += ":";
         } else {
           pairBuffer += ": ";
         }
-        pairBuffer += state2.dump;
+        pairBuffer += state.dump;
         _result += pairBuffer;
       }
-      state2.tag = _tag;
-      state2.dump = _result || "{}";
+      state.tag = _tag;
+      state.dump = _result || "{}";
     }
-    function detectType(state2, object, explicit) {
-      const typeList = explicit ? state2.explicitTypes : state2.implicitTypes;
+    function detectType(state, object, explicit) {
+      const typeList = explicit ? state.explicitTypes : state.implicitTypes;
       for (let index = 0, length = typeList.length; index < length; index += 1) {
         const type = typeList[index];
         if ((type.instanceOf || type.predicate) && (!type.instanceOf || typeof object === "object" && object instanceof type.instanceOf) && (!type.predicate || type.predicate(object))) {
           if (explicit) {
             if (type.multi && type.representName) {
-              state2.tag = type.representName(object);
+              state.tag = type.representName(object);
             } else {
-              state2.tag = type.tag;
+              state.tag = type.tag;
             }
           } else {
-            state2.tag = "?";
+            state.tag = "?";
           }
           if (type.represent) {
-            const style = state2.styleMap[type.tag] || type.defaultStyle;
+            const style = state.styleMap[type.tag] || type.defaultStyle;
             let _result;
             if (_toString.call(type.represent) === "[object Function]") {
               _result = type.represent(object, style);
@@ -27553,103 +27610,103 @@ var require_dumper = __commonJS({
             } else {
               throw new YAMLException("!<" + type.tag + '> tag resolver accepts not "' + style + '" style');
             }
-            state2.dump = _result;
+            state.dump = _result;
           }
           return true;
         }
       }
       return false;
     }
-    function writeNode(state2, level, object, block, compact, iskey, isblockseq) {
-      state2.tag = null;
-      state2.dump = object;
-      if (!detectType(state2, object, false)) {
-        detectType(state2, object, true);
+    function writeNode(state, level, object, block, compact, iskey, isblockseq) {
+      state.tag = null;
+      state.dump = object;
+      if (!detectType(state, object, false)) {
+        detectType(state, object, true);
       }
-      const type = _toString.call(state2.dump);
+      const type = _toString.call(state.dump);
       const inblock = block;
       if (block) {
-        block = state2.flowLevel < 0 || state2.flowLevel > level;
+        block = state.flowLevel < 0 || state.flowLevel > level;
       }
       const objectOrArray = type === "[object Object]" || type === "[object Array]";
       let duplicateIndex;
       let duplicate;
       if (objectOrArray) {
-        duplicateIndex = state2.duplicates.indexOf(object);
+        duplicateIndex = state.duplicates.indexOf(object);
         duplicate = duplicateIndex !== -1;
       }
-      if (state2.tag !== null && state2.tag !== "?" || duplicate || state2.indent !== 2 && level > 0) {
+      if (state.tag !== null && state.tag !== "?" || duplicate || state.indent !== 2 && level > 0) {
         compact = false;
       }
-      if (duplicate && state2.usedDuplicates[duplicateIndex]) {
-        state2.dump = "*ref_" + duplicateIndex;
+      if (duplicate && state.usedDuplicates[duplicateIndex]) {
+        state.dump = "*ref_" + duplicateIndex;
       } else {
-        if (objectOrArray && duplicate && !state2.usedDuplicates[duplicateIndex]) {
-          state2.usedDuplicates[duplicateIndex] = true;
+        if (objectOrArray && duplicate && !state.usedDuplicates[duplicateIndex]) {
+          state.usedDuplicates[duplicateIndex] = true;
         }
         if (type === "[object Object]") {
-          if (block && Object.keys(state2.dump).length !== 0) {
-            writeBlockMapping(state2, level, state2.dump, compact);
+          if (block && Object.keys(state.dump).length !== 0) {
+            writeBlockMapping(state, level, state.dump, compact);
             if (duplicate) {
-              state2.dump = "&ref_" + duplicateIndex + state2.dump;
+              state.dump = "&ref_" + duplicateIndex + state.dump;
             }
           } else {
-            writeFlowMapping(state2, level, state2.dump);
+            writeFlowMapping(state, level, state.dump);
             if (duplicate) {
-              state2.dump = "&ref_" + duplicateIndex + " " + state2.dump;
+              state.dump = "&ref_" + duplicateIndex + " " + state.dump;
             }
           }
         } else if (type === "[object Array]") {
-          if (block && state2.dump.length !== 0) {
-            if (state2.noArrayIndent && !isblockseq && level > 0) {
-              writeBlockSequence(state2, level - 1, state2.dump, compact);
+          if (block && state.dump.length !== 0) {
+            if (state.noArrayIndent && !isblockseq && level > 0) {
+              writeBlockSequence(state, level - 1, state.dump, compact);
             } else {
-              writeBlockSequence(state2, level, state2.dump, compact);
+              writeBlockSequence(state, level, state.dump, compact);
             }
             if (duplicate) {
-              state2.dump = "&ref_" + duplicateIndex + state2.dump;
+              state.dump = "&ref_" + duplicateIndex + state.dump;
             }
           } else {
-            writeFlowSequence(state2, level, state2.dump);
+            writeFlowSequence(state, level, state.dump);
             if (duplicate) {
-              state2.dump = "&ref_" + duplicateIndex + " " + state2.dump;
+              state.dump = "&ref_" + duplicateIndex + " " + state.dump;
             }
           }
         } else if (type === "[object String]") {
-          if (state2.tag !== "?") {
-            writeScalar(state2, state2.dump, level, iskey, inblock);
+          if (state.tag !== "?") {
+            writeScalar(state, state.dump, level, iskey, inblock);
           }
         } else if (type === "[object Undefined]") {
           return false;
         } else {
-          if (state2.skipInvalid) return false;
+          if (state.skipInvalid) return false;
           throw new YAMLException("unacceptable kind of an object to dump " + type);
         }
-        if (state2.tag !== null && state2.tag !== "?") {
+        if (state.tag !== null && state.tag !== "?") {
           let tagStr = encodeURI(
-            state2.tag[0] === "!" ? state2.tag.slice(1) : state2.tag
+            state.tag[0] === "!" ? state.tag.slice(1) : state.tag
           ).replace(/!/g, "%21");
-          if (state2.tag[0] === "!") {
+          if (state.tag[0] === "!") {
             tagStr = "!" + tagStr;
           } else if (tagStr.slice(0, 18) === "tag:yaml.org,2002:") {
             tagStr = "!!" + tagStr.slice(18);
           } else {
             tagStr = "!<" + tagStr + ">";
           }
-          state2.dump = tagStr + " " + state2.dump;
+          state.dump = tagStr + " " + state.dump;
         }
       }
       return true;
     }
-    function getDuplicateReferences(object, state2) {
+    function getDuplicateReferences(object, state) {
       const objects = [];
       const duplicatesIndexes = [];
       inspectNode(object, objects, duplicatesIndexes);
       const length = duplicatesIndexes.length;
       for (let index = 0; index < length; index += 1) {
-        state2.duplicates.push(objects[duplicatesIndexes[index]]);
+        state.duplicates.push(objects[duplicatesIndexes[index]]);
       }
-      state2.usedDuplicates = new Array(length);
+      state.usedDuplicates = new Array(length);
     }
     function inspectNode(object, objects, duplicatesIndexes) {
       if (object !== null && typeof object === "object") {
@@ -27675,13 +27732,13 @@ var require_dumper = __commonJS({
     }
     function dump(input, options) {
       options = options || {};
-      const state2 = new State(options);
-      if (!state2.noRefs) getDuplicateReferences(input, state2);
+      const state = new State(options);
+      if (!state.noRefs) getDuplicateReferences(input, state);
       let value = input;
-      if (state2.replacer) {
-        value = state2.replacer.call({ "": value }, "", value);
+      if (state.replacer) {
+        value = state.replacer.call({ "": value }, "", value);
       }
-      if (writeNode(state2, 0, value, true, true)) return state2.dump + "\n";
+      if (writeNode(state, 0, value, true, true)) return state.dump + "\n";
       return "";
     }
     module2.exports.dump = dump;
@@ -30403,7 +30460,7 @@ var require_DownloadedUpdateHelper = __commonJS({
     var fs_1 = require("fs");
     var isEqual = require_lodash();
     var fs_extra_1 = require_lib();
-    var path16 = require("path");
+    var path20 = require("path");
     var DownloadedUpdateHelper = class {
       constructor(cacheDir) {
         this.cacheDir = cacheDir;
@@ -30423,7 +30480,7 @@ var require_DownloadedUpdateHelper = __commonJS({
         return this._packageFile;
       }
       get cacheDirForPendingUpdate() {
-        return path16.join(this.cacheDir, "pending");
+        return path20.join(this.cacheDir, "pending");
       }
       async validateDownloadedPath(updateFile, updateInfo, fileInfo, logger) {
         if (this.versionInfo != null && this.file === updateFile && this.fileInfo != null) {
@@ -30502,7 +30559,7 @@ var require_DownloadedUpdateHelper = __commonJS({
           await this.cleanCacheDirForPendingUpdate();
           return null;
         }
-        const updateFile = path16.join(this.cacheDirForPendingUpdate, cachedInfo.fileName);
+        const updateFile = path20.join(this.cacheDirForPendingUpdate, cachedInfo.fileName);
         if (!await (0, fs_extra_1.pathExists)(updateFile)) {
           logger.info("Cached update file doesn't exist");
           return null;
@@ -30517,7 +30574,7 @@ var require_DownloadedUpdateHelper = __commonJS({
         return updateFile;
       }
       getUpdateInfoFile() {
-        return path16.join(this.cacheDirForPendingUpdate, "update-info.json");
+        return path20.join(this.cacheDirForPendingUpdate, "update-info.json");
       }
     };
     exports2.DownloadedUpdateHelper = DownloadedUpdateHelper;
@@ -30537,7 +30594,7 @@ var require_DownloadedUpdateHelper = __commonJS({
     }
     async function createTempUpdateFile(name, cacheDir, log) {
       let nameCounter = 0;
-      let result = path16.join(cacheDir, name);
+      let result = path20.join(cacheDir, name);
       for (let i = 0; i < 3; i++) {
         try {
           await (0, fs_extra_1.unlink)(result);
@@ -30547,7 +30604,7 @@ var require_DownloadedUpdateHelper = __commonJS({
             return result;
           }
           log.warn(`Error on remove temp update file: ${e}`);
-          result = path16.join(cacheDir, `${nameCounter++}-${name}`);
+          result = path20.join(cacheDir, `${nameCounter++}-${name}`);
         }
       }
       return result;
@@ -30561,17 +30618,17 @@ var require_AppAdapter = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getAppCacheDir = getAppCacheDir;
-    var path16 = require("path");
+    var path20 = require("path");
     var os_1 = require("os");
     function getAppCacheDir() {
       const homedir = (0, os_1.homedir)();
       let result;
       if (process.platform === "win32") {
-        result = process.env["LOCALAPPDATA"] || path16.join(homedir, "AppData", "Local");
+        result = process.env["LOCALAPPDATA"] || path20.join(homedir, "AppData", "Local");
       } else if (process.platform === "darwin") {
-        result = path16.join(homedir, "Library", "Caches");
+        result = path20.join(homedir, "Library", "Caches");
       } else {
-        result = process.env["XDG_CACHE_HOME"] || path16.join(homedir, ".cache");
+        result = process.env["XDG_CACHE_HOME"] || path20.join(homedir, ".cache");
       }
       return result;
     }
@@ -30584,11 +30641,11 @@ var require_ElectronAppAdapter = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ElectronAppAdapter = void 0;
-    var path16 = require("path");
+    var path20 = require("path");
     var AppAdapter_1 = require_AppAdapter();
     var ElectronAppAdapter = class {
-      constructor(app8 = require("electron").app) {
-        this.app = app8;
+      constructor(app9 = require("electron").app) {
+        this.app = app9;
       }
       whenReady() {
         return this.app.whenReady();
@@ -30603,7 +30660,7 @@ var require_ElectronAppAdapter = __commonJS({
         return this.app.isPackaged === true;
       }
       get appUpdateConfigPath() {
-        return this.isPackaged ? path16.join(process.resourcesPath, "app-update.yml") : path16.join(this.app.getAppPath(), "dev-app-update.yml");
+        return this.isPackaged ? path20.join(process.resourcesPath, "app-update.yml") : path20.join(this.app.getAppPath(), "dev-app-update.yml");
       }
       get userDataPath() {
         return this.app.getPath("userData");
@@ -31544,7 +31601,7 @@ var require_PrivateGitHubProvider = __commonJS({
     exports2.PrivateGitHubProvider = void 0;
     var builder_util_runtime_1 = require_out();
     var js_yaml_1 = require_js_yaml();
-    var path16 = require("path");
+    var path20 = require("path");
     var url_1 = require("url");
     var util_1 = require_util3();
     var GitHubProvider_1 = require_GitHubProvider();
@@ -31615,7 +31672,7 @@ var require_PrivateGitHubProvider = __commonJS({
       }
       resolveFiles(updateInfo) {
         return (0, Provider_1.getFileList)(updateInfo).map((it) => {
-          const name = path16.posix.basename(it.url).replace(/ /g, "-");
+          const name = path20.posix.basename(it.url).replace(/ /g, "-");
           const asset = updateInfo.assets.find((it2) => it2 != null && it2.name === name);
           if (asset == null) {
             throw (0, builder_util_runtime_1.newError)(`Cannot find asset "${name}" in: ${JSON.stringify(updateInfo.assets, null, 2)}`, "ERR_UPDATER_ASSET_NOT_FOUND");
@@ -32566,7 +32623,7 @@ var require_AppUpdater = __commonJS({
     var fs_extra_1 = require_lib();
     var js_yaml_1 = require_js_yaml();
     var lazy_val_1 = require_main();
-    var path16 = require("path");
+    var path20 = require("path");
     var semver_1 = require_semver4();
     var DownloadedUpdateHelper_1 = require_DownloadedUpdateHelper();
     var ElectronAppAdapter_1 = require_ElectronAppAdapter();
@@ -32656,7 +32713,7 @@ var require_AppUpdater = __commonJS({
           this._isUserWithinRollout = value;
         }
       }
-      constructor(options, app8) {
+      constructor(options, app9) {
         super();
         this.autoDownload = true;
         this.autoInstallOnAppQuit = true;
@@ -32686,11 +32743,11 @@ var require_AppUpdater = __commonJS({
         this.on("error", (error) => {
           this._logger.error(`Error: ${error.stack || error.message}`);
         });
-        if (app8 == null) {
+        if (app9 == null) {
           this.app = new ElectronAppAdapter_1.ElectronAppAdapter();
           this.httpExecutor = new electronHttpExecutor_1.ElectronHttpExecutor((authInfo, callback) => this.emit("login", authInfo, callback));
         } else {
-          this.app = app8;
+          this.app = app9;
           this.httpExecutor = null;
         }
         const currentVersionString = this.app.version;
@@ -32964,7 +33021,7 @@ var require_AppUpdater = __commonJS({
         return this.computeFinalHeaders({ accept: "*/*" });
       }
       async getOrCreateStagingUserId() {
-        const file = path16.join(this.app.userDataPath, ".updaterId");
+        const file = path20.join(this.app.userDataPath, ".updaterId");
         try {
           const id2 = await (0, fs_extra_1.readFile)(file, "utf-8");
           if (builder_util_runtime_1.UUID.check(id2)) {
@@ -33008,7 +33065,7 @@ var require_AppUpdater = __commonJS({
           if (dirName == null) {
             logger.error("updaterCacheDirName is not specified in app-update.yml Was app build using at least electron-builder 20.34.0?");
           }
-          const cacheDir = path16.join(this.app.baseCachePath, dirName || this.app.name);
+          const cacheDir = path20.join(this.app.baseCachePath, dirName || this.app.name);
           if (logger.debug != null) {
             logger.debug(`updater cache dir: ${cacheDir}`);
           }
@@ -33034,26 +33091,26 @@ var require_AppUpdater = __commonJS({
         function getCacheUpdateFileName() {
           const urlPath = decodeURIComponent(taskOptions.fileInfo.url.pathname);
           if (urlPath.toLowerCase().endsWith(`.${taskOptions.fileExtension.toLowerCase()}`)) {
-            return path16.basename(urlPath);
+            return path20.basename(urlPath);
           } else {
-            return path16.basename(taskOptions.fileInfo.info.url);
+            return path20.basename(taskOptions.fileInfo.info.url);
           }
         }
         const downloadedUpdateHelper = await this.getOrCreateDownloadHelper();
         const cacheDir = downloadedUpdateHelper.cacheDirForPendingUpdate;
         await (0, fs_extra_1.mkdir)(cacheDir, { recursive: true });
         const updateFileName = getCacheUpdateFileName();
-        let updateFile = path16.join(cacheDir, updateFileName);
-        const packageFile = packageInfo == null ? null : path16.join(cacheDir, `package-${version}${path16.extname(packageInfo.path) || ".7z"}`);
+        let updateFile = path20.join(cacheDir, updateFileName);
+        const packageFile = packageInfo == null ? null : path20.join(cacheDir, `package-${version}${path20.extname(packageInfo.path) || ".7z"}`);
         const done = async (isSaveCache) => {
           await downloadedUpdateHelper.setDownloadedFile(updateFile, packageFile, updateInfo, fileInfo, updateFileName, isSaveCache);
           await taskOptions.done({
             ...updateInfo,
             downloadedFile: updateFile
           });
-          const currentBlockMapFile = path16.join(cacheDir, "current.blockmap");
+          const currentBlockMapFile = path20.join(cacheDir, "current.blockmap");
           if (await (0, fs_extra_1.pathExists)(currentBlockMapFile)) {
-            await (0, fs_extra_1.copyFile)(currentBlockMapFile, path16.join(downloadedUpdateHelper.cacheDir, "current.blockmap"));
+            await (0, fs_extra_1.copyFile)(currentBlockMapFile, path20.join(downloadedUpdateHelper.cacheDir, "current.blockmap"));
           }
           return packageFile == null ? [updateFile] : [updateFile, packageFile];
         };
@@ -33118,7 +33175,7 @@ var require_AppUpdater = __commonJS({
           };
           const downloadOptions = {
             newUrl: fileInfo.url,
-            oldFile: path16.join(this.downloadedUpdateHelper.cacheDir, oldInstallerFileName),
+            oldFile: path20.join(this.downloadedUpdateHelper.cacheDir, oldInstallerFileName),
             logger: this._logger,
             newFile: installerPath,
             isUseMultipleRangeRequest: provider2.isUseMultipleRangeRequest,
@@ -33129,11 +33186,11 @@ var require_AppUpdater = __commonJS({
             downloadOptions.onProgress = (it) => this.emit(types_1.DOWNLOAD_PROGRESS, it);
           }
           const saveBlockMapToCacheDir = async (blockMapData, cacheDir) => {
-            const blockMapFile = path16.join(cacheDir, "current.blockmap");
+            const blockMapFile = path20.join(cacheDir, "current.blockmap");
             await (0, fs_extra_1.outputFile)(blockMapFile, (0, zlib_1.gzipSync)(JSON.stringify(blockMapData)));
           };
           const getBlockMapFromCacheDir = async (cacheDir) => {
-            const blockMapFile = path16.join(cacheDir, "current.blockmap");
+            const blockMapFile = path20.join(cacheDir, "current.blockmap");
             try {
               if (await (0, fs_extra_1.pathExists)(blockMapFile)) {
                 return JSON.parse((0, zlib_1.gunzipSync)(await (0, fs_extra_1.readFile)(blockMapFile)).toString());
@@ -33187,11 +33244,11 @@ var require_BaseUpdater = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.BaseUpdater = void 0;
     var child_process_1 = require("child_process");
-    var path16 = require("path");
+    var path20 = require("path");
     var AppUpdater_1 = require_AppUpdater();
     var BaseUpdater = class extends AppUpdater_1.AppUpdater {
-      constructor(options, app8) {
-        super(options, app8);
+      constructor(options, app9) {
+        super(options, app9);
         this.quitAndInstallCalled = false;
         this.quitHandlerAdded = false;
       }
@@ -33274,7 +33331,7 @@ var require_BaseUpdater = __commonJS({
        * a trusted package manager binary.
        */
       sanitizeEnvPath(envPath) {
-        return envPath.split(path16.delimiter).filter((dir) => path16.isAbsolute(dir)).join(path16.delimiter);
+        return envPath.split(path20.delimiter).filter((dir) => path20.isAbsolute(dir)).join(path20.delimiter);
       }
       spawnSyncLog(cmd, args = [], env = {}) {
         var _a;
@@ -33376,14 +33433,14 @@ var require_AppImageUpdater = __commonJS({
     var child_process_1 = require("child_process");
     var fs_extra_1 = require_lib();
     var fs_1 = require("fs");
-    var path16 = require("path");
+    var path20 = require("path");
     var BaseUpdater_1 = require_BaseUpdater();
     var FileWithEmbeddedBlockMapDifferentialDownloader_1 = require_FileWithEmbeddedBlockMapDifferentialDownloader();
     var Provider_1 = require_Provider();
     var types_1 = require_types3();
     var AppImageUpdater = class extends BaseUpdater_1.BaseUpdater {
-      constructor(options, app8) {
-        super(options, app8);
+      constructor(options, app9) {
+        super(options, app9);
       }
       isUpdaterActive() {
         if (process.env["APPIMAGE"] == null && !this.forceDevUpdateConfig) {
@@ -33442,21 +33499,21 @@ var require_AppImageUpdater = __commonJS({
         if (appImageFile == null) {
           throw (0, builder_util_runtime_1.newError)("APPIMAGE env is not defined", "ERR_UPDATER_OLD_FILE_NOT_FOUND");
         }
-        if (!path16.isAbsolute(appImageFile) || appImageFile.includes("\0")) {
+        if (!path20.isAbsolute(appImageFile) || appImageFile.includes("\0")) {
           throw (0, builder_util_runtime_1.newError)(`APPIMAGE env is not a valid absolute path: "${appImageFile}"`, "ERR_UPDATER_OLD_FILE_NOT_FOUND");
         }
         (0, fs_1.unlinkSync)(appImageFile);
         let destination;
-        const existingBaseName = path16.basename(appImageFile);
+        const existingBaseName = path20.basename(appImageFile);
         const installerPath = this.installerPath;
         if (installerPath == null) {
           this.dispatchError(new Error("No update filepath provided, can't quit and install"));
           return false;
         }
-        if (path16.basename(installerPath) === existingBaseName || !/\d+\.\d+\.\d+/.test(existingBaseName)) {
+        if (path20.basename(installerPath) === existingBaseName || !/\d+\.\d+\.\d+/.test(existingBaseName)) {
           destination = appImageFile;
         } else {
-          destination = path16.join(path16.dirname(appImageFile), path16.basename(installerPath));
+          destination = path20.join(path20.dirname(appImageFile), path20.basename(installerPath));
         }
         (0, child_process_1.execFileSync)("mv", ["-f", installerPath, destination]);
         if (destination !== appImageFile) {
@@ -33488,8 +33545,8 @@ var require_LinuxUpdater = __commonJS({
     var BaseUpdater_1 = require_BaseUpdater();
     var SAFE_PM_REGEX = /^[a-zA-Z0-9_-]+$/;
     var LinuxUpdater = class extends BaseUpdater_1.BaseUpdater {
-      constructor(options, app8) {
-        super(options, app8);
+      constructor(options, app9) {
+        super(options, app9);
       }
       /**
        * Returns true if the current process is running as root.
@@ -33600,8 +33657,8 @@ var require_DebUpdater = __commonJS({
     var types_1 = require_types3();
     var LinuxUpdater_1 = require_LinuxUpdater();
     var DebUpdater = class _DebUpdater extends LinuxUpdater_1.LinuxUpdater {
-      constructor(options, app8) {
-        super(options, app8);
+      constructor(options, app9) {
+        super(options, app9);
       }
       /*** @private */
       doDownloadUpdate(downloadUpdateOptions) {
@@ -33684,8 +33741,8 @@ var require_PacmanUpdater = __commonJS({
     var Provider_1 = require_Provider();
     var LinuxUpdater_1 = require_LinuxUpdater();
     var PacmanUpdater = class _PacmanUpdater extends LinuxUpdater_1.LinuxUpdater {
-      constructor(options, app8) {
-        super(options, app8);
+      constructor(options, app9) {
+        super(options, app9);
       }
       /*** @private */
       doDownloadUpdate(downloadUpdateOptions) {
@@ -33751,8 +33808,8 @@ var require_RpmUpdater = __commonJS({
     var Provider_1 = require_Provider();
     var LinuxUpdater_1 = require_LinuxUpdater();
     var RpmUpdater = class _RpmUpdater extends LinuxUpdater_1.LinuxUpdater {
-      constructor(options, app8) {
-        super(options, app8);
+      constructor(options, app9) {
+        super(options, app9);
       }
       /*** @private */
       doDownloadUpdate(downloadUpdateOptions) {
@@ -33819,15 +33876,15 @@ var require_MacUpdater = __commonJS({
     var builder_util_runtime_1 = require_out();
     var fs_extra_1 = require_lib();
     var fs_1 = require("fs");
-    var path16 = require("path");
+    var path20 = require("path");
     var http_1 = require("http");
     var AppUpdater_1 = require_AppUpdater();
     var Provider_1 = require_Provider();
     var child_process_1 = require("child_process");
     var crypto_1 = require("crypto");
     var MacUpdater = class _MacUpdater extends AppUpdater_1.AppUpdater {
-      constructor(options, app8) {
-        super(options, app8);
+      constructor(options, app9) {
+        super(options, app9);
         this.nativeUpdater = require("electron").autoUpdater;
         this.squirrelDownloadedUpdate = false;
         this.nativeUpdater.on("error", (it) => {
@@ -33903,7 +33960,7 @@ var require_MacUpdater = __commonJS({
           fileInfo: zipFileInfo,
           downloadUpdateOptions,
           task: async (destinationFile, downloadOptions) => {
-            const cachedUpdateFilePath = path16.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
+            const cachedUpdateFilePath = path20.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
             const canDifferentialDownload = () => {
               if (!(0, fs_extra_1.pathExistsSync)(cachedUpdateFilePath)) {
                 log.info("Unable to locate previous update.zip for differential download (is this first install?), falling back to full download");
@@ -33922,7 +33979,7 @@ var require_MacUpdater = __commonJS({
           done: async (event) => {
             if (!downloadUpdateOptions.disableDifferentialDownload) {
               try {
-                const cachedUpdateFilePath = path16.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
+                const cachedUpdateFilePath = path20.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
                 await (0, fs_extra_1.copyFile)(event.downloadedFile, cachedUpdateFilePath);
               } catch (error) {
                 this._logger.warn(`Unable to copy file for caching for future differential downloads: ${error.message}`);
@@ -34065,7 +34122,7 @@ var require_windowsExecutableCodeSignatureVerifier = __commonJS({
     var builder_util_runtime_1 = require_out();
     var child_process_1 = require("child_process");
     var os = require("os");
-    var path16 = require("path");
+    var path20 = require("path");
     function preparePowerShellExec(command, timeout) {
       const executable = `set "PSModulePath=" & chcp 65001 >NUL & powershell.exe`;
       const args = ["-NoProfile", "-NonInteractive", "-InputFormat", "None", "-Command", command];
@@ -34090,8 +34147,8 @@ var require_windowsExecutableCodeSignatureVerifier = __commonJS({
             const data = parseOut(stdout);
             if (data.Status === 0) {
               try {
-                const normlaizedUpdateFilePath = path16.normalize(data.Path);
-                const normalizedTempUpdateFile = path16.normalize(unescapedTempUpdateFile);
+                const normlaizedUpdateFilePath = path20.normalize(data.Path);
+                const normalizedTempUpdateFile = path20.normalize(unescapedTempUpdateFile);
                 logger.info(`LiteralPath: ${normlaizedUpdateFilePath}. Update Path: ${normalizedTempUpdateFile}`);
                 if (normlaizedUpdateFilePath !== normalizedTempUpdateFile) {
                   handleError(logger, new Error(`LiteralPath of ${normlaizedUpdateFilePath} is different than ${normalizedTempUpdateFile}`), stderr, reject);
@@ -34178,7 +34235,7 @@ var require_NsisUpdater = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.NsisUpdater = void 0;
     var builder_util_runtime_1 = require_out();
-    var path16 = require("path");
+    var path20 = require("path");
     var BaseUpdater_1 = require_BaseUpdater();
     var FileWithEmbeddedBlockMapDifferentialDownloader_1 = require_FileWithEmbeddedBlockMapDifferentialDownloader();
     var types_1 = require_types3();
@@ -34187,8 +34244,8 @@ var require_NsisUpdater = __commonJS({
     var windowsExecutableCodeSignatureVerifier_1 = require_windowsExecutableCodeSignatureVerifier();
     var url_1 = require("url");
     var NsisUpdater = class extends BaseUpdater_1.BaseUpdater {
-      constructor(options, app8) {
-        super(options, app8);
+      constructor(options, app9) {
+        super(options, app9);
         this._verifyUpdateCodeSignature = (publisherNames, unescapedTempUpdateFile) => (0, windowsExecutableCodeSignatureVerifier_1.verifySignature)(publisherNames, unescapedTempUpdateFile, this._logger);
       }
       /**
@@ -34287,7 +34344,7 @@ var require_NsisUpdater = __commonJS({
           args.push(`--package-file=${packagePath}`);
         }
         const callUsingElevation = () => {
-          this.spawnLog(path16.join(process.resourcesPath, "elevate.exe"), [installerPath].concat(args)).catch((e) => this.dispatchError(e));
+          this.spawnLog(path20.join(process.resourcesPath, "elevate.exe"), [installerPath].concat(args)).catch((e) => this.dispatchError(e));
         };
         if (options.isAdminRightsRequired) {
           this._logger.info("isAdminRightsRequired is set to true, run installer using elevate.exe");
@@ -34314,7 +34371,7 @@ var require_NsisUpdater = __commonJS({
         try {
           const downloadOptions = {
             newUrl: new url_1.URL(packageInfo.path),
-            oldFile: path16.join(this.downloadedUpdateHelper.cacheDir, builder_util_runtime_1.CURRENT_APP_PACKAGE_FILE_NAME),
+            oldFile: path20.join(this.downloadedUpdateHelper.cacheDir, builder_util_runtime_1.CURRENT_APP_PACKAGE_FILE_NAME),
             logger: this._logger,
             newFile: packagePath,
             requestHeaders: this.requestHeaders,
@@ -34359,7 +34416,7 @@ var require_main2 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.NsisUpdater = exports2.MacUpdater = exports2.RpmUpdater = exports2.PacmanUpdater = exports2.DebUpdater = exports2.AppImageUpdater = exports2.Provider = exports2.NoOpLogger = exports2.AppUpdater = exports2.BaseUpdater = void 0;
     var fs_extra_1 = require_lib();
-    var path16 = require("path");
+    var path20 = require("path");
     var BaseUpdater_1 = require_BaseUpdater();
     Object.defineProperty(exports2, "BaseUpdater", { enumerable: true, get: function() {
       return BaseUpdater_1.BaseUpdater;
@@ -34409,7 +34466,7 @@ var require_main2 = __commonJS({
       } else {
         _autoUpdater = new (require_AppImageUpdater()).AppImageUpdater();
         try {
-          const identity = path16.join(process.resourcesPath, "package-type");
+          const identity = path20.join(process.resourcesPath, "package-type");
           if (!(0, fs_extra_1.existsSync)(identity)) {
             return _autoUpdater;
           }
@@ -34446,12 +34503,12 @@ var require_main2 = __commonJS({
 var require_path_is_absolute = __commonJS({
   "node_modules/path-is-absolute/index.js"(exports2, module2) {
     "use strict";
-    function posix(path16) {
-      return path16.charAt(0) === "/";
+    function posix(path20) {
+      return path20.charAt(0) === "/";
     }
-    function win32(path16) {
+    function win32(path20) {
       var splitDeviceRe = /^([a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?([\\\/])?([\s\S]*?)$/;
-      var result = splitDeviceRe.exec(path16);
+      var result = splitDeviceRe.exec(path20);
       var device = result[1] || "";
       var isUnc = Boolean(device && device.charAt(1) !== ":");
       return Boolean(result[2] || isUnc);
@@ -34466,8 +34523,8 @@ var require_path_is_absolute = __commonJS({
 var require_registry = __commonJS({
   "node_modules/winreg/lib/registry.js"(exports2, module2) {
     var util = require("util");
-    var path16 = require("path");
-    var spawn2 = require("child_process").spawn;
+    var path20 = require("path");
+    var spawn3 = require("child_process").spawn;
     var log = function() {
     };
     var HKLM = "HKLM";
@@ -34535,7 +34592,7 @@ var require_registry = __commonJS({
     }
     function getRegExePath() {
       if (process.platform === "win32") {
-        return path16.join(process.env.windir, "system32", "reg.exe");
+        return path20.join(process.env.windir, "system32", "reg.exe");
       } else {
         return "REG";
       }
@@ -34622,7 +34679,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["QUERY", this.path];
       pushArch(args, this.arch);
-      var proc = spawn2(getRegExePath(), args, {
+      var proc = spawn3(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -34672,7 +34729,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["QUERY", this.path];
       pushArch(args, this.arch);
-      var proc = spawn2(getRegExePath(), args, {
+      var proc = spawn3(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -34730,7 +34787,7 @@ var require_registry = __commonJS({
       else
         args = args.concat(["/v", name]);
       pushArch(args, this.arch);
-      var proc = spawn2(getRegExePath(), args, {
+      var proc = spawn3(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -34785,7 +34842,7 @@ var require_registry = __commonJS({
         args = args.concat(["/v", name]);
       args = args.concat(["/t", type, "/d", value, "/f"]);
       pushArch(args, this.arch);
-      var proc = spawn2(getRegExePath(), args, {
+      var proc = spawn3(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -34815,7 +34872,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = name ? ["DELETE", this.path, "/f", "/v", name] : ["DELETE", this.path, "/f", "/ve"];
       pushArch(args, this.arch);
-      var proc = spawn2(getRegExePath(), args, {
+      var proc = spawn3(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -34845,7 +34902,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["DELETE", this.path, "/f", "/va"];
       pushArch(args, this.arch);
-      var proc = spawn2(getRegExePath(), args, {
+      var proc = spawn3(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -34876,7 +34933,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["DELETE", this.path, "/f"];
       pushArch(args, this.arch);
-      var proc = spawn2(getRegExePath(), args, {
+      var proc = spawn3(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -34906,7 +34963,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["ADD", this.path, "/f"];
       pushArch(args, this.arch);
-      var proc = spawn2(getRegExePath(), args, {
+      var proc = spawn3(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -34963,11 +35020,11 @@ var require_registry = __commonJS({
 var require_AutoLaunchWindows = __commonJS({
   "node_modules/auto-launch/dist/AutoLaunchWindows.js"(exports2, module2) {
     var Winreg;
-    var fs11;
-    var path16;
+    var fs12;
+    var path20;
     var regKey;
-    fs11 = require("fs");
-    path16 = require("path");
+    fs12 = require("fs");
+    path20 = require("path");
     Winreg = require_registry();
     regKey = new Winreg({
       hive: Winreg.HKCU,
@@ -34982,10 +35039,10 @@ var require_AutoLaunchWindows = __commonJS({
           var args, pathToAutoLaunchedApp, ref, updateDotExe;
           pathToAutoLaunchedApp = appPath;
           args = "";
-          updateDotExe = path16.join(path16.dirname(process.execPath), "..", "update.exe");
-          if (((ref = process.versions) != null ? ref.electron : void 0) != null && fs11.existsSync(updateDotExe)) {
+          updateDotExe = path20.join(path20.dirname(process.execPath), "..", "update.exe");
+          if (((ref = process.versions) != null ? ref.electron : void 0) != null && fs12.existsSync(updateDotExe)) {
             pathToAutoLaunchedApp = updateDotExe;
-            args = ' --processStart "' + path16.basename(process.execPath) + '"';
+            args = ' --processStart "' + path20.basename(process.execPath) + '"';
             if (isHiddenOnLaunch) {
               args += ' --process-start-args "--hidden"';
             }
@@ -35126,7 +35183,7 @@ var require_applescript_parser = __commonJS({
 // node_modules/applescript/lib/applescript.js
 var require_applescript = __commonJS({
   "node_modules/applescript/lib/applescript.js"(exports2) {
-    var spawn2 = require("child_process").spawn;
+    var spawn3 = require("child_process").spawn;
     exports2.Parsers = require_applescript_parser();
     var parse = exports2.Parsers.parse;
     exports2.osascript = "osascript";
@@ -35151,7 +35208,7 @@ var require_applescript = __commonJS({
       if (!isString) {
         args.push(strOrPath);
       }
-      var interpreter = spawn2(exports2.osascript, args);
+      var interpreter = spawn3(exports2.osascript, args);
       bufferBody(interpreter.stdout);
       bufferBody(interpreter.stderr);
       interpreter.on("exit", function(code) {
@@ -35198,8 +35255,8 @@ var require_untildify = __commonJS({
 // node_modules/mkdirp/index.js
 var require_mkdirp = __commonJS({
   "node_modules/mkdirp/index.js"(exports2, module2) {
-    var path16 = require("path");
-    var fs11 = require("fs");
+    var path20 = require("path");
+    var fs12 = require("fs");
     var _0777 = parseInt("0777", 8);
     module2.exports = mkdirP.mkdirp = mkdirP.mkdirP = mkdirP;
     function mkdirP(p, opts, f, made) {
@@ -35210,7 +35267,7 @@ var require_mkdirp = __commonJS({
         opts = { mode: opts };
       }
       var mode = opts.mode;
-      var xfs = opts.fs || fs11;
+      var xfs = opts.fs || fs12;
       if (mode === void 0) {
         mode = _0777;
       }
@@ -35218,7 +35275,7 @@ var require_mkdirp = __commonJS({
       var cb = f || /* istanbul ignore next */
       function() {
       };
-      p = path16.resolve(p);
+      p = path20.resolve(p);
       xfs.mkdir(p, mode, function(er) {
         if (!er) {
           made = made || p;
@@ -35226,8 +35283,8 @@ var require_mkdirp = __commonJS({
         }
         switch (er.code) {
           case "ENOENT":
-            if (path16.dirname(p) === p) return cb(er);
-            mkdirP(path16.dirname(p), opts, function(er2, made2) {
+            if (path20.dirname(p) === p) return cb(er);
+            mkdirP(path20.dirname(p), opts, function(er2, made2) {
               if (er2) cb(er2, made2);
               else mkdirP(p, opts, cb, made2);
             });
@@ -35249,19 +35306,19 @@ var require_mkdirp = __commonJS({
         opts = { mode: opts };
       }
       var mode = opts.mode;
-      var xfs = opts.fs || fs11;
+      var xfs = opts.fs || fs12;
       if (mode === void 0) {
         mode = _0777;
       }
       if (!made) made = null;
-      p = path16.resolve(p);
+      p = path20.resolve(p);
       try {
         xfs.mkdirSync(p, mode);
         made = made || p;
       } catch (err0) {
         switch (err0.code) {
           case "ENOENT":
-            made = sync(path16.dirname(p), opts, made);
+            made = sync(path20.dirname(p), opts, made);
             sync(p, opts, made);
             break;
           // In the case of any other error, just see if there's a dir
@@ -35286,9 +35343,9 @@ var require_mkdirp = __commonJS({
 // node_modules/auto-launch/dist/fileBasedUtilities.js
 var require_fileBasedUtilities = __commonJS({
   "node_modules/auto-launch/dist/fileBasedUtilities.js"(exports2, module2) {
-    var fs11;
+    var fs12;
     var mkdirp;
-    fs11 = require("fs");
+    fs12 = require("fs");
     mkdirp = require_mkdirp();
     module2.exports = {
       /* Public */
@@ -35300,7 +35357,7 @@ var require_fileBasedUtilities = __commonJS({
             if (mkdirErr != null) {
               return reject(mkdirErr);
             }
-            return fs11.writeFile(filePath, data, function(writeErr) {
+            return fs12.writeFile(filePath, data, function(writeErr) {
               if (writeErr != null) {
                 return reject(writeErr);
               }
@@ -35312,7 +35369,7 @@ var require_fileBasedUtilities = __commonJS({
       isEnabled: function(filePath) {
         return new Promise(/* @__PURE__ */ function(_this) {
           return function(resolve, reject) {
-            return fs11.stat(filePath, function(err, stat) {
+            return fs12.stat(filePath, function(err, stat) {
               if (err != null) {
                 return resolve(false);
               }
@@ -35324,11 +35381,11 @@ var require_fileBasedUtilities = __commonJS({
       removeFile: function(filePath) {
         return new Promise(/* @__PURE__ */ function(_this) {
           return function(resolve, reject) {
-            return fs11.stat(filePath, function(statErr) {
+            return fs12.stat(filePath, function(statErr) {
               if (statErr != null) {
                 return resolve();
               }
-              return fs11.unlink(filePath, function(unlinkErr) {
+              return fs12.unlink(filePath, function(unlinkErr) {
                 if (unlinkErr != null) {
                   return reject(unlinkErr);
                 }
@@ -35466,8 +35523,8 @@ var require_dist3 = __commonJS({
     isPathAbsolute = require_path_is_absolute();
     module2.exports = AutoLaunch2 = function() {
       function AutoLaunch3(arg) {
-        var isHidden, mac, name, path16, versions;
-        name = arg.name, isHidden = arg.isHidden, mac = arg.mac, path16 = arg.path;
+        var isHidden, mac, name, path20, versions;
+        name = arg.name, isHidden = arg.isHidden, mac = arg.mac, path20 = arg.path;
         this.fixOpts = bind(this.fixOpts, this);
         this.isEnabled = bind(this.isEnabled, this);
         this.disable = bind(this.disable, this);
@@ -35481,11 +35538,11 @@ var require_dist3 = __commonJS({
           mac: mac != null ? mac : {}
         };
         versions = typeof process !== "undefined" && process !== null ? process.versions : void 0;
-        if (path16 != null) {
-          if (!isPathAbsolute(path16)) {
+        if (path20 != null) {
+          if (!isPathAbsolute(path20)) {
             throw new Error("path must be absolute");
           }
-          this.opts.appPath = path16;
+          this.opts.appPath = path20;
         } else if (versions != null && (versions.nw != null || versions["node-webkit"] != null || versions.electron != null)) {
           this.opts.appPath = process.execPath;
         } else {
@@ -35512,12 +35569,12 @@ var require_dist3 = __commonJS({
       AutoLaunch3.prototype.isEnabled = function() {
         return this.api.isEnabled(this.opts.appName, this.opts.mac);
       };
-      AutoLaunch3.prototype.fixMacExecPath = function(path16, macOptions) {
-        path16 = path16.replace(/(^.+?[^\/]+?\.app)\/Contents\/(Frameworks\/((\1|[^\/]+?) Helper)\.app\/Contents\/MacOS\/\3|MacOS\/Electron)/, "$1");
+      AutoLaunch3.prototype.fixMacExecPath = function(path20, macOptions) {
+        path20 = path20.replace(/(^.+?[^\/]+?\.app)\/Contents\/(Frameworks\/((\1|[^\/]+?) Helper)\.app\/Contents\/MacOS\/\3|MacOS\/Electron)/, "$1");
         if (!macOptions.useLaunchAgent) {
-          path16 = path16.replace(/\.app\/Contents\/MacOS\/[^\/]*$/, ".app");
+          path20 = path20.replace(/\.app\/Contents\/MacOS\/[^\/]*$/, ".app");
         }
-        return path16;
+        return path20;
       };
       AutoLaunch3.prototype.fixOpts = function() {
         var tempPath;
@@ -35545,9 +35602,9 @@ var require_dist3 = __commonJS({
 });
 
 // electron/main.ts
-var import_electron22 = require("electron");
-var import_node_path15 = __toESM(require("node:path"));
-var import_node_fs10 = __toESM(require("node:fs"));
+var import_electron24 = require("electron");
+var import_node_path19 = __toESM(require("node:path"));
+var import_node_fs11 = __toESM(require("node:fs"));
 init_tray();
 
 // electron/shortcuts.ts
@@ -35599,6 +35656,10 @@ var VK = {
   X: 88,
   Z: 90,
   Digit1: 49,
+  Digit2: 50,
+  Digit3: 51,
+  Digit4: 52,
+  Digit5: 53,
   Digit0: 48,
   Space: 32,
   Delete: 46,
@@ -35645,17 +35706,17 @@ function displayString(s) {
 function defaultShortcut(action) {
   switch (action) {
     case 1 /* region */:
-      return { keyCode: VK.A, modifiers: MOD_SHIFT, enabled: true };
+      return { keyCode: VK.Digit4, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
     case 2 /* fullscreen */:
-      return { keyCode: VK.A, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
+      return { keyCode: VK.Digit3, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
     case 4 /* ocr */:
-      return { keyCode: VK.O, modifiers: MOD_SHIFT, enabled: true };
+      return { keyCode: VK.O, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
     case 5 /* colorPicker */:
-      return { keyCode: VK.C, modifiers: MOD_SHIFT, enabled: true };
+      return { keyCode: VK.C, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
     case 6 /* recording */:
-      return { keyCode: VK.R, modifiers: MOD_SHIFT, enabled: true };
+      return { keyCode: VK.Digit2, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
     case 7 /* recordingOptions */:
-      return { keyCode: VK.R, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
+      return { keyCode: VK.Digit5, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
     default:
       return null;
   }
@@ -35693,6 +35754,12 @@ function unregisterShortcuts() {
   }
   registeredAccels.length = 0;
 }
+function setShortcutBinding(action, shortcut) {
+  const current = { ...getPref("shortcuts") };
+  current[String(action)] = shortcut;
+  setPref("shortcuts", current);
+  registerShortcuts();
+}
 
 // electron/main.ts
 init_preferences();
@@ -35700,11 +35767,11 @@ init_regionSelection();
 init_orchestrator();
 
 // electron/updater.ts
-var import_electron17 = require("electron");
+var import_electron18 = require("electron");
 var import_electron_updater = __toESM(require_main2());
 var import_auto_launch = __toESM(require_dist3());
 function initUpdater() {
-  if (import_electron17.app.isPackaged) {
+  if (import_electron18.app.isPackaged) {
     import_electron_updater.autoUpdater.autoDownload = false;
     import_electron_updater.autoUpdater.on("update-available", (info) => {
       const { emitBus: emitBus2 } = (init_bus(), __toCommonJS(bus_exports));
@@ -35721,12 +35788,12 @@ function setLaunchAtLogin(enabled) {
     else void autoLaunch.disable().catch(() => {
     });
   } else {
-    import_electron17.app.setLoginItemSettings({ openAtLogin: enabled });
+    import_electron18.app.setLoginItemSettings({ openAtLogin: enabled });
   }
 }
 function getLaunchAtLogin() {
   if (autoLaunch) return autoLaunch.isEnabled().catch(() => false);
-  return import_electron17.app.getLoginItemSettings().openAtLogin;
+  return import_electron18.app.getLoginItemSettings().openAtLogin;
 }
 
 // electron/main.ts
@@ -35736,8 +35803,8 @@ init_store();
 init_bus();
 
 // electron/settings/window.ts
-var import_electron18 = require("electron");
-var import_node_path12 = __toESM(require("node:path"));
+var import_electron19 = require("electron");
+var import_node_path13 = __toESM(require("node:path"));
 init_preferences();
 init_paths();
 var settingsWin = null;
@@ -35747,7 +35814,7 @@ function openSettingsWindow(section) {
     if (section) settingsWin.webContents.send("settings:section", section);
     return;
   }
-  settingsWin = new import_electron18.BrowserWindow({
+  settingsWin = new import_electron19.BrowserWindow({
     width: 720,
     height: 560,
     minWidth: 640,
@@ -35763,7 +35830,7 @@ function openSettingsWindow(section) {
   settingsWin.setMenuBarVisibility(false);
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) settingsWin.loadURL(`${devURL}/src/entries/settings.html`);
-  else settingsWin.loadFile(import_node_path12.default.join(__dirname, "../dist/src/entries/settings.html"));
+  else settingsWin.loadFile(import_node_path13.default.join(__dirname, "../dist/src/entries/settings.html"));
   settingsWin.once("ready-to-show", () => {
     settingsWin?.show();
     if (section) settingsWin?.webContents.send("settings:section", section);
@@ -35773,7 +35840,7 @@ function openSettingsWindow(section) {
   });
 }
 function registerSettingsIpc() {
-  import_electron18.ipcMain.handle("settings:snapshot", () => {
+  import_electron19.ipcMain.handle("settings:snapshot", () => {
     const prefs = { ...defaultPreferences, ...loadPreferences().store };
     const shortcuts = {};
     for (const action of Object.values(Action).filter((v) => typeof v === "number")) {
@@ -35792,15 +35859,15 @@ function registerSettingsIpc() {
       )
     };
   });
-  import_electron18.ipcMain.handle("settings:setPref", (_e, key, value) => {
+  import_electron19.ipcMain.handle("settings:setPref", (_e, key, value) => {
     setPref(key, value);
     return getPref(key);
   });
-  import_electron18.ipcMain.handle("settings:setLaunchAtLogin", (_e, enabled) => {
+  import_electron19.ipcMain.handle("settings:setLaunchAtLogin", (_e, enabled) => {
     setLaunchAtLogin(enabled);
     return getLaunchAtLogin();
   });
-  import_electron18.ipcMain.handle("settings:resetOverlay", () => {
+  import_electron19.ipcMain.handle("settings:resetOverlay", () => {
     setPref("overlayCardSize", "small");
     setPref("overlayEdgeMargin", 20);
     setPref("overlayPosition", "bottomRight");
@@ -35809,11 +35876,15 @@ function registerSettingsIpc() {
     setPref("overlayAlwaysShowActions", false);
     return true;
   });
-  import_electron18.ipcMain.handle("settings:reregisterShortcuts", () => {
+  import_electron19.ipcMain.handle("settings:reregisterShortcuts", () => {
     registerShortcuts();
     return true;
   });
-  import_electron18.ipcMain.handle("settings:r2Test", async () => {
+  import_electron19.ipcMain.handle("settings:setShortcut", (_e, action, shortcut) => {
+    setShortcutBinding(action, shortcut);
+    return true;
+  });
+  import_electron19.ipcMain.handle("settings:r2Test", async () => {
     const { testR2Connection: testR2Connection2 } = await Promise.resolve().then(() => (init_r2(), r2_exports));
     await testR2Connection2();
     return true;
@@ -35821,11 +35892,13 @@ function registerSettingsIpc() {
 }
 
 // electron/gallery/window.ts
-var import_electron19 = require("electron");
-var import_node_path13 = __toESM(require("node:path"));
+var import_electron20 = require("electron");
+var import_node_path14 = __toESM(require("node:path"));
 var import_node_fs8 = __toESM(require("node:fs"));
 init_store();
 init_deck();
+init_videoPresenter();
+init_annotatePresenter();
 init_paths();
 var galleryWin = null;
 function openGalleryWindow() {
@@ -35834,7 +35907,7 @@ function openGalleryWindow() {
     galleryWin.webContents.send("gallery:refresh");
     return;
   }
-  galleryWin = new import_electron19.BrowserWindow({
+  galleryWin = new import_electron20.BrowserWindow({
     width: 960,
     height: 640,
     minWidth: 720,
@@ -35850,14 +35923,14 @@ function openGalleryWindow() {
   galleryWin.setMenuBarVisibility(false);
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) galleryWin.loadURL(`${devURL}/src/entries/gallery.html`);
-  else galleryWin.loadFile(import_node_path13.default.join(__dirname, "../dist/src/entries/gallery.html"));
+  else galleryWin.loadFile(import_node_path14.default.join(__dirname, "../dist/src/entries/gallery.html"));
   galleryWin.once("ready-to-show", () => galleryWin?.show());
   galleryWin.on("closed", () => {
     galleryWin = null;
   });
 }
 function registerGalleryIpc() {
-  import_electron19.ipcMain.handle("gallery:list", (_e, filter) => {
+  import_electron20.ipcMain.handle("gallery:list", (_e, filter) => {
     let records = HistoryStore.shared.records;
     if (filter?.kind === "screenshot" || filter?.kind === "recording") {
       records = records.filter((r) => r.kind === filter.kind);
@@ -35882,10 +35955,14 @@ function registerGalleryIpc() {
       };
     });
   });
-  import_electron19.ipcMain.handle("gallery:open", (_e, filePath) => {
-    if (import_node_fs8.default.existsSync(filePath)) showOnDeck(filePath);
+  import_electron20.ipcMain.handle("gallery:open", (_e, filePath) => {
+    if (!import_node_fs8.default.existsSync(filePath)) return;
+    const ext = import_node_path14.default.extname(filePath).toLowerCase();
+    if (ext === ".mp4" || ext === ".mov" || ext === ".webm") openVideoEditor(filePath);
+    else if (/\.(png|jpe?g|webp|gif)$/i.test(ext)) openAnnotateEditor(filePath);
+    else showOnDeck(filePath);
   });
-  import_electron19.ipcMain.handle("gallery:delete", (_e, id) => {
+  import_electron20.ipcMain.handle("gallery:delete", (_e, id) => {
     const record = HistoryStore.shared.records.find((r) => r.id === id);
     if (record) HistoryStore.shared.deleteRecord(record);
     return true;
@@ -35893,49 +35970,276 @@ function registerGalleryIpc() {
 }
 
 // electron/recording/bar.ts
-var import_electron20 = require("electron");
-var import_node_path14 = __toESM(require("node:path"));
-var import_node_fs9 = __toESM(require("node:fs"));
-var import_node_child_process = require("node:child_process");
-var import_electron21 = require("electron");
-var import_node_crypto6 = require("node:crypto");
-init_deck();
-init_store();
-init_toast();
+var import_electron22 = require("electron");
+var import_node_path17 = __toESM(require("node:path"));
 init_preferences();
 init_paths();
 init_countdown();
+init_regionSelection();
+init_deck();
+init_store();
+init_toast();
+init_videoPresenter();
+
+// electron/recording/ffmpeg.ts
+var import_node_fs9 = __toESM(require("node:fs"));
+var import_node_path15 = __toESM(require("node:path"));
+var import_node_child_process = require("node:child_process");
+function resolveFfmpeg() {
+  try {
+    const staticPath = require("ffmpeg-static");
+    if (staticPath && import_node_fs9.default.existsSync(staticPath)) return staticPath;
+  } catch {
+  }
+  const bundled = import_node_path15.default.join(process.resourcesPath || "", "ffmpeg.exe");
+  if (import_node_fs9.default.existsSync(bundled)) return bundled;
+  return "ffmpeg";
+}
+function runFfmpeg(args, stdinClose = false) {
+  return new Promise((resolve, reject) => {
+    const proc = (0, import_node_child_process.spawn)(resolveFfmpeg(), args, { stdio: ["ignore", "pipe", "pipe"] });
+    let err = "";
+    proc.stderr.on("data", (d) => {
+      err += String(d);
+    });
+    proc.on("error", reject);
+    proc.on("close", (code) => {
+      if (code === 0 || stdinClose) resolve();
+      else reject(new Error(err.split("\n").slice(-8).join("\n") || `ffmpeg exited ${code}`));
+    });
+  });
+}
+async function listDshowDevices() {
+  return new Promise((resolve) => {
+    const proc = (0, import_node_child_process.spawn)(resolveFfmpeg(), ["-list_devices", "true", "-f", "dshow", "-i", "dummy"], {
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    let out = "";
+    proc.stderr.on("data", (d) => {
+      out += String(d);
+    });
+    proc.stdout.on("data", (d) => {
+      out += String(d);
+    });
+    proc.on("close", () => {
+      const devices = [];
+      let kind = null;
+      for (const line of out.split("\n")) {
+        if (/DirectShow video devices/i.test(line)) {
+          kind = "video";
+          continue;
+        }
+        if (/DirectShow audio devices/i.test(line)) {
+          kind = "audio";
+          continue;
+        }
+        const m = line.match(/"([^"]+)"/);
+        if (m && kind) devices.push({ name: m[1], kind });
+      }
+      resolve(devices);
+    });
+    proc.on("error", () => resolve([]));
+  });
+}
+function even(n) {
+  const i = Math.max(2, Math.round(n));
+  return i % 2 === 0 ? i : i - 1;
+}
+
+// electron/recording/engine.ts
+var import_electron21 = require("electron");
+var import_node_fs10 = __toESM(require("node:fs"));
+var import_node_path16 = __toESM(require("node:path"));
+var import_node_child_process2 = require("node:child_process");
+var import_node_crypto6 = require("node:crypto");
+init_preferences();
+var session = null;
+function recordingSnapshot() {
+  return {
+    state: session?.state ?? "idle",
+    elapsedMs: currentElapsed(),
+    source: session?.options.source.type ?? "display"
+  };
+}
+function currentElapsed() {
+  if (!session) return 0;
+  if (session.state === "recording") return session.elapsedBeforePause + (Date.now() - session.startedAt);
+  return session.elapsedBeforePause;
+}
+async function startSession(options) {
+  if (session && session.state !== "idle") return;
+  const dir = import_node_path16.default.join(import_electron21.app.getPath("temp"), `reflecto-rec-${(0, import_node_crypto6.randomUUID)()}`);
+  import_node_fs10.default.mkdirSync(dir, { recursive: true });
+  session = {
+    state: "idle",
+    startedAt: 0,
+    elapsedBeforePause: 0,
+    dir,
+    segments: [],
+    proc: null,
+    options
+  };
+  try {
+    await spawnSegment();
+  } catch (err) {
+    session = null;
+    throw err;
+  }
+}
+async function spawnSegment() {
+  if (!session) return;
+  const out = import_node_path16.default.join(session.dir, `seg-${session.segments.length}.mp4`);
+  const args = buildArgs(session.options, out);
+  const proc = (0, import_node_child_process2.spawn)(resolveFfmpeg(), args, { stdio: ["pipe", "pipe", "pipe"] });
+  session.proc = proc;
+  session.segments.push(out);
+  session.state = "recording";
+  session.startedAt = Date.now();
+  await new Promise((resolve, reject) => {
+    const timer = setTimeout(resolve, 400);
+    proc.once("error", (err) => {
+      clearTimeout(timer);
+      reject(err);
+    });
+  });
+}
+function buildArgs(options, out) {
+  const fps = options.fps ?? getPref("recordingFps") ?? 30;
+  const showCursor = options.showCursor ?? getPref("recordingShowCursor") ?? true;
+  const args = ["-y", "-f", "gdigrab", "-framerate", String(fps), "-draw_mouse", showCursor ? "1" : "0"];
+  if (options.source.type === "area") {
+    const physical = import_electron21.screen.dipToScreenRect(null, options.source.rect);
+    args.push(
+      "-offset_x",
+      String(Math.round(physical.x)),
+      "-offset_y",
+      String(Math.round(physical.y)),
+      "-video_size",
+      `${even(physical.width)}x${even(physical.height)}`,
+      "-i",
+      "desktop"
+    );
+  } else if (options.source.type === "window") {
+    args.push("-i", `title=${options.source.title.replace(/"/g, "")}`);
+  } else if (options.source.type === "display") {
+    const source = options.source;
+    const display = source.displayId != null ? import_electron21.screen.getAllDisplays().find((d) => d.id === source.displayId) ?? import_electron21.screen.getPrimaryDisplay() : import_electron21.screen.getDisplayNearestPoint(import_electron21.screen.getCursorScreenPoint());
+    const physical = import_electron21.screen.dipToScreenRect(null, display.bounds);
+    args.push(
+      "-offset_x",
+      String(Math.round(physical.x)),
+      "-offset_y",
+      String(Math.round(physical.y)),
+      "-video_size",
+      `${even(physical.width)}x${even(physical.height)}`,
+      "-i",
+      "desktop"
+    );
+  }
+  const mic = options.microphone ?? getPref("recordingMicrophone") ?? "";
+  if (mic) {
+    args.push("-f", "dshow", "-i", `audio=${mic}`);
+  }
+  const filters = [];
+  if (options.camera) {
+    args.push("-f", "dshow", "-i", `video=${options.camera}`);
+    const camIndex = mic ? 2 : 1;
+    filters.push(`[${camIndex}:v]scale=320:-1[cam]`, `[0:v][cam]overlay=W-w-24:H-h-24[vout]`);
+  }
+  args.push("-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p");
+  if (filters.length) {
+    args.push("-filter_complex", filters.join(";"), "-map", "[vout]");
+    if (mic) args.push("-map", "1:a", "-c:a", "aac");
+  } else if (mic) {
+    args.push("-map", "0:v", "-map", "1:a", "-c:a", "aac");
+  }
+  args.push(out);
+  return args;
+}
+async function pauseSession() {
+  if (!session || session.state !== "recording") return;
+  session.elapsedBeforePause = currentElapsed();
+  await stopProcess();
+  session.state = "paused";
+}
+async function resumeSession() {
+  if (!session || session.state !== "paused") return;
+  await spawnSegment();
+}
+async function stopSession(save) {
+  if (!session) return null;
+  session.elapsedBeforePause = currentElapsed();
+  await stopProcess();
+  const segs = session.segments.filter((p) => import_node_fs10.default.existsSync(p) && import_node_fs10.default.statSync(p).size > 1024);
+  const dir = session.dir;
+  session = null;
+  if (!save || segs.length === 0) {
+    try {
+      import_node_fs10.default.rmSync(dir, { recursive: true, force: true });
+    } catch {
+    }
+    return null;
+  }
+  const dest = import_node_path16.default.join(import_electron21.app.getPath("userData"), "recordings", `reflecto_${(0, import_node_crypto6.randomUUID)()}.mp4`);
+  import_node_fs10.default.mkdirSync(import_node_path16.default.dirname(dest), { recursive: true });
+  if (segs.length === 1) {
+    import_node_fs10.default.copyFileSync(segs[0], dest);
+  } else {
+    const list = import_node_path16.default.join(dir, "concat.txt");
+    import_node_fs10.default.writeFileSync(list, segs.map((s) => `file '${s.replace(/\\/g, "/")}'`).join("\n"));
+    await runFfmpeg(["-y", "-f", "concat", "-safe", "0", "-i", list, "-c", "copy", dest]);
+  }
+  try {
+    import_node_fs10.default.rmSync(dir, { recursive: true, force: true });
+  } catch {
+  }
+  return dest;
+}
+async function stopProcess() {
+  const proc = session?.proc;
+  if (!proc) return;
+  await new Promise((resolve) => {
+    const done = () => resolve();
+    proc.once("close", done);
+    try {
+      proc.stdin.write("q");
+      proc.stdin.end();
+    } catch {
+      proc.kill("SIGINT");
+    }
+    setTimeout(() => {
+      try {
+        proc.kill();
+      } catch {
+      }
+      done();
+    }, 4e3);
+  });
+  if (session) session.proc = null;
+}
+function isRecordingActive() {
+  return Boolean(session && session.state !== "idle");
+}
+
+// electron/recording/bar.ts
+init_orchestrator();
 var barWin = null;
-var state = "idle";
-var startedAt = 0;
-var elapsedBeforePause = 0;
-var ffmpeg = null;
-var outputPath = null;
+var ui = "idle";
+var optionsMode = false;
 var tickTimer = null;
-async function showRecordingBar(optionsMode = false) {
+async function showRecordingBar(showOptions = false) {
+  optionsMode = showOptions;
   ensureBar();
   positionBar();
   barWin?.show();
   barWin?.focus();
-  barWin?.webContents.send("recording:state", snapshot(optionsMode));
-}
-function snapshot(optionsMode = false) {
-  return {
-    state,
-    optionsMode,
-    elapsedMs: currentElapsed(),
-    openEditorAfterRecording: getPref("openEditorAfterRecording")
-  };
-}
-function currentElapsed() {
-  if (state === "recording") return elapsedBeforePause + (Date.now() - startedAt);
-  return elapsedBeforePause;
+  push();
 }
 function ensureBar() {
   if (barWin && !barWin.isDestroyed()) return;
-  barWin = new import_electron20.BrowserWindow({
-    width: 420,
-    height: 72,
+  barWin = new import_electron22.BrowserWindow({
+    width: 760,
+    height: 96,
     show: false,
     frame: false,
     transparent: true,
@@ -35951,149 +36255,168 @@ function ensureBar() {
   barWin.setAlwaysOnTop(true, "screen-saver");
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) barWin.loadURL(`${devURL}/src/entries/recording.html`);
-  else barWin.loadFile(import_node_path14.default.join(__dirname, "../dist/src/entries/recording.html"));
+  else barWin.loadFile(import_node_path17.default.join(__dirname, "../dist/src/entries/recording.html"));
   barWin.on("closed", () => {
     barWin = null;
   });
 }
 function positionBar() {
   if (!barWin || barWin.isDestroyed()) return;
-  const { workArea } = import_electron20.screen.getPrimaryDisplay();
-  const width = 420;
-  const height = state === "idle" ? 72 : 46;
+  const { workArea } = import_electron22.screen.getDisplayNearestPoint(import_electron22.screen.getCursorScreenPoint());
+  const width = 760;
+  const height = ui === "idle" ? 96 : 52;
   const x = Math.round(workArea.x + workArea.width / 2 - width / 2);
-  const y = Math.round(workArea.y + 16);
+  const y = Math.round(workArea.y + workArea.height - height - 28);
   barWin.setBounds({ x, y, width, height });
 }
-async function startRecording() {
-  if (state === "recording" || state === "countdown") return;
+function snapshot() {
+  const rec = recordingSnapshot();
+  return {
+    state: ui,
+    optionsMode,
+    elapsedMs: rec.elapsedMs,
+    openEditorAfterRecording: getPref("openEditorAfterRecording"),
+    microphone: getPref("recordingMicrophone") || "",
+    systemAudio: getPref("recordingSystemAudio"),
+    showCursor: getPref("recordingShowCursor"),
+    camera: getPref("recordingCamera") || "",
+    timer: getPref("selfTimerDelay")
+  };
+}
+function push() {
+  barWin?.webContents.send("recording:state", snapshot());
+}
+async function beginRecording(source) {
+  if (isRecordingActive() || ui === "countdown") return;
+  barWin?.hide();
   const delay = getPref("selfTimerDelay") || 0;
   if (delay > 0) {
-    state = "countdown";
+    ui = "countdown";
     push();
     await showCountdown(delay);
-    if (state !== "countdown") return;
+    if (ui !== "countdown") return;
   }
-  const dir = import_node_path14.default.join(import_electron21.app.getPath("userData"), "recordings");
-  import_node_fs9.default.mkdirSync(dir, { recursive: true });
-  outputPath = import_node_path14.default.join(dir, `reflecto_${(0, import_node_crypto6.randomUUID)()}.mp4`);
-  const ffmpegPath = resolveFfmpeg();
-  const args = [
-    "-y",
-    "-f",
-    "gdigrab",
-    "-framerate",
-    "30",
-    "-i",
-    "desktop",
-    "-c:v",
-    "libx264",
-    "-preset",
-    "ultrafast",
-    "-pix_fmt",
-    "yuv420p",
-    outputPath
-  ];
   try {
-    ffmpeg = (0, import_node_child_process.spawn)(ffmpegPath, args, { stdio: ["pipe", "pipe", "pipe"] });
-  } catch (err) {
-    showToast({ title: "Couldn't start recording", message: String(err), icon: "error" });
-    state = "idle";
-    push();
-    return;
-  }
-  state = "recording";
-  startedAt = Date.now();
-  elapsedBeforePause = 0;
-  positionBar();
-  push();
-  startTicker();
-}
-function resolveFfmpeg() {
-  try {
-    const staticPath = require("ffmpeg-static");
-    if (staticPath && import_node_fs9.default.existsSync(staticPath)) return staticPath;
-  } catch {
-  }
-  const bundled = import_node_path14.default.join(process.resourcesPath || "", "ffmpeg.exe");
-  if (import_node_fs9.default.existsSync(bundled)) return bundled;
-  return "ffmpeg";
-}
-function pauseRecording() {
-  if (state !== "recording" || !ffmpeg) return;
-  elapsedBeforePause = currentElapsed();
-  state = "paused";
-  push();
-}
-function resumeRecording() {
-  if (state !== "paused") return;
-  state = "recording";
-  startedAt = Date.now();
-  push();
-}
-async function stopRecording(save) {
-  stopTicker();
-  const out = outputPath;
-  if (ffmpeg) {
-    try {
-      ffmpeg.stdin.write("q");
-      ffmpeg.stdin.end();
-    } catch {
-      ffmpeg.kill("SIGINT");
-    }
-    await new Promise((resolve) => {
-      ffmpeg?.once("close", () => resolve());
-      setTimeout(resolve, 3e3);
+    await startSession({
+      source,
+      microphone: getPref("recordingMicrophone") || null,
+      systemAudio: getPref("recordingSystemAudio"),
+      showCursor: getPref("recordingShowCursor"),
+      camera: getPref("recordingCamera") || null,
+      fps: getPref("recordingFps")
     });
-    ffmpeg = null;
+    ui = "recording";
+    ensureBar();
+    positionBar();
+    barWin?.showInactive();
+    push();
+    startTicker();
+  } catch (err) {
+    ui = "idle";
+    showToast({ title: "Couldn't start recording", message: String(err), icon: "error" });
+    barWin?.show();
+    push();
   }
-  state = "idle";
-  elapsedBeforePause = 0;
-  outputPath = null;
+}
+async function finishRecording(save) {
+  stopTicker();
+  const out = await stopSession(save);
+  ui = "idle";
   positionBar();
   push();
   barWin?.hide();
-  if (save && out && import_node_fs9.default.existsSync(out) && import_node_fs9.default.statSync(out).size > 0) {
+  if (save && out) {
     HistoryStore.shared.importCapture(out, false, "recording");
     showOnDeck(out);
     showToast({ message: "Recording saved!", icon: "success" });
-  } else if (out) {
-    try {
-      import_node_fs9.default.unlinkSync(out);
-    } catch {
-    }
-    if (!save) showToast({ message: "Recording discarded", icon: "info" });
+    if (getPref("openEditorAfterRecording")) openVideoEditor(out);
+  } else if (!save) {
+    showToast({ message: "Recording discarded", icon: "info" });
   }
-}
-function restartRecording() {
-  void stopRecording(false).then(() => startRecording());
 }
 function startTicker() {
   stopTicker();
   tickTimer = setInterval(() => push(), 250);
 }
+function startAreaRecordingFromBar() {
+  barWin?.hide();
+  void startRegionSelection(false, "select").then((outcome) => {
+    if (outcome.kind === "region" && outcome.rect) {
+      void beginRecording({ type: "area", rect: outcome.rect });
+    } else {
+      barWin?.show();
+    }
+  });
+}
 function stopTicker() {
   if (tickTimer) clearInterval(tickTimer);
   tickTimer = null;
 }
-function push() {
-  barWin?.webContents.send("recording:state", snapshot(false));
-}
 function registerRecordingIpc() {
-  import_electron20.ipcMain.on("recording:start", () => void startRecording());
-  import_electron20.ipcMain.on("recording:stop", () => void stopRecording(true));
-  import_electron20.ipcMain.on("recording:discard", () => void stopRecording(false));
-  import_electron20.ipcMain.on("recording:pause", () => pauseRecording());
-  import_electron20.ipcMain.on("recording:resume", () => resumeRecording());
-  import_electron20.ipcMain.on("recording:restart", () => restartRecording());
-  import_electron20.ipcMain.on("recording:hide", () => barWin?.hide());
-  import_electron20.ipcMain.handle("recording:listScreens", async () => {
-    const sources = await import_electron20.desktopCapturer.getSources({
+  import_electron22.ipcMain.on("recording:start", () => void beginRecording({ type: "display" }));
+  import_electron22.ipcMain.on("recording:startDisplay", (_e, displayId) => void beginRecording({ type: "display", displayId }));
+  import_electron22.ipcMain.on("recording:startWindow", (_e, title) => void beginRecording({ type: "window", title }));
+  import_electron22.ipcMain.on("recording:startArea", () => startAreaRecordingFromBar());
+  import_electron22.ipcMain.on("recording:stop", () => void finishRecording(true));
+  import_electron22.ipcMain.on("recording:discard", () => void finishRecording(false));
+  import_electron22.ipcMain.on("recording:pause", () => {
+    void pauseSession().then(() => {
+      ui = "paused";
+      push();
+    });
+  });
+  import_electron22.ipcMain.on("recording:resume", () => {
+    void resumeSession().then(() => {
+      ui = "recording";
+      push();
+    });
+  });
+  import_electron22.ipcMain.on("recording:restart", () => {
+    void finishRecording(false).then(() => beginRecording({ type: "display" }));
+  });
+  import_electron22.ipcMain.on("recording:hide", () => barWin?.hide());
+  import_electron22.ipcMain.on("recording:setOptionsMode", (_e, v) => {
+    optionsMode = v;
+    push();
+  });
+  import_electron22.ipcMain.handle("recording:listScreens", async () => {
+    const sources = await import_electron22.desktopCapturer.getSources({
       types: ["screen"],
       thumbnailSize: { width: 320, height: 180 }
     });
-    return sources.map((s) => ({ id: s.id, name: s.name, thumbnail: s.thumbnail.toDataURL() }));
+    return sources.map((s) => ({ id: s.id, displayId: s.display_id, name: s.name, thumbnail: s.thumbnail.toDataURL() }));
   });
+  import_electron22.ipcMain.handle("recording:listWindows", async () => {
+    const sources = await import_electron22.desktopCapturer.getSources({
+      types: ["window"],
+      thumbnailSize: { width: 240, height: 135 },
+      fetchWindowIcons: true
+    });
+    return sources.filter((s) => s.name && !/reflecto/i.test(s.name)).map((s) => ({ id: s.id, name: s.name, thumbnail: s.thumbnail.toDataURL() }));
+  });
+  import_electron22.ipcMain.handle("recording:listDevices", () => listDshowDevices());
+  import_electron22.ipcMain.on("capturebar:action", (_e, kind) => {
+    barWin?.hide();
+    if (kind === "region") void startRegionSelection();
+    else void performCapture({ kind });
+  });
+}
+async function recordingStopSave() {
+  if (ui === "recording" || ui === "paused") await finishRecording(true);
+}
+async function recordingDiscard() {
+  if (ui === "recording" || ui === "paused" || ui === "countdown") await finishRecording(false);
+}
+async function recordingPauseToggle() {
+  if (ui === "recording") {
+    await pauseSession();
+    ui = "paused";
+    push();
+  } else if (ui === "paused") {
+    await resumeSession();
+    ui = "recording";
+    push();
+  }
 }
 
 // electron/main.ts
@@ -36101,15 +36424,63 @@ init_colorPicker();
 init_windowPicker();
 init_fileActions();
 var import_node_crypto7 = require("node:crypto");
-var tray2 = null;
-var gotLock = import_electron22.app.requestSingleInstanceLock();
-if (!gotLock) {
-  import_electron22.app.quit();
-} else {
-  import_electron22.app.on("second-instance", () => {
+
+// electron/recording/exportVideo.ts
+var import_electron23 = require("electron");
+var import_node_path18 = __toESM(require("node:path"));
+async function exportEditedVideo(req) {
+  const dest = req.dest ?? import_node_path18.default.join(import_electron23.app.getPath("videos"), `Reflecto_${Date.now()}.mp4`);
+  const args = ["-y", "-ss", String(req.trimStart), "-to", String(req.trimEnd), "-i", req.src];
+  const filters = [];
+  let last = "0:v";
+  if (req.crop && req.crop.width > 2 && req.crop.height > 2) {
+    filters.push(`[${last}]crop=${even(req.crop.width)}:${even(req.crop.height)}:${Math.round(req.crop.x)}:${Math.round(req.crop.y)}[c]`);
+    last = "c";
+  }
+  req.masks.forEach((mask, i) => {
+    const tag = `m${i}`;
+    const x = Math.round(mask.x), y = Math.round(mask.y);
+    const w = even(mask.width), h = even(mask.height);
+    if (mask.type === "blur") {
+      filters.push(`[${last}]split[b${i}s][b${i}k]`);
+      filters.push(`[b${i}s]crop=${w}:${h}:${x}:${y},boxblur=8:1[${tag}b]`);
+      filters.push(`[b${i}k][${tag}b]overlay=${x}:${y}[${tag}]`);
+    } else {
+      filters.push(`[${last}]split[p${i}s][p${i}k]`);
+      filters.push(`[p${i}s]crop=${w}:${h}:${x}:${y},scale=iw/16:ih/16,scale=${w}:${h}:flags=neighbor[${tag}p]`);
+      filters.push(`[p${i}k][${tag}p]overlay=${x}:${y}[${tag}]`);
+    }
+    last = tag;
   });
-  import_electron22.app.whenReady().then(() => {
+  if (filters.length) {
+    args.push("-filter_complex", filters.join(";"), "-map", `[${last}]`);
+  } else {
+    args.push("-map", "0:v");
+  }
+  args.push("-map", "0:a?", "-c:v", "libx264", "-preset", "medium", "-crf", String(req.crf), "-r", String(req.fps), "-c:a", "aac", "-movflags", "+faststart", dest);
+  await runFfmpeg(args);
+  return dest;
+}
+
+// electron/main.ts
+init_r2();
+init_annotatePresenter();
+var tray2 = null;
+var gotLock = import_electron24.app.requestSingleInstanceLock();
+if (!gotLock) {
+  import_electron24.app.quit();
+} else {
+  import_electron24.app.on("second-instance", (_e, argv) => {
+    const url = argv.find((a) => a.startsWith("reflecto://"));
+    if (url) handleReflectoUrl(url);
+  });
+  import_electron24.app.whenReady().then(() => {
     loadPreferences();
+    if (process.defaultApp) {
+      if (process.argv.length >= 2) import_electron24.app.setAsDefaultProtocolClient("reflecto", process.execPath, [import_node_path19.default.resolve(process.argv[1])]);
+    } else {
+      import_electron24.app.setAsDefaultProtocolClient("reflecto");
+    }
     HistoryStore.shared;
     setRegionCompleteHandler((outcome, mode) => {
       if (mode !== "capture") return;
@@ -36124,6 +36495,8 @@ if (!gotLock) {
     wireShortcuts();
     setCaptureHandler((kind) => handleTrayCapture(kind));
     initUpdater();
+    const launchUrl = process.argv.find((a) => a.startsWith("reflecto://"));
+    if (launchUrl) handleReflectoUrl(launchUrl);
     onBusEvent((channel, payload) => {
     });
   });
@@ -36166,7 +36539,7 @@ function handleTrayCapture(kind) {
     return;
   }
   if (kind === "quit") {
-    import_electron22.app.quit();
+    import_electron24.app.quit();
     return;
   }
   if (kind === "unpinAll") {
@@ -36188,6 +36561,18 @@ function wireShortcuts() {
   onShortcut(25 /* regionPin */, () => void performCapture({ kind: "regionPin" }));
   onShortcut(6 /* recording */, () => void showRecordingBar(false));
   onShortcut(7 /* recordingOptions */, () => void showRecordingBar(true));
+  onShortcut(40 /* recordArea */, () => startAreaRecordingFromBar());
+  onShortcut(41 /* stopRecording */, () => void recordingStopSave());
+  onShortcut(42 /* pauseRecording */, () => void recordingPauseToggle());
+  onShortcut(44 /* discardRecording */, () => void recordingDiscard());
+  onShortcut(43 /* restartRecording */, () => {
+    void recordingDiscard().then(() => showRecordingBar(false));
+  });
+  onShortcut(11 /* restoreLastCapture */, () => {
+    const last = getLastCaptureUrl();
+    if (last) showOnDeck(last);
+  });
+  onShortcut(13 /* openImage */, () => void openImageFromDisk());
   onShortcut(10 /* mediaGallery */, () => openGalleryWindow());
   onShortcut(14 /* openSettings */, () => openSettingsWindow());
   onShortcut(50 /* togglePreviews */, () => toggleDeckVisibility());
@@ -36210,12 +36595,12 @@ function registerIpc() {
   registerRecordingIpc();
   registerColorPickerIpc();
   registerWindowPickerIpc();
-  import_electron22.ipcMain.handle("capture:perform", (_e, req) => performCapture(req));
-  import_electron22.ipcMain.handle(
+  import_electron24.ipcMain.handle("capture:perform", (_e, req) => performCapture(req));
+  import_electron24.ipcMain.handle(
     "capture:startRegionSelection",
     (_e, allowsWindowSelection) => startRegionSelection(allowsWindowSelection)
   );
-  import_electron22.ipcMain.handle("capture:listWindows", async () => {
+  import_electron24.ipcMain.handle("capture:listWindows", async () => {
     const { desktopCapturer: desktopCapturer4 } = await import("electron");
     const sources = await desktopCapturer4.getSources({
       types: ["window"],
@@ -36229,17 +36614,17 @@ function registerIpc() {
       icon: s.appIcon?.toDataURL() ?? null
     }));
   });
-  import_electron22.ipcMain.handle("capture:windowById", async (_e, id) => {
+  import_electron24.ipcMain.handle("capture:windowById", async (_e, id) => {
     void performCapture({ kind: "window", windowId: id });
     return true;
   });
-  import_electron22.ipcMain.handle("prefs:get", () => ({ ...loadPreferences().store }));
-  import_electron22.ipcMain.handle("prefs:set", (_e, key, value) => {
+  import_electron24.ipcMain.handle("prefs:get", () => ({ ...loadPreferences().store }));
+  import_electron24.ipcMain.handle("prefs:set", (_e, key, value) => {
     setPref(key, value);
     return true;
   });
-  import_electron22.ipcMain.handle("prefs:getSingle", (_e, key) => getPref(key));
-  import_electron22.ipcMain.handle("history:recents", () => {
+  import_electron24.ipcMain.handle("prefs:getSingle", (_e, key) => getPref(key));
+  import_electron24.ipcMain.handle("history:recents", () => {
     const shots = HistoryStore.shared.recent("screenshot", 8).map((r) => ({
       filename: r.filename,
       kind: r.kind,
@@ -36254,74 +36639,130 @@ function registerIpc() {
     }));
     return [...shots, ...recs];
   });
-  import_electron22.ipcMain.handle("history:open", (_e, filePath) => {
-    if (import_node_fs10.default.existsSync(filePath)) showOnDeck(filePath);
+  import_electron24.ipcMain.handle("history:open", (_e, filePath) => {
+    if (import_node_fs11.default.existsSync(filePath)) showOnDeck(filePath);
   });
-  import_electron22.ipcMain.handle("pins:hasAny", () => hasPinnedWindows());
-  import_electron22.ipcMain.handle("pins:unpinAll", () => unpinAll());
-  import_electron22.ipcMain.handle("dialog:pickFolder", async () => {
-    const win = import_electron22.BrowserWindow.getFocusedWindow();
-    const result = await import_electron22.dialog.showOpenDialog(win ?? void 0, {
+  import_electron24.ipcMain.handle("pins:hasAny", () => hasPinnedWindows());
+  import_electron24.ipcMain.handle("pins:unpinAll", () => unpinAll());
+  import_electron24.ipcMain.handle("dialog:pickFolder", async () => {
+    const win = import_electron24.BrowserWindow.getFocusedWindow();
+    const result = await import_electron24.dialog.showOpenDialog(win ?? void 0, {
       properties: ["openDirectory", "createDirectory"]
     });
     return result.canceled ? null : result.filePaths[0];
   });
-  import_electron22.ipcMain.handle("dialog:pickSaveFile", async (_e, opts) => {
-    const win = import_electron22.BrowserWindow.getFocusedWindow();
-    const result = await import_electron22.dialog.showSaveDialog(win ?? void 0, opts);
+  import_electron24.ipcMain.handle("dialog:pickSaveFile", async (_e, opts) => {
+    const win = import_electron24.BrowserWindow.getFocusedWindow();
+    const result = await import_electron24.dialog.showSaveDialog(win ?? void 0, opts);
     return result.canceled ? null : result.filePath;
   });
-  import_electron22.ipcMain.handle("files:saveTempPNG", (_e, base64) => {
-    const file = import_node_path15.default.join(import_electron22.app.getPath("temp"), `reflecto-${Date.now()}.png`);
-    import_node_fs10.default.writeFileSync(file, Buffer.from(base64, "base64"));
+  import_electron24.ipcMain.handle("files:saveTempPNG", (_e, base64) => {
+    const file = import_node_path19.default.join(import_electron24.app.getPath("temp"), `reflecto-${Date.now()}.png`);
+    import_node_fs11.default.writeFileSync(file, Buffer.from(base64, "base64"));
     return file;
   });
-  import_electron22.ipcMain.handle("files:copyImage", (_e, dataUrl) => {
-    import_electron22.clipboard.writeImage(import_electron22.nativeImage.createFromDataURL(dataUrl));
+  import_electron24.ipcMain.handle("files:copyImage", (_e, dataUrl) => {
+    import_electron24.clipboard.writeImage(import_electron24.nativeImage.createFromDataURL(dataUrl));
     return true;
   });
-  import_electron22.ipcMain.handle("files:saveDataUrl", (_e, dataUrl) => {
+  import_electron24.ipcMain.handle("files:saveDataUrl", (_e, dataUrl) => {
     const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
-    const temp = import_node_path15.default.join(import_electron22.app.getPath("temp"), `reflecto-edit-${(0, import_node_crypto7.randomUUID)()}.png`);
-    import_node_fs10.default.writeFileSync(temp, Buffer.from(base64, "base64"));
+    const temp = import_node_path19.default.join(import_electron24.app.getPath("temp"), `reflecto-edit-${(0, import_node_crypto7.randomUUID)()}.png`);
+    import_node_fs11.default.writeFileSync(temp, Buffer.from(base64, "base64"));
     const dest = saveToDefaultLocation(temp);
     try {
-      import_node_fs10.default.unlinkSync(temp);
+      import_node_fs11.default.unlinkSync(temp);
     } catch {
     }
     return dest;
   });
-  import_electron22.ipcMain.handle("files:copyDataUrl", (_e, dataUrl) => {
+  import_electron24.ipcMain.handle("files:copyDataUrl", (_e, dataUrl) => {
     const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
-    const temp = import_node_path15.default.join(import_electron22.app.getPath("temp"), `reflecto-clip-${(0, import_node_crypto7.randomUUID)()}.png`);
-    import_node_fs10.default.writeFileSync(temp, Buffer.from(base64, "base64"));
+    const temp = import_node_path19.default.join(import_electron24.app.getPath("temp"), `reflecto-clip-${(0, import_node_crypto7.randomUUID)()}.png`);
+    import_node_fs11.default.writeFileSync(temp, Buffer.from(base64, "base64"));
     copyImageToClipboard(temp);
     return true;
   });
-  import_electron22.ipcMain.on("files:startDrag", (e, filePath) => {
-    e.sender.startDrag({ file: filePath, icon: import_electron22.nativeImage.createEmpty() });
+  import_electron24.ipcMain.handle("files:exportDataUrl", async (_e, dataUrl) => {
+    const dest = await import_electron24.dialog.showSaveDialog({
+      title: "Export image",
+      defaultPath: import_node_path19.default.join(import_electron24.app.getPath("pictures"), `Reflecto_${Date.now()}.png`),
+      filters: [{ name: "PNG", extensions: ["png"] }, { name: "JPEG", extensions: ["jpg"] }]
+    });
+    if (dest.canceled || !dest.filePath) return null;
+    const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
+    import_node_fs11.default.writeFileSync(dest.filePath, Buffer.from(base64, "base64"));
+    return dest.filePath;
   });
-  import_electron22.ipcMain.handle("files:reveal", (_e, filePath) => {
-    import_electron22.shell.showItemInFolder(filePath);
+  import_electron24.ipcMain.handle("files:shareDataUrl", async (_e, dataUrl) => {
+    if (!isR2Configured()) {
+      openSettingsWindow("sharing");
+      return null;
+    }
+    const temp = import_node_path19.default.join(import_electron24.app.getPath("temp"), `reflecto-share-${(0, import_node_crypto7.randomUUID)()}.png`);
+    import_node_fs11.default.writeFileSync(temp, Buffer.from(dataUrl.replace(/^data:image\/\w+;base64,/, ""), "base64"));
+    const url = await uploadShare(temp);
+    import_electron24.clipboard.writeText(url);
+    try {
+      import_node_fs11.default.unlinkSync(temp);
+    } catch {
+    }
+    return url;
   });
-  import_electron22.ipcMain.handle("loginItem:set", (_e, enabled) => setLaunchAtLogin(enabled));
-  import_electron22.ipcMain.handle("loginItem:get", () => getLaunchAtLogin());
-  import_electron22.ipcMain.handle("app:version", () => import_electron22.app.getVersion());
-  import_electron22.ipcMain.on("app:quit", () => import_electron22.app.quit());
-  import_electron22.ipcMain.on("tray:openSettings", () => {
+  import_electron24.ipcMain.handle("video:export", async (_e, req) => {
+    const dest = await import_electron24.dialog.showSaveDialog({
+      title: "Export video",
+      defaultPath: import_node_path19.default.join(import_electron24.app.getPath("videos"), `Reflecto_${Date.now()}.mp4`),
+      filters: [{ name: "MP4", extensions: ["mp4"] }]
+    });
+    if (dest.canceled || !dest.filePath) return null;
+    return exportEditedVideo({ ...req, dest: dest.filePath });
+  });
+  import_electron24.ipcMain.on("files:startDrag", (e, filePath) => {
+    e.sender.startDrag({ file: filePath, icon: import_electron24.nativeImage.createEmpty() });
+  });
+  import_electron24.ipcMain.handle("files:reveal", (_e, filePath) => {
+    import_electron24.shell.showItemInFolder(filePath);
+  });
+  import_electron24.ipcMain.handle("loginItem:set", (_e, enabled) => setLaunchAtLogin(enabled));
+  import_electron24.ipcMain.handle("loginItem:get", () => getLaunchAtLogin());
+  import_electron24.ipcMain.handle("app:version", () => import_electron24.app.getVersion());
+  import_electron24.ipcMain.on("app:quit", () => import_electron24.app.quit());
+  import_electron24.ipcMain.on("tray:openSettings", () => {
     dismissPopover();
     openSettingsWindow();
   });
-  import_electron22.ipcMain.on("tray:openGallery", () => {
+  import_electron24.ipcMain.on("tray:openGallery", () => {
     dismissPopover();
     openGalleryWindow();
   });
 }
-import_electron22.app.on("will-quit", () => {
+import_electron24.app.on("will-quit", () => {
   unregisterShortcuts();
 });
-import_electron22.app.on("window-all-closed", () => {
+import_electron24.app.on("window-all-closed", () => {
 });
+function handleReflectoUrl(raw) {
+  try {
+    const u = new URL(raw);
+    const route = `${u.hostname}${u.pathname}`.replace(/\/+$/, "").replace(/^\/+/, "");
+    if (route === "capture/region" || route === "capture/region/") void startRegionSelection();
+    else if (route === "capture/fullscreen") void performCapture({ kind: "fullscreen" });
+    else if (route === "capture/window") void performCapture({ kind: "window" });
+    else if (route === "ocr") void performCapture({ kind: "ocr" });
+    else if (route === "color-picker") void performCapture({ kind: "colorPicker" });
+    else if (route === "record") void showRecordingBar(false);
+    else if (route === "settings") openSettingsWindow();
+  } catch {
+  }
+}
+async function openImageFromDisk() {
+  const result = await import_electron24.dialog.showOpenDialog({
+    properties: ["openFile"],
+    filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "webp", "gif"] }]
+  });
+  if (!result.canceled && result.filePaths[0]) openAnnotateEditor(result.filePaths[0]);
+}
 /*! Bundled license information:
 
 sax/lib/sax.js:

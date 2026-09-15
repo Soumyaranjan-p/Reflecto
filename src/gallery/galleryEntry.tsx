@@ -101,23 +101,35 @@ function GalleryApp() {
               }}>
                 {item.filename}
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
                 <span style={{ fontSize: 10, color: "var(--reflecto-tertiary)" }}>
                   {item.kind === "recording" ? "Recording" : `${item.width}×${item.height}`}
                 </span>
-                <button
-                  type="button"
-                  className="editor-button destructive"
-                  style={{ minHeight: 24, padding: "0 6px", fontSize: 11 }}
-                  onClick={async () => {
-                    if (confirm("Delete this capture from the library?")) {
-                      await window.reflecto?.galleryDelete(item.id);
-                      await reload();
-                    }
-                  }}
-                >
-                  Delete
-                </button>
+                <span style={{ display: "flex", gap: 4 }}>
+                  {item.shareURL && (
+                    <button
+                      type="button"
+                      className="editor-button"
+                      style={{ minHeight: 24, padding: "0 6px", fontSize: 11 }}
+                      onClick={() => navigator.clipboard.writeText(item.shareURL!)}
+                    >
+                      Copy link
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="editor-button destructive"
+                    style={{ minHeight: 24, padding: "0 6px", fontSize: 11 }}
+                    onClick={async () => {
+                      if (confirm("Delete this capture from the library?")) {
+                        await window.reflecto?.galleryDelete(item.id);
+                        await reload();
+                      }
+                    }}
+                  >
+                    Delete
+                  </button>
+                </span>
               </div>
             </div>
           </div>

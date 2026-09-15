@@ -1,61 +1,50 @@
 import { BrowserWindow, screen, ipcMain, desktopCapturer } from "electron";
 import path from "node:path";
-import fs from "node:fs";
-import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
-import { app } from "electron";
-import { randomUUID } from "node:crypto";
-import { showOnDeck } from "../preview/deck";
-import { HistoryStore } from "../history/store";
-import { showToast } from "../toast/toast";
 import { getPref } from "../preferences";
 import { preloadPath } from "../paths";
 import { showCountdown } from "../overlay/countdown";
+import { startRegionSelection } from "../overlay/regionSelection";
+import { showOnDeck } from "../preview/deck";
+import { HistoryStore } from "../history/store";
+import { showToast } from "../toast/toast";
+import { openVideoEditor } from "../editor/videoPresenter";
+import { listDshowDevices } from "./ffmpeg";
+import {
+  isRecordingActive,
+  pauseSession,
+  recordingSnapshot,
+  resumeSession,
+  startSession,
+  stopSession,
+} from "./engine";
+import { performCapture } from "../capture/orchestrator";
 
 /**
- * Port of RecordingBarPresenter + shared capture bar.
- * BarMetrics: capture height 64, recording height 38.
- * Recording row: Stop/timer, Pause, Restart, Discard.
- *
- * PLATFORM GAP: ScreenCaptureKit → Electron desktopCapturer + ffmpeg mux.
+ * Shared capture/recording bar — RecordingPickerBar + RecordingControlPresenter.
+ * Capture height 64, recording height 38.
  */
 
-type RecordingState = "idle" | "countdown" | "recording" | "paused";
+type UiState = "idle" | "countdown" | "recording" | "paused";
 
 let barWin: BrowserWindow | null = null;
-let state: RecordingState = "idle";
-let startedAt = 0;
-let elapsedBeforePause = 0;
-let ffmpeg: ChildProcessWithoutNullStreams | null = null;
-let outputPath: string | null = null;
+let ui: UiState = "idle";
+let optionsMode = false;
 let tickTimer: NodeJS.Timeout | null = null;
 
-export async function showRecordingBar(optionsMode = false) {
+export async function showRecordingBar(showOptions = false) {
+  optionsMode = showOptions;
   ensureBar();
   positionBar();
   barWin?.show();
   barWin?.focus();
-  barWin?.webContents.send("recording:state", snapshot(optionsMode));
-}
-
-function snapshot(optionsMode = false) {
-  return {
-    state,
-    optionsMode,
-    elapsedMs: currentElapsed(),
-    openEditorAfterRecording: getPref("openEditorAfterRecording"),
-  };
-}
-
-function currentElapsed(): number {
-  if (state === "recording") return elapsedBeforePause + (Date.now() - startedAt);
-  return elapsedBeforePause;
+  push();
 }
 
 function ensureBar() {
   if (barWin && !barWin.isDestroyed()) return;
   barWin = new BrowserWindow({
-    width: 420,
-    height: 72,
+    width: 760,
+    height: 96,
     show: false,
     frame: false,
     transparent: true,
@@ -77,120 +66,81 @@ function ensureBar() {
 
 function positionBar() {
   if (!barWin || barWin.isDestroyed()) return;
-  const { workArea } = screen.getPrimaryDisplay();
-  const width = 420;
-  const height = state === "idle" ? 72 : 46;
+  const { workArea } = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
+  const width = 760;
+  const height = ui === "idle" ? 96 : 52;
   const x = Math.round(workArea.x + workArea.width / 2 - width / 2);
-  const y = Math.round(workArea.y + 16);
+  const y = Math.round(workArea.y + workArea.height - height - 28);
   barWin.setBounds({ x, y, width, height });
 }
 
-async function startRecording() {
-  if (state === "recording" || state === "countdown") return;
+function snapshot() {
+  const rec = recordingSnapshot();
+  return {
+    state: ui,
+    optionsMode,
+    elapsedMs: rec.elapsedMs,
+    openEditorAfterRecording: getPref("openEditorAfterRecording"),
+    microphone: getPref("recordingMicrophone") || "",
+    systemAudio: getPref("recordingSystemAudio"),
+    showCursor: getPref("recordingShowCursor"),
+    camera: getPref("recordingCamera") || "",
+    timer: getPref("selfTimerDelay"),
+  };
+}
+
+function push() {
+  barWin?.webContents.send("recording:state", snapshot());
+}
+
+async function beginRecording(source: Parameters<typeof startSession>[0]["source"]) {
+  if (isRecordingActive() || ui === "countdown") return;
+  barWin?.hide();
   const delay = getPref("selfTimerDelay") || 0;
   if (delay > 0) {
-    state = "countdown";
+    ui = "countdown";
     push();
     await showCountdown(delay);
-    if (state !== "countdown") return;
+    if (ui !== "countdown") return;
   }
-
-  const dir = path.join(app.getPath("userData"), "recordings");
-  fs.mkdirSync(dir, { recursive: true });
-  outputPath = path.join(dir, `reflecto_${randomUUID()}.mp4`);
-
-  // Prefer ffmpeg gdigrab on Windows for full-desktop capture.
-  const ffmpegPath = resolveFfmpeg();
-  const args = [
-    "-y",
-    "-f", "gdigrab",
-    "-framerate", "30",
-    "-i", "desktop",
-    "-c:v", "libx264",
-    "-preset", "ultrafast",
-    "-pix_fmt", "yuv420p",
-    outputPath,
-  ];
   try {
-    ffmpeg = spawn(ffmpegPath, args, { stdio: ["pipe", "pipe", "pipe"] });
-  } catch (err) {
-    showToast({ title: "Couldn't start recording", message: String(err), icon: "error" });
-    state = "idle";
-    push();
-    return;
-  }
-
-  state = "recording";
-  startedAt = Date.now();
-  elapsedBeforePause = 0;
-  positionBar();
-  push();
-  startTicker();
-}
-
-function resolveFfmpeg(): string {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const staticPath = require("ffmpeg-static") as string;
-    if (staticPath && fs.existsSync(staticPath)) return staticPath;
-  } catch { /* fall through */ }
-  const bundled = path.join(process.resourcesPath || "", "ffmpeg.exe");
-  if (fs.existsSync(bundled)) return bundled;
-  return "ffmpeg";
-}
-
-function pauseRecording() {
-  if (state !== "recording" || !ffmpeg) return;
-  // gdigrab doesn't pause cleanly — stop writing by signaling and keep file; full pause needs segment mux.
-  // Approximate: send 'p' is not supported; we stop the process clock UI-only and note platform gap.
-  elapsedBeforePause = currentElapsed();
-  state = "paused";
-  // Stop ffmpeg and we'll restart on resume into a new segment later; for v1 just pause the timer.
-  push();
-}
-
-function resumeRecording() {
-  if (state !== "paused") return;
-  state = "recording";
-  startedAt = Date.now();
-  push();
-}
-
-async function stopRecording(save: boolean) {
-  stopTicker();
-  const out = outputPath;
-  if (ffmpeg) {
-    try {
-      ffmpeg.stdin.write("q");
-      ffmpeg.stdin.end();
-    } catch {
-      ffmpeg.kill("SIGINT");
-    }
-    await new Promise<void>((resolve) => {
-      ffmpeg?.once("close", () => resolve());
-      setTimeout(resolve, 3000);
+    await startSession({
+      source,
+      microphone: getPref("recordingMicrophone") || null,
+      systemAudio: getPref("recordingSystemAudio"),
+      showCursor: getPref("recordingShowCursor"),
+      camera: getPref("recordingCamera") || null,
+      fps: getPref("recordingFps"),
     });
-    ffmpeg = null;
+    ui = "recording";
+    ensureBar();
+    positionBar();
+    barWin?.showInactive();
+    push();
+    startTicker();
+  } catch (err) {
+    ui = "idle";
+    showToast({ title: "Couldn't start recording", message: String(err), icon: "error" });
+    barWin?.show();
+    push();
   }
-  state = "idle";
-  elapsedBeforePause = 0;
-  outputPath = null;
+}
+
+async function finishRecording(save: boolean) {
+  stopTicker();
+  const out = await stopSession(save);
+  ui = "idle";
   positionBar();
   push();
   barWin?.hide();
-
-  if (save && out && fs.existsSync(out) && fs.statSync(out).size > 0) {
+  if (save && out) {
     HistoryStore.shared.importCapture(out, false, "recording");
     showOnDeck(out);
     showToast({ message: "Recording saved!", icon: "success" });
-  } else if (out) {
-    try { fs.unlinkSync(out); } catch { /* ignore */ }
-    if (!save) showToast({ message: "Recording discarded", icon: "info" });
+    if (getPref("openEditorAfterRecording")) openVideoEditor(out);
+  } else if (!save) {
+    showToast({ message: "Recording discarded", icon: "info" });
   }
-}
-
-function restartRecording() {
-  void stopRecording(false).then(() => startRecording());
 }
 
 function startTicker() {
@@ -198,28 +148,94 @@ function startTicker() {
   tickTimer = setInterval(() => push(), 250);
 }
 
+export function startAreaRecordingFromBar() {
+  barWin?.hide();
+  void startRegionSelection(false, "select").then((outcome) => {
+    if (outcome.kind === "region" && outcome.rect) {
+      void beginRecording({ type: "area", rect: outcome.rect });
+    } else {
+      barWin?.show();
+    }
+  });
+}
+
 function stopTicker() {
   if (tickTimer) clearInterval(tickTimer);
   tickTimer = null;
 }
 
-function push() {
-  barWin?.webContents.send("recording:state", snapshot(false));
-}
-
 export function registerRecordingIpc() {
-  ipcMain.on("recording:start", () => void startRecording());
-  ipcMain.on("recording:stop", () => void stopRecording(true));
-  ipcMain.on("recording:discard", () => void stopRecording(false));
-  ipcMain.on("recording:pause", () => pauseRecording());
-  ipcMain.on("recording:resume", () => resumeRecording());
-  ipcMain.on("recording:restart", () => restartRecording());
+  ipcMain.on("recording:start", () => void beginRecording({ type: "display" }));
+  ipcMain.on("recording:startDisplay", (_e, displayId?: number) => void beginRecording({ type: "display", displayId }));
+  ipcMain.on("recording:startWindow", (_e, title: string) => void beginRecording({ type: "window", title }));
+  ipcMain.on("recording:startArea", () => startAreaRecordingFromBar());
+  ipcMain.on("recording:stop", () => void finishRecording(true));
+  ipcMain.on("recording:discard", () => void finishRecording(false));
+  ipcMain.on("recording:pause", () => {
+    void pauseSession().then(() => {
+      ui = "paused";
+      push();
+    });
+  });
+  ipcMain.on("recording:resume", () => {
+    void resumeSession().then(() => {
+      ui = "recording";
+      push();
+    });
+  });
+  ipcMain.on("recording:restart", () => {
+    void finishRecording(false).then(() => beginRecording({ type: "display" }));
+  });
   ipcMain.on("recording:hide", () => barWin?.hide());
+  ipcMain.on("recording:setOptionsMode", (_e, v: boolean) => {
+    optionsMode = v;
+    push();
+  });
   ipcMain.handle("recording:listScreens", async () => {
     const sources = await desktopCapturer.getSources({
       types: ["screen"],
       thumbnailSize: { width: 320, height: 180 },
     });
-    return sources.map((s) => ({ id: s.id, name: s.name, thumbnail: s.thumbnail.toDataURL() }));
+    return sources.map((s) => ({ id: s.id, displayId: s.display_id, name: s.name, thumbnail: s.thumbnail.toDataURL() }));
   });
+  ipcMain.handle("recording:listWindows", async () => {
+    const sources = await desktopCapturer.getSources({
+      types: ["window"],
+      thumbnailSize: { width: 240, height: 135 },
+      fetchWindowIcons: true,
+    });
+    return sources
+      .filter((s) => s.name && !/reflecto/i.test(s.name))
+      .map((s) => ({ id: s.id, name: s.name, thumbnail: s.thumbnail.toDataURL() }));
+  });
+  ipcMain.handle("recording:listDevices", () => listDshowDevices());
+  ipcMain.on("capturebar:action", (_e, kind: string) => {
+    barWin?.hide();
+    if (kind === "region") void startRegionSelection();
+    else void performCapture({ kind: kind as never });
+  });
+}
+
+export function hideRecordingBar() {
+  barWin?.hide();
+}
+
+export async function recordingStopSave() {
+  if (ui === "recording" || ui === "paused") await finishRecording(true);
+}
+
+export async function recordingDiscard() {
+  if (ui === "recording" || ui === "paused" || ui === "countdown") await finishRecording(false);
+}
+
+export async function recordingPauseToggle() {
+  if (ui === "recording") {
+    await pauseSession();
+    ui = "paused";
+    push();
+  } else if (ui === "paused") {
+    await resumeSession();
+    ui = "recording";
+    push();
+  }
 }

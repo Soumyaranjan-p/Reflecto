@@ -8,12 +8,20 @@ export type BackgroundStyle =
   | { kind: "solid"; rgb: [number, number, number] }
   | { kind: "gradient"; id: string };
 
+export interface BeautifierBorder {
+  enabled: boolean;
+  color: string;
+  thickness: number;
+  opacity: number;
+}
+
 export interface BeautifierConfig {
   style: BackgroundStyle;
   padding: number;
   cornerRadius: number;
   shadowStrength: number;
   aspectRatio: "auto" | "1:1" | "4:3" | "3:2" | "16:9" | "9:16";
+  border: BeautifierBorder;
 }
 
 export const defaultBeautifierConfig: BeautifierConfig = {
@@ -22,7 +30,12 @@ export const defaultBeautifierConfig: BeautifierConfig = {
   cornerRadius: 0.018,
   shadowStrength: 0.36,
   aspectRatio: "auto",
+  border: { enabled: false, color: "#ffffff", thickness: 0.012, opacity: 1 },
 };
+
+export function beautifierNeedsCanvas(config: BeautifierConfig): boolean {
+  return config.style.kind !== "none" || Boolean(config.border?.enabled);
+}
 
 export interface GradientPreset {
   id: string;

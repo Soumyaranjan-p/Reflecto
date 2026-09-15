@@ -2,7 +2,7 @@ import { BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
 import { getPref, setPref, loadPreferences, defaultPreferences } from "../preferences";
 import { setLaunchAtLogin, getLaunchAtLogin } from "../updater";
-import { Action, defaultShortcut, displayString, effectiveShortcut, registerShortcuts } from "../shortcuts";
+import { Action, defaultShortcut, displayString, effectiveShortcut, registerShortcuts, setShortcutBinding } from "../shortcuts";
 import { preloadPath } from "../paths";
 
 /**
@@ -43,7 +43,7 @@ export function openSettingsWindow(section?: string) {
 }
 
 export function registerSettingsIpc() {
-  ipcMain.handle("settings:snapshot", () => {
+  ipcMain.handle("settings:snapshot", async () => {
     const prefs = { ...defaultPreferences, ...(loadPreferences().store as object) };
     const shortcuts: Record<string, { label: string; enabled: boolean } | null> = {};
     for (const action of Object.values(Action).filter((v) => typeof v === "number") as Action[]) {
@@ -53,7 +53,7 @@ export function registerSettingsIpc() {
     return {
       prefs,
       shortcuts,
-      launchAtLogin: getLaunchAtLogin(),
+      launchAtLogin: await getLaunchAtLogin(),
       defaults: Object.fromEntries(
         (Object.values(Action).filter((v) => typeof v === "number") as Action[])
           .map((a) => {
@@ -67,7 +67,7 @@ export function registerSettingsIpc() {
     setPref(key as never, value as never);
     return getPref(key as never);
   });
-  ipcMain.handle("settings:setLaunchAtLogin", (_e, enabled: boolean) => {
+  ipcMain.handle("settings:setLaunchAtLogin", async (_e, enabled: boolean) => {
     setLaunchAtLogin(enabled);
     return getLaunchAtLogin();
   });
@@ -83,6 +83,10 @@ export function registerSettingsIpc() {
   // Re-bind after shortcut edits (settings UI will call this).
   ipcMain.handle("settings:reregisterShortcuts", () => {
     registerShortcuts();
+    return true;
+  });
+  ipcMain.handle("settings:setShortcut", (_e, action: number, shortcut: { keyCode: number; modifiers: number; enabled: boolean } | null) => {
+    setShortcutBinding(action, shortcut);
     return true;
   });
   ipcMain.handle("settings:r2Test", async () => {

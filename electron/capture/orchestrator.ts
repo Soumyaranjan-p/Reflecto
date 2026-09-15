@@ -69,7 +69,7 @@ async function executeCapture(req: CaptureRequest): Promise<void> {
     case "regionEdit":
     case "regionPin": {
       if (!req.rect) {
-        await startRegionSelection();
+        await startRegionSelection(true, "capture", req.kind);
         return;
       }
       await captureAndProcess(req);
@@ -82,7 +82,7 @@ async function executeCapture(req: CaptureRequest): Promise<void> {
       break;
     }
     case "fullscreen": {
-      const displayId = req.displayId ?? screen.getPrimaryDisplay().id;
+      const displayId = req.displayId ?? screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).id;
       const source = await captureDisplay(displayId);
       const img = nativeImage.createFromDataURL(source.thumbnail.toDataURL());
       await processCapturedImage(img, req, displayId);
@@ -239,7 +239,7 @@ export function dismissAndPerform(kind: CaptureKind) {
 async function captureWindowById(id: string): Promise<Electron.DesktopCapturerSource> {
   const sources = await desktopCapturer.getSources({
     types: ["window"],
-    thumbnailSize: { width: 2560, height: 1440 },
+    thumbnailSize: { width: 4096, height: 4096 },
   });
   const match = sources.find((s) => s.id === id);
   if (!match) throw new Error("Window not found");

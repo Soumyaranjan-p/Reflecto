@@ -40,7 +40,13 @@ export function setLaunchAtLogin(enabled: boolean) {
   }
 }
 
-export function getLaunchAtLogin(): boolean {
-  if (autoLaunch) return autoLaunch.isEnabled().catch(() => false) as unknown as boolean;
+export async function getLaunchAtLogin(): Promise<boolean> {
+  if (autoLaunch) {
+    try {
+      return await autoLaunch.isEnabled();
+    } catch {
+      return false;
+    }
+  }
   return app.getLoginItemSettings().openAtLogin;
 }

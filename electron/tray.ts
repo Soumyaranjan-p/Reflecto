@@ -16,9 +16,8 @@ const POPOVER_BODY_HEIGHT = 480;
 const ARROW_HEIGHT = 9;
 
 export function createTray(): Tray {
-  const iconPath = path.join(__dirname, "../build/tray.png");
-  const icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 });
-  tray = new Tray(icon.isEmpty() ? nativeImage.createFromDataURL("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAhklEQVQoz2NgGDTgPxTjBf+hgImJCawGqAakGqBqmBqAahhqAKphqAGghqEGgBqGGgBqGGoAqGGoAaCGoQaAGoYaAGoYagCoYagBoIahBoAahhoAahhqAKhhqAGghqEGgBqGGgBqGGoAqGGoAaCGoQaAGoYaAGoYagCoYagBoIahBgYpAAC7WxGZb0zqUQAAAABJRU5ErkJggg==") : icon);
+  const icon = loadTrayIcon();
+  tray = new Tray(icon.isEmpty() ? nativeImage.createEmpty() : icon.resize({ width: 16, height: 16 }));
   tray.setToolTip("Reflecto");
 
   // Native context menu shown on right-click. Left click opens the popover,
@@ -119,3 +118,18 @@ export function registerTrayIpc() {
 }
 
 export { ARROW_HEIGHT };
+
+function loadTrayIcon(): Electron.NativeImage {
+  const candidates = [
+    path.join(__dirname, "../build/tray.png"),
+    path.join(process.resourcesPath || "", "tray.png"),
+    path.join(__dirname, "tray.png"),
+  ];
+  for (const file of candidates) {
+    const img = nativeImage.createFromPath(file);
+    if (!img.isEmpty()) return img;
+  }
+  return nativeImage.createFromDataURL(
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAnklEQVR4nO2Wuw3AIBBD3zAJWzAJWzAJI7AJm7AJozAJm7AJozAJm7AJm7AJ/yUqRYqUKFGq9AIv2OfYPjsbERERERER8f8A7gCuAO4AHgD2ZVsA7AHsgv4G4ArgCeAE4A3gCOAE4AXgA+AE4A3gCOAE4AXgA+AE4A3gCOAE4AXgA+AE4A3gCOAE4AXgA+AE4A3gCOAE4AXgA+AE4A3gCOAE4AXgA+AE4A3gC+ANwA/AB8APwA/AD8APwA/AD8APwA/AD8APwA/AD8APwA/AD8APwA/AD8APwA/AD8APwA/AD8APwA/AD8APwA/AD8P8fEREREfELcP4tO2G2NmwAAAAASUVORK5CYII=",
+  );
+}

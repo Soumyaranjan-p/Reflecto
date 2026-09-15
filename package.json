@@ -54,6 +54,10 @@
       {
         "from": "node_modules/ffmpeg-static/ffmpeg.exe",
         "to": "ffmpeg.exe"
+      },
+      {
+        "from": "build/tray.png",
+        "to": "tray.png"
       }
     ],
     "win": {

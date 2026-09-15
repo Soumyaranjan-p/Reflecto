@@ -15,11 +15,12 @@ export interface RegionSelectionOutcome {
   displayId?: number;
 }
 
-type CompleteHandler = (outcome: RegionSelectionOutcome, mode: RegionMode) => void;
+type CompleteHandler = (outcome: RegionSelectionOutcome, mode: RegionMode, captureKind: string) => void;
 
 let active: BrowserWindow[] = [];
 let resolver: ((o: RegionSelectionOutcome) => void) | null = null;
 let currentMode: RegionMode = "capture";
+let pendingCaptureKind = "region";
 let onComplete: CompleteHandler | null = null;
 
 /** Main registers capture routing here to avoid a circular import with orchestrator. */
@@ -30,6 +31,7 @@ export function setRegionCompleteHandler(fn: CompleteHandler) {
 export function startRegionSelection(
   allowsWindowSelection = true,
   mode: RegionMode = "capture",
+  captureKind = "region",
 ): Promise<RegionSelectionOutcome> {
   return new Promise((resolve) => {
     if (resolver) {
@@ -37,6 +39,7 @@ export function startRegionSelection(
     }
     resolver = resolve;
     currentMode = mode;
+    pendingCaptureKind = captureKind;
     active = [];
     const displays = screen.getAllDisplays();
     const lastRegion = getPref("lastRegionRect");
@@ -68,10 +71,11 @@ function finish(outcome: RegionSelectionOutcome) {
   active = [];
   const resolve = resolver;
   const mode = currentMode;
+  const captureKind = pendingCaptureKind;
   resolver = null;
   resolve?.(outcome);
   if (outcome.kind !== "cancelled") {
-    onComplete?.(outcome, mode);
+    onComplete?.(outcome, mode, captureKind);
   }
 }
 

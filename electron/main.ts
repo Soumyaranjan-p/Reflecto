@@ -13,11 +13,14 @@ import { HistoryStore } from "./history/store";
 import { onBusEvent } from "./bus";
 import { openSettingsWindow, registerSettingsIpc } from "./settings/window";
 import { openGalleryWindow, registerGalleryIpc } from "./gallery/window";
-import { showRecordingBar, registerRecordingIpc } from "./recording/bar";
+import { showRecordingBar, registerRecordingIpc, recordingStopSave, recordingPauseToggle, startAreaRecordingFromBar, recordingDiscard } from "./recording/bar";
 import { registerColorPickerIpc } from "./overlay/colorPicker";
 import { registerWindowPickerIpc } from "./overlay/windowPicker";
 import { copyImageToClipboard, saveToDefaultLocation } from "./preview/fileActions";
 import { randomUUID } from "node:crypto";
+import { exportEditedVideo } from "./recording/exportVideo";
+import { isR2Configured, uploadShare } from "./sharing/r2";
+import { openAnnotateEditor } from "./editor/annotatePresenter";
 
 /**
  * Reflecto main process — port of Sources/App/BetterShotApp.swift +
@@ -29,17 +32,24 @@ const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
   app.quit();
 } else {
-  app.on("second-instance", () => {
-    // Tray-only app: second launch does nothing visible.
+  app.on("second-instance", (_e, argv) => {
+    const url = argv.find((a) => a.startsWith("reflecto://"));
+    if (url) handleReflectoUrl(url);
   });
 
   app.whenReady().then(() => {
     loadPreferences();
+    if (process.defaultApp) {
+      if (process.argv.length >= 2) app.setAsDefaultProtocolClient("reflecto", process.execPath, [path.resolve(process.argv[1])]);
+    } else {
+      app.setAsDefaultProtocolClient("reflecto");
+    }
     HistoryStore.shared; // init library
-    setRegionCompleteHandler((outcome, mode) => {
+    setRegionCompleteHandler((outcome, mode, captureKind) => {
       if (mode !== "capture") return;
       if (outcome.kind === "region" && outcome.rect && outcome.displayId != null) {
-        void performCapture({ kind: "region", rect: outcome.rect, displayId: outcome.displayId });
+        const kind = (captureKind as CaptureKind) || "region";
+        void performCapture({ kind, rect: outcome.rect, displayId: outcome.displayId });
       } else if (outcome.kind === "window") {
         void performCapture({ kind: "window" });
       }
@@ -49,6 +59,8 @@ if (!gotLock) {
     wireShortcuts();
     setCaptureHandler((kind) => handleTrayCapture(kind));
     initUpdater();
+    const launchUrl = process.argv.find((a) => a.startsWith("reflecto://"));
+    if (launchUrl) handleReflectoUrl(launchUrl);
     onBusEvent((channel, payload) => {
       void channel;
       void payload;
@@ -108,6 +120,18 @@ function wireShortcuts() {
   onShortcut(Action.regionPin, () => void performCapture({ kind: "regionPin" }));
   onShortcut(Action.recording, () => void showRecordingBar(false));
   onShortcut(Action.recordingOptions, () => void showRecordingBar(true));
+  onShortcut(Action.recordArea, () => startAreaRecordingFromBar());
+  onShortcut(Action.stopRecording, () => void recordingStopSave());
+  onShortcut(Action.pauseRecording, () => void recordingPauseToggle());
+  onShortcut(Action.discardRecording, () => void recordingDiscard());
+  onShortcut(Action.restartRecording, () => {
+    void recordingDiscard().then(() => showRecordingBar(false));
+  });
+  onShortcut(Action.restoreLastCapture, () => {
+    const last = getLastCaptureUrl();
+    if (last) showOnDeck(last);
+  });
+  onShortcut(Action.openImage, () => void openImageFromDisk());
   onShortcut(Action.mediaGallery, () => openGalleryWindow());
   onShortcut(Action.openSettings, () => openSettingsWindow());
   onShortcut(Action.togglePreviews, () => toggleDeckVisibility());
@@ -223,6 +247,38 @@ function registerIpc() {
     copyImageToClipboard(temp);
     return true;
   });
+  ipcMain.handle("files:exportDataUrl", async (_e, dataUrl: string) => {
+    const dest = await dialog.showSaveDialog({
+      title: "Export image",
+      defaultPath: path.join(app.getPath("pictures"), `Reflecto_${Date.now()}.png`),
+      filters: [{ name: "PNG", extensions: ["png"] }, { name: "JPEG", extensions: ["jpg"] }],
+    });
+    if (dest.canceled || !dest.filePath) return null;
+    const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
+    fs.writeFileSync(dest.filePath, Buffer.from(base64, "base64"));
+    return dest.filePath;
+  });
+  ipcMain.handle("files:shareDataUrl", async (_e, dataUrl: string) => {
+    if (!isR2Configured()) {
+      openSettingsWindow("sharing");
+      return null;
+    }
+    const temp = path.join(app.getPath("temp"), `reflecto-share-${randomUUID()}.png`);
+    fs.writeFileSync(temp, Buffer.from(dataUrl.replace(/^data:image\/\w+;base64,/, ""), "base64"));
+    const url = await uploadShare(temp);
+    clipboard.writeText(url);
+    try { fs.unlinkSync(temp); } catch { /* ignore */ }
+    return url;
+  });
+  ipcMain.handle("video:export", async (_e, req) => {
+    const dest = await dialog.showSaveDialog({
+      title: "Export video",
+      defaultPath: path.join(app.getPath("videos"), `Reflecto_${Date.now()}.mp4`),
+      filters: [{ name: "MP4", extensions: ["mp4"] }],
+    });
+    if (dest.canceled || !dest.filePath) return null;
+    return exportEditedVideo({ ...req, dest: dest.filePath });
+  });
   ipcMain.on("files:startDrag", (e, filePath: string) => {
     e.sender.startDrag({ file: filePath, icon: nativeImage.createEmpty() });
   });
@@ -252,3 +308,27 @@ app.on("will-quit", () => {
 app.on("window-all-closed", () => {
   // Tray app: stay alive with no windows.
 });
+
+function handleReflectoUrl(raw: string) {
+  try {
+    const u = new URL(raw);
+    const route = `${u.hostname}${u.pathname}`.replace(/\/+$/, "").replace(/^\/+/, "");
+    if (route === "capture/region" || route === "capture/region/") void startRegionSelection();
+    else if (route === "capture/fullscreen") void performCapture({ kind: "fullscreen" });
+    else if (route === "capture/window") void performCapture({ kind: "window" });
+    else if (route === "ocr") void performCapture({ kind: "ocr" });
+    else if (route === "color-picker") void performCapture({ kind: "colorPicker" });
+    else if (route === "record") void showRecordingBar(false);
+    else if (route === "settings") openSettingsWindow();
+  } catch {
+    /* ignore malformed URLs */
+  }
+}
+
+async function openImageFromDisk() {
+  const result = await dialog.showOpenDialog({
+    properties: ["openFile"],
+    filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "webp", "gif"] }],
+  });
+  if (!result.canceled && result.filePaths[0]) openAnnotateEditor(result.filePaths[0]);
+}
