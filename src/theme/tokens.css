@@ -1,0 +1,72 @@
+/*
+ * Reflecto design tokens — extracted from the BetterShot SwiftUI sources.
+ * Sources: EditorChrome.swift, GlassSurface.swift, MenuBarContentView.swift,
+ * PreviewOverlay.swift, RecordingStudioWindow.swift, AnnotationEditorWindow.swift.
+ *
+ * PLATFORM GAPS (documented, intentional):
+ * - NSVisualEffectView/Liquid Glass → acrylic (Windows 11) + CSS backdrop-filter
+ *   fallback. Colors are close but the material differs from macOS glass.
+ * - SF Pro → Segoe UI (system font stack). Metrics differ ~2%.
+ * - NSColor systemBlue/systemRed → Apple palette hex values kept for fidelity.
+ */
+:root {
+  /* Colors — EditorChrome.swift */
+  --reflecto-accent: #007aff;            /* NSColor.systemBlue */
+  --reflecto-destructive: #ff3b30;       /* NSColor.systemRed */
+  --reflecto-destructive-light: #d92c26; /* systemRed blended 25% black (light surfaces) */
+
+  /* Neutrals — mapped from NSColor dynamic colors (light / dark via media query) */
+  --reflecto-panel: #ffffff;             /* controlBackgroundColor */
+  --reflecto-workspace: #f5f5f5;         /* windowBackgroundColor */
+  --reflecto-label: #000000;             /* labelColor */
+  --reflecto-secondary: rgba(0, 0, 0, 0.55);
+  --reflecto-tertiary: rgba(0, 0, 0, 0.35);
+  --reflecto-border: rgba(0, 0, 0, 0.10); /* Color.primary.opacity(0.10) */
+  --reflecto-separator: rgba(0, 0, 0, 0.12);
+
+  /* GlassSurface.swift depths */
+  --glass-floating-shadow: 0 5px 16px rgba(0, 0, 0, 0.35);
+  --glass-raised-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  --glass-material-opacity-floating: 0.35;
+  --glass-material-opacity-raised: 0.18;
+
+  /* Radii */
+  --radius-button: 6px;   /* EditorButtonStyle RoundedRectangle(6) */
+  --radius-card: 8px;     /* tray buttons, preview cards */
+  --radius-panel: 12px;   /* tray panel, MenuBarPanelShape */
+  --radius-glass-card: 10px; /* studioEffectCard, studio canvas */
+
+  /* Control metrics — MenuBarContentView / AnnotationEditorWindow */
+  --tray-button-height: 32px;
+  --tray-panel-width: 296px;
+  --tray-grid-gap: 6px;
+  --toolbar-height: 48px;
+  --footer-height: 52px;
+  --inspector-width: 300px;
+  --studio-inspector-width: 360px;
+  --popover-width: 340px;
+
+  /* Type */
+  --font-system: "Segoe UI", "Segoe UI Variable", system-ui, sans-serif;
+  --font-mono: "Cascadia Mono", Consolas, monospace;
+  --size-caption: 10px;
+  --size-control: 12px;
+  --size-mono-label: 11px;
+
+  /* Motion — RecordingMotion.showHideSpring + hover timing */
+  --hover-duration: 0.12s;          /* TrayButtonBackground easeOut */
+  --show-hide-spring: cubic-bezier(0.32, 0.72, 0, 1); /* approximation of spring(response:0.35, dampingFraction:0.8) */
+  --snappy: cubic-bezier(0.2, 0.8, 0.2, 1);           /* .snappy(duration:0.18–0.22) */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --reflecto-panel: #282828;
+    --reflecto-workspace: #1e1e1e;
+    --reflecto-label: #ffffff;
+    --reflecto-secondary: rgba(255, 255, 255, 0.6);
+    --reflecto-tertiary: rgba(255, 255, 255, 0.35);
+    --reflecto-border: rgba(255, 255, 255, 0.14);
+    --reflecto-separator: rgba(255, 255, 255, 0.14);
+  }
+}

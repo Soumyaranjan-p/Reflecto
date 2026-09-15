@@ -1,0 +1,67 @@
+/* Shared chrome built from tokens: EditorButtonStyle, glass surfaces, dividers. */
+@import "./tokens.css";
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-system);
+  color: var(--reflecto-label);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* GlassSurface(.raised) equivalent */
+.glass-raised {
+  background: color-mix(in srgb, var(--reflecto-panel) 82%, transparent);
+  backdrop-filter: blur(28px) saturate(1.4);
+  border: 0.5px solid color-mix(in srgb, var(--reflecto-separator) 50%, transparent);
+  box-shadow: var(--glass-raised-shadow);
+}
+
+/* GlassSurface(.floating) equivalent */
+.glass-floating {
+  background: color-mix(in srgb, var(--reflecto-panel) 65%, transparent);
+  backdrop-filter: blur(32px) saturate(1.5);
+  border: 0.5px solid color-mix(in srgb, var(--reflecto-separator) 50%, transparent);
+  box-shadow: var(--glass-floating-shadow);
+}
+
+/* EditorButtonStyle — EditorChrome.swift */
+.editor-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: var(--size-control);
+  font-weight: 500;
+  font-family: var(--font-system);
+  color: var(--reflecto-label);
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: var(--radius-button);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: default;
+  transition: background var(--hover-duration) ease-out, opacity var(--hover-duration) ease-out;
+}
+.editor-button:hover:not(:disabled) { background: rgba(128, 128, 128, 0.10); }
+.editor-button:active:not(:disabled) { background: rgba(128, 128, 128, 0.16); opacity: 0.8; }
+.editor-button:disabled { color: var(--reflecto-secondary); cursor: default; }
+.editor-button.selected { background: var(--reflecto-accent); color: #fff; }
+.editor-button.selected:active { background: rgba(0, 122, 255, 0.8); }
+.editor-button.destructive { color: var(--reflecto-destructive); }
+.editor-button.bordered { border-color: rgba(128, 128, 128, 0.25); }
+
+.divider-v {
+  width: 1px;
+  align-self: stretch;
+  background: var(--reflecto-separator);
+  opacity: 0.6;
+}
+.divider-h {
+  height: 1px;
+  width: 100%;
+  background: var(--reflecto-separator);
+  opacity: 0.6;
+}
