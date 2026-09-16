@@ -37,7 +37,7 @@ if (!gotLock) {
     if (url) handleReflectoUrl(url);
   });
 
-  app.whenReady().then(() => {
+  app.whenReady().then(async () => {
     loadPreferences();
     if (process.defaultApp) {
       if (process.argv.length >= 2) app.setAsDefaultProtocolClient("reflecto", process.execPath, [path.resolve(process.argv[1])]);
@@ -61,6 +61,13 @@ if (!gotLock) {
     initUpdater();
     const launchUrl = process.argv.find((a) => a.startsWith("reflecto://"));
     if (launchUrl) handleReflectoUrl(launchUrl);
+    if (process.argv.includes("--record-e2e")) {
+      const { runRecordingE2E } = await import("./recording/e2e");
+      const report = await runRecordingE2E();
+      console.log("E2E_REPORT", report);
+      app.exit(0);
+      return;
+    }
     onBusEvent((channel, payload) => {
       void channel;
       void payload;

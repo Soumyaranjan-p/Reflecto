@@ -8,7 +8,6 @@ import { showOnDeck } from "../preview/deck";
 import { HistoryStore } from "../history/store";
 import { showToast } from "../toast/toast";
 import { openVideoEditor } from "../editor/videoPresenter";
-import { listDshowDevices } from "./ffmpeg";
 import {
   isRecordingActive,
   pauseSession,
@@ -16,6 +15,9 @@ import {
   resumeSession,
   startSession,
   stopSession,
+  handleWorkerEvent,
+  takeBlob,
+  refreshMediaDevices,
 } from "./engine";
 import { performCapture } from "../capture/orchestrator";
 
@@ -152,7 +154,7 @@ export function startAreaRecordingFromBar() {
   barWin?.hide();
   void startRegionSelection(false, "select").then((outcome) => {
     if (outcome.kind === "region" && outcome.rect) {
-      void beginRecording({ type: "area", rect: outcome.rect });
+      void beginRecording({ type: "area", rect: outcome.rect, displayId: outcome.displayId });
     } else {
       barWin?.show();
     }
@@ -166,8 +168,12 @@ function stopTicker() {
 
 export function registerRecordingIpc() {
   ipcMain.on("recording:start", () => void beginRecording({ type: "display" }));
-  ipcMain.on("recording:startDisplay", (_e, displayId?: number) => void beginRecording({ type: "display", displayId }));
-  ipcMain.on("recording:startWindow", (_e, title: string) => void beginRecording({ type: "window", title }));
+  ipcMain.on("recording:startDisplay", (_e, sourceId?: string, displayId?: number) =>
+    void beginRecording({ type: "display", sourceId, displayId }),
+  );
+  ipcMain.on("recording:startWindow", (_e, sourceId: string, title?: string) =>
+    void beginRecording({ type: "window", sourceId, title }),
+  );
   ipcMain.on("recording:startArea", () => startAreaRecordingFromBar());
   ipcMain.on("recording:stop", () => void finishRecording(true));
   ipcMain.on("recording:discard", () => void finishRecording(false));
@@ -191,12 +197,22 @@ export function registerRecordingIpc() {
     optionsMode = v;
     push();
   });
+  ipcMain.on("recording:worker-event", (_e, kind: string, payload: unknown) => handleWorkerEvent(kind, payload));
+  ipcMain.handle("recording:save-blob", (_e, bytes: unknown) => {
+    takeBlob(Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes as Uint8Array));
+    return true;
+  });
   ipcMain.handle("recording:listScreens", async () => {
     const sources = await desktopCapturer.getSources({
       types: ["screen"],
       thumbnailSize: { width: 320, height: 180 },
     });
-    return sources.map((s) => ({ id: s.id, displayId: s.display_id, name: s.name, thumbnail: s.thumbnail.toDataURL() }));
+    return sources.map((s) => ({
+      id: s.id,
+      displayId: s.display_id,
+      name: s.name,
+      thumbnail: s.thumbnail.toDataURL(),
+    }));
   });
   ipcMain.handle("recording:listWindows", async () => {
     const sources = await desktopCapturer.getSources({
@@ -208,7 +224,12 @@ export function registerRecordingIpc() {
       .filter((s) => s.name && !/reflecto/i.test(s.name))
       .map((s) => ({ id: s.id, name: s.name, thumbnail: s.thumbnail.toDataURL() }));
   });
-  ipcMain.handle("recording:listDevices", () => listDshowDevices());
+  ipcMain.handle("recording:listDevices", async () => {
+    const chromium = await refreshMediaDevices();
+    if (chromium.length) return chromium;
+    const { listDshowDevices } = await import("./ffmpeg");
+    return listDshowDevices();
+  });
   ipcMain.on("capturebar:action", (_e, kind: string) => {
     barWin?.hide();
     if (kind === "region") void startRegionSelection();

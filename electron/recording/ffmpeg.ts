@@ -45,8 +45,13 @@ export async function listDshowDevices(): Promise<AvDevice[]> {
       for (const line of out.split("\n")) {
         if (/DirectShow video devices/i.test(line)) { kind = "video"; continue; }
         if (/DirectShow audio devices/i.test(line)) { kind = "audio"; continue; }
+        const tagged = line.match(/"([^"]+)"\s*\((video|audio)\)/i);
+        if (tagged) {
+          devices.push({ name: tagged[1], kind: tagged[2].toLowerCase() as "audio" | "video" });
+          continue;
+        }
         const m = line.match(/"([^"]+)"/);
-        if (m && kind) devices.push({ name: m[1], kind });
+        if (m && kind && !/Alternative name/i.test(line)) devices.push({ name: m[1], kind });
       }
       resolve(devices);
     });

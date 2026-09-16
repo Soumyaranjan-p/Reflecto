@@ -7,12 +7,13 @@ interface RecState {
   optionsMode: boolean;
   elapsedMs: number;
   microphone: string;
+  systemAudio: boolean;
   showCursor: boolean;
   camera: string;
   timer: number;
 }
 
-interface Device { name: string; kind: "audio" | "video" }
+interface Device { id?: string; name?: string; label?: string; kind: string }
 interface ScreenSrc { id: string; displayId: string; name: string }
 interface WinSrc { id: string; name: string }
 
@@ -25,7 +26,7 @@ function formatTime(ms: number): string {
 
 function RecordingBar() {
   const [rec, setRec] = useState<RecState>({
-    state: "idle", optionsMode: false, elapsedMs: 0, microphone: "", showCursor: true, camera: "", timer: 0,
+    state: "idle", optionsMode: false, elapsedMs: 0, microphone: "", systemAudio: false, showCursor: true, camera: "", timer: 0,
   });
   const [devices, setDevices] = useState<Device[]>([]);
   const [screens, setScreens] = useState<ScreenSrc[]>([]);
@@ -40,8 +41,10 @@ function RecordingBar() {
   }, []);
 
   const idle = rec.state === "idle" || rec.state === "countdown";
-  const mics = devices.filter((d) => d.kind === "audio");
-  const cams = devices.filter((d) => d.kind === "video");
+  const mics = devices.filter((d) => d.kind === "audio" || d.kind === "audioinput");
+  const cams = devices.filter((d) => d.kind === "video" || d.kind === "videoinput");
+  const deviceId = (d: Device) => d.id || d.name || "";
+  const deviceLabel = (d: Device) => d.label || d.name || deviceId(d);
 
   return (
     <div style={{ padding: "8px 10px" }}>
@@ -81,23 +84,29 @@ function RecordingBar() {
                 <select
                   title="Display"
                   style={miniSelect}
-                  onChange={(e) => window.reflecto?.recordingStartDisplay?.(Number(e.target.value) || undefined)}
+                  onChange={(e) => {
+                    const [sourceId, displayId] = e.target.value.split("||");
+                    window.reflecto?.recordingStartDisplay?.(sourceId, displayId ? Number(displayId) : undefined);
+                  }}
                   defaultValue=""
                 >
                   <option value="" disabled>Display</option>
                   {screens.map((s, i) => (
-                    <option key={s.id} value={s.displayId || ""}>{s.name || `Screen ${i + 1}`}</option>
+                    <option key={s.id} value={`${s.id}||${s.displayId || ""}`}>{s.name || `Screen ${i + 1}`}</option>
                   ))}
                 </select>
                 <select
                   title="Window"
                   style={miniSelect}
-                  onChange={(e) => { if (e.target.value) window.reflecto?.recordingStartWindow?.(e.target.value); }}
+                  onChange={(e) => {
+                    const win = windows.find((w) => w.id === e.target.value);
+                    if (win) window.reflecto?.recordingStartWindow?.(win.id, win.name);
+                  }}
                   defaultValue=""
                 >
                   <option value="" disabled>Window</option>
                   {windows.map((w) => (
-                    <option key={w.id} value={w.name}>{w.name}</option>
+                    <option key={w.id} value={w.id}>{w.name}</option>
                   ))}
                 </select>
                 <BarIcon label="Area rec" onClick={() => window.reflecto?.recordingStartArea?.()} />
@@ -108,7 +117,7 @@ function RecordingBar() {
                   onChange={(e) => window.reflecto?.setPref?.("recordingMicrophone", e.target.value)}
                 >
                   <option value="">Mic off</option>
-                  {mics.map((m) => <option key={m.name} value={m.name}>{m.name}</option>)}
+                  {mics.map((m) => <option key={deviceId(m)} value={deviceId(m)}>{deviceLabel(m)}</option>)}
                 </select>
                 <select
                   title="Camera"
@@ -117,8 +126,13 @@ function RecordingBar() {
                   onChange={(e) => window.reflecto?.setPref?.("recordingCamera", e.target.value)}
                 >
                   <option value="">Camera off</option>
-                  {cams.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
+                  {cams.map((c) => <option key={deviceId(c)} value={deviceId(c)}>{deviceLabel(c)}</option>)}
                 </select>
+                <BarIcon
+                  label={rec.systemAudio ? "Sys audio" : "No sys audio"}
+                  accent={rec.systemAudio}
+                  onClick={() => window.reflecto?.setPref?.("recordingSystemAudio", !rec.systemAudio)}
+                />
                 <BarIcon
                   label={rec.showCursor ? "Cursor" : "No cursor"}
                   onClick={() => window.reflecto?.setPref?.("recordingShowCursor", !rec.showCursor)}

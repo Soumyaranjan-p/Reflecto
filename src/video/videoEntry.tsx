@@ -164,28 +164,66 @@ function VideoStudio() {
         )}
         <div style={{ flex: 1, display: "grid", placeItems: "center", background: "#111", padding: 20, minWidth: 0 }}>
           {src ? (
-            <video
-              ref={videoRef}
-              src={src}
-              style={{ maxWidth: "100%", maxHeight: "100%", background: "#000", cursor: cropping || maskTool ? "crosshair" : "default" }}
-              onLoadedMetadata={(e) => {
-                const d = e.currentTarget.duration || 0;
-                setDuration(d);
-                setTrimEnd(d);
-              }}
-              onTimeUpdate={(e) => {
-                const t = e.currentTarget.currentTime;
-                setCurrent(t);
-                if (trimEnd && t >= trimEnd) {
-                  e.currentTarget.pause();
-                  e.currentTarget.currentTime = trimStart;
-                  setPlaying(false);
-                }
-              }}
-              onMouseDown={onDown}
-              onMouseMove={onMove}
-              onMouseUp={onUp}
-            />
+            <div style={{ position: "relative", maxWidth: "100%", maxHeight: "100%" }}>
+              <video
+                ref={videoRef}
+                src={src}
+                style={{ maxWidth: "100%", maxHeight: "70vh", background: "#000", display: "block", cursor: cropping || maskTool ? "crosshair" : "default" }}
+                onLoadedMetadata={(e) => {
+                  const d = e.currentTarget.duration || 0;
+                  setDuration(d);
+                  setTrimEnd(d);
+                }}
+                onTimeUpdate={(e) => {
+                  const t = e.currentTarget.currentTime;
+                  setCurrent(t);
+                  if (trimEnd && t >= trimEnd) {
+                    e.currentTarget.pause();
+                    e.currentTarget.currentTime = trimStart;
+                    setPlaying(false);
+                  }
+                }}
+                onMouseDown={onDown}
+                onMouseMove={onMove}
+                onMouseUp={onUp}
+              />
+              {(masks.length > 0 || draft || crop) && videoRef.current && (
+                <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+                  {masks.map((m) => {
+                    const v = videoRef.current!;
+                    const sx = v.clientWidth / v.videoWidth;
+                    const sy = v.clientHeight / v.videoHeight;
+                    return (
+                      <div
+                        key={m.id}
+                        style={{
+                          position: "absolute",
+                          left: m.x * sx,
+                          top: m.y * sy,
+                          width: m.width * sx,
+                          height: m.height * sy,
+                          background: m.type === "blur" ? "rgba(80,80,120,0.35)" : "rgba(0,0,0,0.28)",
+                          backdropFilter: m.type === "blur" ? "blur(6px)" : "none",
+                          imageRendering: m.type === "pixelate" ? "pixelated" : undefined,
+                          outline: "1px solid rgba(255,255,255,0.7)",
+                        }}
+                      />
+                    );
+                  })}
+                  {draft && (
+                    <div style={{
+                      position: "absolute",
+                      left: draft.x * (videoRef.current.clientWidth / videoRef.current.videoWidth),
+                      top: draft.y * (videoRef.current.clientHeight / videoRef.current.videoHeight),
+                      width: draft.w * (videoRef.current.clientWidth / videoRef.current.videoWidth),
+                      height: draft.h * (videoRef.current.clientHeight / videoRef.current.videoHeight),
+                      outline: "1px dashed #007aff",
+                    }}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
           ) : (
             <div style={{ color: "#888" }}>No recording loaded</div>
           )}

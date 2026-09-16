@@ -73,8 +73,8 @@ var api = {
     return () => import_electron.ipcRenderer.removeListener("gallery:refresh", listener);
   },
   recordingStart: () => import_electron.ipcRenderer.send("recording:start"),
-  recordingStartDisplay: (displayId) => import_electron.ipcRenderer.send("recording:startDisplay", displayId),
-  recordingStartWindow: (title) => import_electron.ipcRenderer.send("recording:startWindow", title),
+  recordingStartDisplay: (sourceId, displayId) => import_electron.ipcRenderer.send("recording:startDisplay", sourceId, displayId),
+  recordingStartWindow: (sourceId, title) => import_electron.ipcRenderer.send("recording:startWindow", sourceId, title),
   recordingStartArea: () => import_electron.ipcRenderer.send("recording:startArea"),
   recordingStop: () => import_electron.ipcRenderer.send("recording:stop"),
   recordingDiscard: () => import_electron.ipcRenderer.send("recording:discard"),
@@ -86,6 +86,8 @@ var api = {
   recordingListScreens: () => import_electron.ipcRenderer.invoke("recording:listScreens"),
   recordingListWindows: () => import_electron.ipcRenderer.invoke("recording:listWindows"),
   recordingListDevices: () => import_electron.ipcRenderer.invoke("recording:listDevices"),
+  recordingWorkerEvent: (kind, payload) => import_electron.ipcRenderer.send("recording:worker-event", kind, payload),
+  recordingSaveBlob: (bytes) => import_electron.ipcRenderer.invoke("recording:save-blob", bytes),
   captureBarAction: (kind) => import_electron.ipcRenderer.send("capturebar:action", kind),
   onRecordingState: (callback) => {
     const listener = (_e, state) => callback(state);

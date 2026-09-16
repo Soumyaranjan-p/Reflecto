@@ -63,8 +63,10 @@ const api = {
   },
 
   recordingStart: () => ipcRenderer.send("recording:start"),
-  recordingStartDisplay: (displayId?: number) => ipcRenderer.send("recording:startDisplay", displayId),
-  recordingStartWindow: (title: string) => ipcRenderer.send("recording:startWindow", title),
+  recordingStartDisplay: (sourceId?: string, displayId?: number) =>
+    ipcRenderer.send("recording:startDisplay", sourceId, displayId),
+  recordingStartWindow: (sourceId: string, title?: string) =>
+    ipcRenderer.send("recording:startWindow", sourceId, title),
   recordingStartArea: () => ipcRenderer.send("recording:startArea"),
   recordingStop: () => ipcRenderer.send("recording:stop"),
   recordingDiscard: () => ipcRenderer.send("recording:discard"),
@@ -76,6 +78,9 @@ const api = {
   recordingListScreens: () => ipcRenderer.invoke("recording:listScreens"),
   recordingListWindows: () => ipcRenderer.invoke("recording:listWindows"),
   recordingListDevices: () => ipcRenderer.invoke("recording:listDevices"),
+  recordingWorkerEvent: (kind: string, payload: unknown) =>
+    ipcRenderer.send("recording:worker-event", kind, payload),
+  recordingSaveBlob: (bytes: Uint8Array) => ipcRenderer.invoke("recording:save-blob", bytes),
   captureBarAction: (kind: string) => ipcRenderer.send("capturebar:action", kind),
   onRecordingState: (callback: (state: unknown) => void) => {
     const listener = (_e: Electron.IpcRendererEvent, state: unknown) => callback(state);
