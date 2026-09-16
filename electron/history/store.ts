@@ -1,4 +1,4 @@
-import { app, nativeImage } from "electron";
+import { app, nativeImage, shell } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
@@ -21,6 +21,7 @@ export interface CaptureRecord {
   beautifiedPath?: string | null;
   sourcePath?: string | null;
   shareURL?: string | null;
+  localDeleted?: boolean;
 }
 
 const MAX_RETENTION = 500;
@@ -112,13 +113,32 @@ export class HistoryStore {
     }) ?? null;
   }
 
-  deleteRecord(record: CaptureRecord) {
-    this.records = this.records.filter((r) => r.id !== record.id);
-    this.saveRecords();
+  async deleteRecord(record: CaptureRecord): Promise<{ trashed: boolean; keptShare: string | null }> {
+    const file = this.urlForRecord(record);
+    const share = record.shareURL ?? null;
+    let trashed = false;
     try {
-      const file = this.urlForRecord(record);
-      if (file.startsWith(this.storageDir) && fs.existsSync(file)) fs.unlinkSync(file);
-    } catch { /* ignore */ }
+      if (file && fs.existsSync(file)) {
+        await shell.trashItem(file);
+        trashed = !fs.existsSync(file);
+      }
+    } catch {
+      try {
+        if (file && fs.existsSync(file) && file.startsWith(this.storageDir)) fs.unlinkSync(file);
+        trashed = !fs.existsSync(file);
+      } catch { /* ignore */ }
+    }
+    if (share) {
+      const index = this.records.findIndex((r) => r.id === record.id);
+      if (index >= 0) {
+        this.records[index] = { ...this.records[index], localDeleted: true };
+        this.saveRecords();
+      }
+    } else {
+      this.records = this.records.filter((r) => r.id !== record.id);
+      this.saveRecords();
+    }
+    return { trashed, keptShare: share };
   }
 
   recent(kind?: CaptureKind, limit = 12): CaptureRecord[] {

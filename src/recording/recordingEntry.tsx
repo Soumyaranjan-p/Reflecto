@@ -137,6 +137,24 @@ function RecordingBar() {
                   label={rec.showCursor ? "Cursor" : "No cursor"}
                   onClick={() => window.reflecto?.setPref?.("recordingShowCursor", !rec.showCursor)}
                 />
+                <select
+                  title="Cursor style"
+                  style={miniSelect}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    window.reflecto?.setPref?.("recordingCursorStyle", v);
+                    if (v === "hidden") window.reflecto?.setPref?.("recordingShowCursor", false);
+                    else window.reflecto?.setPref?.("recordingShowCursor", true);
+                  }}
+                  defaultValue="recorded"
+                >
+                  <option value="recorded">Recorded</option>
+                  <option value="hidden">Hidden</option>
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
+                  <option value="dot">Dot</option>
+                  <option value="hand">Hand</option>
+                </select>
               </>
             )}
             <div style={{ flex: 1 }} />

@@ -9,6 +9,7 @@ interface Mask {
   y: number;
   width: number;
   height: number;
+  coverage: "crop" | "full";
 }
 
 function fileUrl(src: string): string {
@@ -32,6 +33,8 @@ function VideoStudio() {
   const [draft, setDraft] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [fps, setFps] = useState(30);
   const [crf, setCrf] = useState(20);
+  const [speed, setSpeed] = useState(1);
+  const [maskCoverage, setMaskCoverage] = useState<"crop" | "full">("crop");
   const [busy, setBusy] = useState(false);
   const [inspector, setInspector] = useState(true);
   const drag = useRef<{ x: number; y: number } | null>(null);
@@ -77,7 +80,7 @@ function VideoStudio() {
     if (!draft || !drag.current) { drag.current = null; return; }
     if (draft.w > 8 && draft.h > 8) {
       if (cropping) setCrop({ x: draft.x, y: draft.y, w: draft.w, h: draft.h });
-      if (maskTool) setMasks((m) => [...m, { id: crypto.randomUUID(), type: maskTool, x: draft.x, y: draft.y, width: draft.w, height: draft.h }]);
+      if (maskTool) setMasks((m) => [...m, { id: crypto.randomUUID(), type: maskTool, x: draft.x, y: draft.y, width: draft.w, height: draft.h, coverage: maskCoverage }]);
     }
     setDraft(null);
     drag.current = null;
@@ -97,6 +100,7 @@ function VideoStudio() {
         masks,
         fps,
         crf,
+        speed,
       });
       if (dest) await window.reflecto?.revealPath?.(dest);
     } finally {
@@ -156,6 +160,15 @@ function VideoStudio() {
             </Row>
             <Row label={`Quality (CRF ${crf})`}>
               <input type="range" min={16} max={28} value={crf} onChange={(e) => setCrf(Number(e.target.value))} style={{ width: 140 }} />
+            </Row>
+            <Row label={`Speed ${speed.toFixed(2)}×`}>
+              <input type="range" min={0.25} max={8} step={0.01} value={speed} onChange={(e) => setSpeed(Number(e.target.value))} style={{ width: 140 }} />
+            </Row>
+            <Row label="Mask coverage">
+              <select value={maskCoverage} onChange={(e) => setMaskCoverage(e.target.value as "crop" | "full")} style={selectStyle}>
+                <option value="crop">Crop only</option>
+                <option value="full">Full frame</option>
+              </select>
             </Row>
             <h3 style={{ margin: "16px 0 10px", fontSize: 13 }}>Masks</h3>
             <div style={{ color: "var(--reflecto-secondary)" }}>{masks.length} blur/pixelate regions</div>

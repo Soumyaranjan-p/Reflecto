@@ -111,6 +111,7 @@ async function beginRecording(source: Parameters<typeof startSession>[0]["source
       microphone: getPref("recordingMicrophone") || null,
       systemAudio: getPref("recordingSystemAudio"),
       showCursor: getPref("recordingShowCursor"),
+      cursorStyle: getPref("recordingCursorStyle"),
       camera: getPref("recordingCamera") || null,
       fps: getPref("recordingFps"),
     });

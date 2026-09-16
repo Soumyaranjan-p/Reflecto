@@ -73,9 +73,9 @@ export function registerGalleryIpc() {
     else if (/\.(png|jpe?g|webp|gif)$/i.test(ext)) openAnnotateEditor(filePath);
     else showOnDeck(filePath);
   });
-  ipcMain.handle("gallery:delete", (_e, id: string) => {
+  ipcMain.handle("gallery:delete", async (_e, id: string) => {
     const record = HistoryStore.shared.records.find((r) => r.id === id);
-    if (record) HistoryStore.shared.deleteRecord(record);
-    return true;
+    if (!record) return { trashed: false, keptShare: null };
+    return HistoryStore.shared.deleteRecord(record);
   });
 }

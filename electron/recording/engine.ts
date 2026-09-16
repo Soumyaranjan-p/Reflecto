@@ -6,6 +6,15 @@ import { spawn, type ChildProcess } from "node:child_process";
 import { even, resolveFfmpeg, runFfmpeg, listDshowDevices } from "./ffmpeg";
 import { getPref } from "../preferences";
 import { preloadPath } from "../paths";
+import {
+  needsGdiGrab,
+  startGdiGrab,
+  stopGdiGrab,
+  lastGdiInfo,
+  resetGdiInfo,
+  type CursorStyle,
+} from "./gdigrab";
+import { getWindowRect, parseCapturerHwnd } from "../win32";
 
 /**
  * Windows equivalent of ScreenRecordingManager:
@@ -24,6 +33,7 @@ export interface RecordingOptions {
   microphone?: string | null;
   systemAudio?: boolean;
   showCursor?: boolean;
+  cursorStyle?: CursorStyle;
   camera?: string | null;
   fps?: number;
 }
@@ -48,6 +58,10 @@ let mediaDevices: Array<{ id: string; label: string; kind: string }> = [];
 let lastWorkerInfo: Record<string, unknown> | null = null;
 let cameraProc: ChildProcess | null = null;
 let lastCameraPath: string | null = null;
+let gdiMode = false;
+let pointerTimer: NodeJS.Timeout | null = null;
+let pointerSamples: Array<{ t: number; x: number; y: number }> = [];
+let pointerStartedAt = 0;
 
 export function lastCameraSidecar() {
   if (!lastCameraPath || !fs.existsSync(lastCameraPath)) return null;
@@ -56,6 +70,10 @@ export function lastCameraSidecar() {
 
 export function lastCaptureWorkerInfo() {
   return lastWorkerInfo;
+}
+
+export function lastPointerLog() {
+  return pointerSamples.slice();
 }
 
 export function recordingLog(): string[] {
@@ -130,6 +148,43 @@ export async function startSession(options: RecordingOptions): Promise<void> {
     log: [],
   };
   lastBlob = null;
+  lastWorkerInfo = null;
+  resetGdiInfo();
+  gdiMode = false;
+  const fps = options.fps ?? getPref("recordingFps") ?? 30;
+  const cursorStyle = (options.cursorStyle || (options.showCursor === false ? "hidden" : "recorded")) as CursorStyle;
+  const useGdi = needsGdiGrab({
+    sourceType: options.source.type,
+    showCursor: options.showCursor,
+    cursorStyle,
+  });
+
+  if (useGdi) {
+    const sourceId = options.source.type === "window" ? options.source.sourceId : await resolveSourceId(options.source);
+    const hwnd = options.source.type === "window" ? (parseCapturerHwnd(sourceId || "") ?? undefined) : undefined;
+    const title = options.source.type === "window" ? options.source.title : undefined;
+    const winRect = hwnd ? getWindowRect(hwnd) : undefined;
+    if (options.source.type === "window") {
+      log(`gdigrab window hwnd=${hwnd ?? "none"} title=${title || ""} bounds=${winRect ? `${winRect.width}x${winRect.height}+${winRect.x},${winRect.y}` : "unknown"}`);
+    }
+    const areaRect = options.source.type === "area" ? options.source.rect : undefined;
+    await startGdiGrab({
+      kind: options.source.type,
+      hwnd,
+      title,
+      rect: winRect ?? areaRect,
+      fps,
+      drawMouse: cursorStyle === "recorded" && options.showCursor !== false,
+    });
+    gdiMode = true;
+    session.state = "recording";
+    session.startedAt = Date.now();
+    startPointerLog();
+    log(`gdigrab started draw_mouse=${cursorStyle === "recorded" && options.showCursor !== false ? 1 : 0} style=${cursorStyle}`);
+    if (options.camera) await startCameraSidecar();
+    return;
+  }
+
   const win = await ensureCaptureWorker();
   const sourceId = await resolveSourceId(options.source);
   if (!sourceId) throw new Error("No desktop capture source for this display/window");
@@ -157,7 +212,7 @@ export async function startSession(options: RecordingOptions): Promise<void> {
       crop,
       scaleFactor: display?.scaleFactor ?? screen.getPrimaryDisplay().scaleFactor,
       microphoneId: options.microphone || null,
-      cameraId: options.camera || null,
+      cameraId: null,
       systemAudio: Boolean(options.systemAudio),
       fps: options.fps ?? getPref("recordingFps") ?? 30,
     });
@@ -170,6 +225,7 @@ export async function startSession(options: RecordingOptions): Promise<void> {
   });
   session.state = "recording";
   session.startedAt = Date.now();
+  startPointerLog();
   log("MediaRecorder started");
   if (options.camera) await startCameraSidecar();
 }
@@ -177,23 +233,40 @@ export async function startSession(options: RecordingOptions): Promise<void> {
 export async function pauseSession(): Promise<void> {
   if (!session || session.state !== "recording") return;
   session.elapsedBeforePause = currentElapsed();
-  worker?.webContents.send("recording:worker-pause");
+  if (gdiMode) {
+    log("gdigrab pause keeps capturing (Windows ffmpeg cannot pause gdigrab mid-stream); elapsed timer paused");
+  } else {
+    worker?.webContents.send("recording:worker-pause");
+    log("paused (MediaRecorder.pause)");
+  }
   session.state = "paused";
-  log("paused (MediaRecorder.pause)");
 }
 
 export async function resumeSession(): Promise<void> {
   if (!session || session.state !== "paused") return;
-  worker?.webContents.send("recording:worker-resume");
+  if (!gdiMode) {
+    worker?.webContents.send("recording:worker-resume");
+    log("resumed (MediaRecorder.resume)");
+  } else {
+    log("gdigrab resume (timer only)");
+  }
   session.state = "recording";
   session.startedAt = Date.now();
-  log("resumed (MediaRecorder.resume)");
 }
 
 export async function stopSession(save: boolean): Promise<string | null> {
   if (!session) return null;
   session.elapsedBeforePause = currentElapsed();
+  stopPointerLog();
   await stopCameraSidecar();
+  if (gdiMode) {
+    const notes = session.log;
+    session = null;
+    gdiMode = false;
+    const dest = await stopGdiGrab(save);
+    logLine(notes, dest ? `gdigrab saved ${dest}` : "gdigrab discarded");
+    return dest;
+  }
   await new Promise<void>((resolve) => {
     pendingStop = { resolve };
     worker?.webContents.send("recording:worker-stop");
@@ -244,31 +317,87 @@ async function startCameraSidecar() {
   const dest = path.join(app.getPath("temp"), `reflecto-camera-${randomUUID()}.mkv`);
   lastCameraPath = dest;
   log(`camera sidecar dshow="${cam.name}" -> ${dest}`);
-  cameraProc = spawn(resolveFfmpeg(), [
-    "-y", "-f", "dshow", "-rtbufsize", "64M",
-    "-i", `video=${cam.name}`,
-    "-an", "-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p",
-    dest,
-  ], { stdio: ["pipe", "ignore", "pipe"] });
-  cameraProc.stderr?.on("data", (d) => {
-    const line = String(d);
-    if (/error|fail/i.test(line)) log(`camera sidecar: ${line.trim().slice(0, 200)}`);
+  await new Promise<void>((resolve) => {
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+    cameraProc = spawn(resolveFfmpeg(), [
+      "-y",
+      "-f", "dshow",
+      "-rtbufsize", "64M",
+      "-framerate", "30",
+      "-video_size", "640x360",
+      "-i", `video=${cam.name}`,
+      "-an",
+      "-c:v", "libx264",
+      "-preset", "ultrafast",
+      "-pix_fmt", "yuv420p",
+      "-flush_packets", "1",
+      dest,
+    ], { stdio: ["pipe", "ignore", "pipe"] });
+    cameraProc.stderr?.on("data", (d) => {
+      const line = String(d);
+      if (/error|fail/i.test(line) && !/dummy/i.test(line)) log(`camera sidecar: ${line.trim().slice(0, 220)}`);
+      if (/frame=\s*[1-9]/.test(line) || /time=\s*00:00:0[0-9]\.[1-9]/.test(line)) done();
+    });
+    cameraProc.on("error", (err) => {
+      log(`camera sidecar spawn: ${err}`);
+      done();
+    });
+    setTimeout(done, 8000);
   });
 }
 
 function stopCameraSidecar(): Promise<void> {
-  const proc = cameraProc;
+  const child = cameraProc;
   cameraProc = null;
-  if (!proc || proc.killed) return Promise.resolve();
+  if (!child) return Promise.resolve();
   return new Promise((resolve) => {
-    const done = () => resolve();
-    proc.once("close", done);
-    try { proc.stdin?.write("q\n"); } catch { /* ignore */ }
-    setTimeout(() => {
-      if (!proc.killed) proc.kill();
-    }, 2500);
-    setTimeout(done, 5000);
+    let settled = false;
+    const finish = async () => {
+      if (settled) return;
+      settled = true;
+      const src = lastCameraPath;
+      if (src && fs.existsSync(src) && fs.statSync(src).size > 2048) {
+        const remux = src.replace(/\.mkv$/i, ".mp4");
+        try {
+          await runFfmpeg(["-y", "-i", src, "-c", "copy", "-movflags", "+faststart", remux]);
+          if (fs.existsSync(remux) && fs.statSync(remux).size > 1024) {
+            try { fs.unlinkSync(src); } catch { /* ignore */ }
+            lastCameraPath = remux;
+            log(`camera sidecar finalized ${remux} bytes=${fs.statSync(remux).size}`);
+          }
+        } catch (err) {
+          log(`camera sidecar remux failed, keeping mkv: ${err}`);
+        }
+      } else {
+        log(`camera sidecar not finalized size=${src && fs.existsSync(src) ? fs.statSync(src).size : 0}`);
+      }
+      resolve();
+    };
+    child.once("close", () => { void finish(); });
+    try { child.stdin?.write("q\n"); } catch { /* ignore */ }
+    setTimeout(() => { try { if (!child.killed) child.kill(); } catch { /* ignore */ } }, 3000);
+    setTimeout(() => { void finish(); }, 7000);
   });
+}
+
+function startPointerLog() {
+  stopPointerLog();
+  pointerSamples = [];
+  pointerStartedAt = Date.now();
+  pointerTimer = setInterval(() => {
+    const p = screen.getCursorScreenPoint();
+    pointerSamples.push({ t: Date.now() - pointerStartedAt, x: p.x, y: p.y });
+  }, 16);
+}
+
+function stopPointerLog() {
+  if (pointerTimer) clearInterval(pointerTimer);
+  pointerTimer = null;
 }
 
 export function handleWorkerEvent(kind: string, payload: unknown) {
@@ -336,4 +465,4 @@ export function isRecordingActive(): boolean {
   return Boolean(session && session.state !== "idle");
 }
 
-export { even, resolveFfmpeg };
+export { even, resolveFfmpeg, lastGdiInfo };

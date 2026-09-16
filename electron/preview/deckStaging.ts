@@ -49,7 +49,7 @@ export const DeckStaging = {
     try {
       fs.copyFileSync(filePath, preview);
     } catch {
-      HistoryStore.shared.deleteRecord(record);
+      void HistoryStore.shared.deleteRecord(record);
       return filePath;
     }
     HistoryStore.shared.setBeautifiedPath(preview, record.id);

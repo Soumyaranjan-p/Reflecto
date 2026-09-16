@@ -173,8 +173,8 @@ var require_dot_prop = __commonJS({
       "constructor"
     ]);
     var isValidPath = (pathSegments) => !pathSegments.some((segment) => disallowedKeys.has(segment));
-    function getPathSegments(path21) {
-      const pathArray = path21.split(".");
+    function getPathSegments(path25) {
+      const pathArray = path25.split(".");
       const parts = [];
       for (let i = 0; i < pathArray.length; i++) {
         let p = pathArray[i];
@@ -190,11 +190,11 @@ var require_dot_prop = __commonJS({
       return parts;
     }
     module2.exports = {
-      get(object, path21, value) {
-        if (!isObj(object) || typeof path21 !== "string") {
+      get(object, path25, value) {
+        if (!isObj(object) || typeof path25 !== "string") {
           return value === void 0 ? object : value;
         }
-        const pathArray = getPathSegments(path21);
+        const pathArray = getPathSegments(path25);
         if (pathArray.length === 0) {
           return;
         }
@@ -209,12 +209,12 @@ var require_dot_prop = __commonJS({
         }
         return object === void 0 ? value : object;
       },
-      set(object, path21, value) {
-        if (!isObj(object) || typeof path21 !== "string") {
+      set(object, path25, value) {
+        if (!isObj(object) || typeof path25 !== "string") {
           return object;
         }
         const root = object;
-        const pathArray = getPathSegments(path21);
+        const pathArray = getPathSegments(path25);
         for (let i = 0; i < pathArray.length; i++) {
           const p = pathArray[i];
           if (!isObj(object[p])) {
@@ -227,11 +227,11 @@ var require_dot_prop = __commonJS({
         }
         return root;
       },
-      delete(object, path21) {
-        if (!isObj(object) || typeof path21 !== "string") {
+      delete(object, path25) {
+        if (!isObj(object) || typeof path25 !== "string") {
           return false;
         }
-        const pathArray = getPathSegments(path21);
+        const pathArray = getPathSegments(path25);
         for (let i = 0; i < pathArray.length; i++) {
           const p = pathArray[i];
           if (i === pathArray.length - 1) {
@@ -244,11 +244,11 @@ var require_dot_prop = __commonJS({
           }
         }
       },
-      has(object, path21) {
-        if (!isObj(object) || typeof path21 !== "string") {
+      has(object, path25) {
+        if (!isObj(object) || typeof path25 !== "string") {
           return false;
         }
-        const pathArray = getPathSegments(path21);
+        const pathArray = getPathSegments(path25);
         if (pathArray.length === 0) {
           return false;
         }
@@ -272,15 +272,15 @@ var require_dot_prop = __commonJS({
 var require_path_exists = __commonJS({
   "node_modules/path-exists/index.js"(exports2, module2) {
     "use strict";
-    var fs13 = require("fs");
+    var fs16 = require("fs");
     module2.exports = (fp) => new Promise((resolve) => {
-      fs13.access(fp, (err) => {
+      fs16.access(fp, (err) => {
         resolve(!err);
       });
     });
     module2.exports.sync = (fp) => {
       try {
-        fs13.accessSync(fp);
+        fs16.accessSync(fp);
         return true;
       } catch (err) {
         return false;
@@ -383,21 +383,21 @@ var require_p_locate = __commonJS({
 var require_locate_path = __commonJS({
   "node_modules/locate-path/index.js"(exports2, module2) {
     "use strict";
-    var path21 = require("path");
+    var path25 = require("path");
     var pathExists = require_path_exists();
     var pLocate = require_p_locate();
     module2.exports = (iterable, options) => {
       options = Object.assign({
         cwd: process.cwd()
       }, options);
-      return pLocate(iterable, (el) => pathExists(path21.resolve(options.cwd, el)), options);
+      return pLocate(iterable, (el) => pathExists(path25.resolve(options.cwd, el)), options);
     };
     module2.exports.sync = (iterable, options) => {
       options = Object.assign({
         cwd: process.cwd()
       }, options);
       for (const el of iterable) {
-        if (pathExists.sync(path21.resolve(options.cwd, el))) {
+        if (pathExists.sync(path25.resolve(options.cwd, el))) {
           return el;
         }
       }
@@ -409,39 +409,39 @@ var require_locate_path = __commonJS({
 var require_find_up = __commonJS({
   "node_modules/find-up/index.js"(exports2, module2) {
     "use strict";
-    var path21 = require("path");
+    var path25 = require("path");
     var locatePath = require_locate_path();
     module2.exports = (filename, opts = {}) => {
-      const startDir = path21.resolve(opts.cwd || "");
-      const { root } = path21.parse(startDir);
+      const startDir = path25.resolve(opts.cwd || "");
+      const { root } = path25.parse(startDir);
       const filenames = [].concat(filename);
       return new Promise((resolve) => {
         (function find(dir) {
           locatePath(filenames, { cwd: dir }).then((file) => {
             if (file) {
-              resolve(path21.join(dir, file));
+              resolve(path25.join(dir, file));
             } else if (dir === root) {
               resolve(null);
             } else {
-              find(path21.dirname(dir));
+              find(path25.dirname(dir));
             }
           });
         })(startDir);
       });
     };
     module2.exports.sync = (filename, opts = {}) => {
-      let dir = path21.resolve(opts.cwd || "");
-      const { root } = path21.parse(dir);
+      let dir = path25.resolve(opts.cwd || "");
+      const { root } = path25.parse(dir);
       const filenames = [].concat(filename);
       while (true) {
         const file = locatePath.sync(filenames, { cwd: dir });
         if (file) {
-          return path21.join(dir, file);
+          return path25.join(dir, file);
         }
         if (dir === root) {
           return null;
         }
-        dir = path21.dirname(dir);
+        dir = path25.dirname(dir);
       }
     };
   }
@@ -461,42 +461,42 @@ var require_pkg_up = __commonJS({
 var require_env_paths = __commonJS({
   "node_modules/env-paths/index.js"(exports2, module2) {
     "use strict";
-    var path21 = require("path");
-    var os = require("os");
-    var homedir = os.homedir();
-    var tmpdir = os.tmpdir();
+    var path25 = require("path");
+    var os2 = require("os");
+    var homedir = os2.homedir();
+    var tmpdir = os2.tmpdir();
     var { env } = process;
     var macos = (name) => {
-      const library = path21.join(homedir, "Library");
+      const library = path25.join(homedir, "Library");
       return {
-        data: path21.join(library, "Application Support", name),
-        config: path21.join(library, "Preferences", name),
-        cache: path21.join(library, "Caches", name),
-        log: path21.join(library, "Logs", name),
-        temp: path21.join(tmpdir, name)
+        data: path25.join(library, "Application Support", name),
+        config: path25.join(library, "Preferences", name),
+        cache: path25.join(library, "Caches", name),
+        log: path25.join(library, "Logs", name),
+        temp: path25.join(tmpdir, name)
       };
     };
     var windows = (name) => {
-      const appData = env.APPDATA || path21.join(homedir, "AppData", "Roaming");
-      const localAppData = env.LOCALAPPDATA || path21.join(homedir, "AppData", "Local");
+      const appData = env.APPDATA || path25.join(homedir, "AppData", "Roaming");
+      const localAppData = env.LOCALAPPDATA || path25.join(homedir, "AppData", "Local");
       return {
         // Data/config/cache/log are invented by me as Windows isn't opinionated about this
-        data: path21.join(localAppData, name, "Data"),
-        config: path21.join(appData, name, "Config"),
-        cache: path21.join(localAppData, name, "Cache"),
-        log: path21.join(localAppData, name, "Log"),
-        temp: path21.join(tmpdir, name)
+        data: path25.join(localAppData, name, "Data"),
+        config: path25.join(appData, name, "Config"),
+        cache: path25.join(localAppData, name, "Cache"),
+        log: path25.join(localAppData, name, "Log"),
+        temp: path25.join(tmpdir, name)
       };
     };
     var linux = (name) => {
-      const username = path21.basename(homedir);
+      const username = path25.basename(homedir);
       return {
-        data: path21.join(env.XDG_DATA_HOME || path21.join(homedir, ".local", "share"), name),
-        config: path21.join(env.XDG_CONFIG_HOME || path21.join(homedir, ".config"), name),
-        cache: path21.join(env.XDG_CACHE_HOME || path21.join(homedir, ".cache"), name),
+        data: path25.join(env.XDG_DATA_HOME || path25.join(homedir, ".local", "share"), name),
+        config: path25.join(env.XDG_CONFIG_HOME || path25.join(homedir, ".config"), name),
+        cache: path25.join(env.XDG_CACHE_HOME || path25.join(homedir, ".cache"), name),
         // https://wiki.debian.org/XDGBaseDirectorySpecification#state
-        log: path21.join(env.XDG_STATE_HOME || path21.join(homedir, ".local", "state"), name),
-        temp: path21.join(tmpdir, username, name)
+        log: path25.join(env.XDG_STATE_HOME || path25.join(homedir, ".local", "state"), name),
+        temp: path25.join(tmpdir, username, name)
       };
     };
     var envPaths = (name, options) => {
@@ -724,41 +724,41 @@ var require_fs = __commonJS({
   "node_modules/atomically/dist/utils/fs.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    var fs13 = require("fs");
+    var fs16 = require("fs");
     var util_1 = require("util");
     var attemptify_1 = require_attemptify();
     var fs_handlers_1 = require_fs_handlers();
     var retryify_1 = require_retryify();
     var FS = {
-      chmodAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs13.chmod), fs_handlers_1.default.onChangeError),
-      chownAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs13.chown), fs_handlers_1.default.onChangeError),
-      closeAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs13.close)),
-      fsyncAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs13.fsync)),
-      mkdirAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs13.mkdir)),
-      realpathAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs13.realpath)),
-      statAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs13.stat)),
-      unlinkAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs13.unlink)),
-      closeRetry: retryify_1.retryifyAsync(util_1.promisify(fs13.close), fs_handlers_1.default.isRetriableError),
-      fsyncRetry: retryify_1.retryifyAsync(util_1.promisify(fs13.fsync), fs_handlers_1.default.isRetriableError),
-      openRetry: retryify_1.retryifyAsync(util_1.promisify(fs13.open), fs_handlers_1.default.isRetriableError),
-      readFileRetry: retryify_1.retryifyAsync(util_1.promisify(fs13.readFile), fs_handlers_1.default.isRetriableError),
-      renameRetry: retryify_1.retryifyAsync(util_1.promisify(fs13.rename), fs_handlers_1.default.isRetriableError),
-      statRetry: retryify_1.retryifyAsync(util_1.promisify(fs13.stat), fs_handlers_1.default.isRetriableError),
-      writeRetry: retryify_1.retryifyAsync(util_1.promisify(fs13.write), fs_handlers_1.default.isRetriableError),
-      chmodSyncAttempt: attemptify_1.attemptifySync(fs13.chmodSync, fs_handlers_1.default.onChangeError),
-      chownSyncAttempt: attemptify_1.attemptifySync(fs13.chownSync, fs_handlers_1.default.onChangeError),
-      closeSyncAttempt: attemptify_1.attemptifySync(fs13.closeSync),
-      mkdirSyncAttempt: attemptify_1.attemptifySync(fs13.mkdirSync),
-      realpathSyncAttempt: attemptify_1.attemptifySync(fs13.realpathSync),
-      statSyncAttempt: attemptify_1.attemptifySync(fs13.statSync),
-      unlinkSyncAttempt: attemptify_1.attemptifySync(fs13.unlinkSync),
-      closeSyncRetry: retryify_1.retryifySync(fs13.closeSync, fs_handlers_1.default.isRetriableError),
-      fsyncSyncRetry: retryify_1.retryifySync(fs13.fsyncSync, fs_handlers_1.default.isRetriableError),
-      openSyncRetry: retryify_1.retryifySync(fs13.openSync, fs_handlers_1.default.isRetriableError),
-      readFileSyncRetry: retryify_1.retryifySync(fs13.readFileSync, fs_handlers_1.default.isRetriableError),
-      renameSyncRetry: retryify_1.retryifySync(fs13.renameSync, fs_handlers_1.default.isRetriableError),
-      statSyncRetry: retryify_1.retryifySync(fs13.statSync, fs_handlers_1.default.isRetriableError),
-      writeSyncRetry: retryify_1.retryifySync(fs13.writeSync, fs_handlers_1.default.isRetriableError)
+      chmodAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.chmod), fs_handlers_1.default.onChangeError),
+      chownAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.chown), fs_handlers_1.default.onChangeError),
+      closeAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.close)),
+      fsyncAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.fsync)),
+      mkdirAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.mkdir)),
+      realpathAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.realpath)),
+      statAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.stat)),
+      unlinkAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.unlink)),
+      closeRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.close), fs_handlers_1.default.isRetriableError),
+      fsyncRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.fsync), fs_handlers_1.default.isRetriableError),
+      openRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.open), fs_handlers_1.default.isRetriableError),
+      readFileRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.readFile), fs_handlers_1.default.isRetriableError),
+      renameRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.rename), fs_handlers_1.default.isRetriableError),
+      statRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.stat), fs_handlers_1.default.isRetriableError),
+      writeRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.write), fs_handlers_1.default.isRetriableError),
+      chmodSyncAttempt: attemptify_1.attemptifySync(fs16.chmodSync, fs_handlers_1.default.onChangeError),
+      chownSyncAttempt: attemptify_1.attemptifySync(fs16.chownSync, fs_handlers_1.default.onChangeError),
+      closeSyncAttempt: attemptify_1.attemptifySync(fs16.closeSync),
+      mkdirSyncAttempt: attemptify_1.attemptifySync(fs16.mkdirSync),
+      realpathSyncAttempt: attemptify_1.attemptifySync(fs16.realpathSync),
+      statSyncAttempt: attemptify_1.attemptifySync(fs16.statSync),
+      unlinkSyncAttempt: attemptify_1.attemptifySync(fs16.unlinkSync),
+      closeSyncRetry: retryify_1.retryifySync(fs16.closeSync, fs_handlers_1.default.isRetriableError),
+      fsyncSyncRetry: retryify_1.retryifySync(fs16.fsyncSync, fs_handlers_1.default.isRetriableError),
+      openSyncRetry: retryify_1.retryifySync(fs16.openSync, fs_handlers_1.default.isRetriableError),
+      readFileSyncRetry: retryify_1.retryifySync(fs16.readFileSync, fs_handlers_1.default.isRetriableError),
+      renameSyncRetry: retryify_1.retryifySync(fs16.renameSync, fs_handlers_1.default.isRetriableError),
+      statSyncRetry: retryify_1.retryifySync(fs16.statSync, fs_handlers_1.default.isRetriableError),
+      writeSyncRetry: retryify_1.retryifySync(fs16.writeSync, fs_handlers_1.default.isRetriableError)
     };
     exports2.default = FS;
   }
@@ -824,7 +824,7 @@ var require_temp = __commonJS({
   "node_modules/atomically/dist/utils/temp.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    var path21 = require("path");
+    var path25 = require("path");
     var consts_1 = require_consts();
     var fs_1 = require_fs();
     var Temp = {
@@ -859,7 +859,7 @@ var require_temp = __commonJS({
         }
       },
       truncate: (filePath) => {
-        const basename = path21.basename(filePath);
+        const basename = path25.basename(filePath);
         if (basename.length <= consts_1.LIMIT_BASENAME_LENGTH)
           return filePath;
         const truncable = /^(\.?)(.*?)((?:\.[^.]+)?(?:\.tmp-\d{10}[a-f0-9]{6})?)$/.exec(basename);
@@ -880,7 +880,7 @@ var require_dist = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.writeFileSync = exports2.writeFile = exports2.readFileSync = exports2.readFile = void 0;
-    var path21 = require("path");
+    var path25 = require("path");
     var consts_1 = require_consts();
     var fs_1 = require_fs();
     var lang_1 = require_lang();
@@ -934,7 +934,7 @@ var require_dist = __commonJS({
               options.mode = stat.mode;
           }
         }
-        const parentPath = path21.dirname(filePath);
+        const parentPath = path25.dirname(filePath);
         await fs_1.default.mkdirAttempt(parentPath, {
           mode: consts_1.DEFAULT_FOLDER_MODE,
           recursive: true
@@ -1000,7 +1000,7 @@ var require_dist = __commonJS({
               options.mode = stat.mode;
           }
         }
-        const parentPath = path21.dirname(filePath);
+        const parentPath = path25.dirname(filePath);
         fs_1.default.mkdirSyncAttempt(parentPath, {
           mode: consts_1.DEFAULT_FOLDER_MODE,
           recursive: true
@@ -4275,8 +4275,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path21) {
-      let input = path21;
+    function removeDotSegments(path25) {
+      let input = path25;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -4685,8 +4685,8 @@ var require_schemes = __commonJS({
       }
       if (wsComponent.resourceName) {
         const queryIndex = wsComponent.resourceName.indexOf("?");
-        const path21 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
-        wsComponent.path = path21 && path21 !== "/" ? path21 : void 0;
+        const path25 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
+        wsComponent.path = path25 && path25 !== "/" ? path25 : void 0;
         wsComponent.query = queryIndex === -1 ? void 0 : wsComponent.resourceName.slice(queryIndex + 1);
         wsComponent.resourceName = void 0;
       }
@@ -5726,11 +5726,11 @@ var require_core = __commonJS({
     Ajv.ValidationError = validation_error_1.default;
     Ajv.MissingRefError = ref_error_1.default;
     exports2.default = Ajv;
-    function checkOptions(checkOpts, options, msg, log2 = "error") {
+    function checkOptions(checkOpts, options, msg, log3 = "error") {
       for (const key in checkOpts) {
         const opt = key;
         if (opt in options)
-          this.logger[log2](`${msg}: option ${key}. ${checkOpts[opt]}`);
+          this.logger[log3](`${msg}: option ${key}. ${checkOpts[opt]}`);
       }
     }
     function getSchEnv(keyRef) {
@@ -11588,11 +11588,11 @@ var require_core3 = __commonJS({
     Ajv.ValidationError = validation_error_1.default;
     Ajv.MissingRefError = ref_error_1.default;
     exports2.default = Ajv;
-    function checkOptions(checkOpts, options, msg, log2 = "error") {
+    function checkOptions(checkOpts, options, msg, log3 = "error") {
       for (const key in checkOpts) {
         const opt = key;
         if (opt in options)
-          this.logger[log2](`${msg}: option ${key}. ${checkOpts[opt]}`);
+          this.logger[log3](`${msg}: option ${key}. ${checkOpts[opt]}`);
       }
     }
     function getSchEnv(keyRef) {
@@ -13857,12 +13857,12 @@ var require_dist2 = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs13, exportName) {
+    function addFormats(ajv, list, fs16, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = codegen_1._`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs13[f]);
+        ajv.addFormat(f, fs16[f]);
     }
     module2.exports = exports2 = formatsPlugin;
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -16038,8 +16038,8 @@ var require_source = __commonJS({
     var _Conf_defaultValues;
     Object.defineProperty(exports2, "__esModule", { value: true });
     var util_1 = require("util");
-    var fs13 = require("fs");
-    var path21 = require("path");
+    var fs16 = require("fs");
+    var path25 = require("path");
     var crypto2 = require("crypto");
     var assert = require("assert");
     var events_1 = require("events");
@@ -16062,7 +16062,7 @@ var require_source = __commonJS({
     var parentDir = "";
     try {
       delete require.cache[__filename];
-      parentDir = path21.dirname((_b = (_a = module2.parent) === null || _a === void 0 ? void 0 : _a.filename) !== null && _b !== void 0 ? _b : ".");
+      parentDir = path25.dirname((_b = (_a = module2.parent) === null || _a === void 0 ? void 0 : _a.filename) !== null && _b !== void 0 ? _b : ".");
     } catch (_c) {
     }
     var checkValueType = (key, value) => {
@@ -16098,7 +16098,7 @@ var require_source = __commonJS({
         };
         const getPackageData = onetime(() => {
           const packagePath = pkgUp.sync({ cwd: parentDir });
-          const packageData = packagePath && JSON.parse(fs13.readFileSync(packagePath, "utf8"));
+          const packageData = packagePath && JSON.parse(fs16.readFileSync(packagePath, "utf8"));
           return packageData !== null && packageData !== void 0 ? packageData : {};
         });
         if (!options.cwd) {
@@ -16146,7 +16146,7 @@ var require_source = __commonJS({
         this.events = new events_1.EventEmitter();
         __classPrivateFieldSet(this, _Conf_encryptionKey, options.encryptionKey, "f");
         const fileExtension = options.fileExtension ? `.${options.fileExtension}` : "";
-        this.path = path21.resolve(options.cwd, `${(_a2 = options.configName) !== null && _a2 !== void 0 ? _a2 : "config"}${fileExtension}`);
+        this.path = path25.resolve(options.cwd, `${(_a2 = options.configName) !== null && _a2 !== void 0 ? _a2 : "config"}${fileExtension}`);
         const fileStore = this.store;
         const store2 = Object.assign(createPlainObject(), options.defaults, fileStore);
         this._validate(store2);
@@ -16287,7 +16287,7 @@ var require_source = __commonJS({
       }
       get store() {
         try {
-          const data = fs13.readFileSync(this.path, __classPrivateFieldGet(this, _Conf_encryptionKey, "f") ? null : "utf8");
+          const data = fs16.readFileSync(this.path, __classPrivateFieldGet(this, _Conf_encryptionKey, "f") ? null : "utf8");
           const dataString = this._encryptData(data);
           const deserializedData = this._deserialize(dataString);
           this._validate(deserializedData);
@@ -16363,7 +16363,7 @@ var require_source = __commonJS({
         throw new Error("Config schema violation: " + errors.join("; "));
       }
       _ensureDirectory() {
-        fs13.mkdirSync(path21.dirname(this.path), { recursive: true });
+        fs16.mkdirSync(path25.dirname(this.path), { recursive: true });
       }
       _write(value) {
         let data = this._serialize(value);
@@ -16374,13 +16374,13 @@ var require_source = __commonJS({
           data = Buffer.concat([initializationVector, Buffer.from(":"), cipher.update(Buffer.from(data)), cipher.final()]);
         }
         if (process.env.SNAP) {
-          fs13.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
+          fs16.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
         } else {
           try {
             atomically.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
           } catch (error) {
             if ((error === null || error === void 0 ? void 0 : error.code) === "EXDEV") {
-              fs13.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
+              fs16.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
               return;
             }
             throw error;
@@ -16389,15 +16389,15 @@ var require_source = __commonJS({
       }
       _watch() {
         this._ensureDirectory();
-        if (!fs13.existsSync(this.path)) {
+        if (!fs16.existsSync(this.path)) {
           this._write(createPlainObject());
         }
         if (process.platform === "win32") {
-          fs13.watch(this.path, { persistent: false }, debounceFn(() => {
+          fs16.watch(this.path, { persistent: false }, debounceFn(() => {
             this.events.emit("change");
           }, { wait: 100 }));
         } else {
-          fs13.watchFile(this.path, { persistent: false }, debounceFn(() => {
+          fs16.watchFile(this.path, { persistent: false }, debounceFn(() => {
             this.events.emit("change");
           }, { wait: 5e3 }));
         }
@@ -16485,22 +16485,22 @@ var require_source = __commonJS({
 var require_electron_store = __commonJS({
   "node_modules/electron-store/index.js"(exports2, module2) {
     "use strict";
-    var path21 = require("path");
-    var { app: app10, ipcMain: ipcMain11, ipcRenderer, shell: shell2 } = require("electron");
+    var path25 = require("path");
+    var { app: app12, ipcMain: ipcMain12, ipcRenderer, shell: shell3 } = require("electron");
     var Conf = require_source();
     var isInitialized = false;
     var initDataListener = () => {
-      if (!ipcMain11 || !app10) {
+      if (!ipcMain12 || !app12) {
         throw new Error("Electron Store: You need to call `.initRenderer()` from the main process.");
       }
       const appData = {
-        defaultCwd: app10.getPath("userData"),
-        appVersion: app10.getVersion()
+        defaultCwd: app12.getPath("userData"),
+        appVersion: app12.getVersion()
       };
       if (isInitialized) {
         return appData;
       }
-      ipcMain11.on("electron-store-get-data", (event) => {
+      ipcMain12.on("electron-store-get-data", (event) => {
         event.returnValue = appData;
       });
       isInitialized = true;
@@ -16516,7 +16516,7 @@ var require_electron_store = __commonJS({
             throw new Error("Electron Store: You need to call `.initRenderer()` from the main process.");
           }
           ({ defaultCwd, appVersion } = appData);
-        } else if (ipcMain11 && app10) {
+        } else if (ipcMain12 && app12) {
           ({ defaultCwd, appVersion } = initDataListener());
         }
         options = {
@@ -16527,7 +16527,7 @@ var require_electron_store = __commonJS({
           options.projectVersion = appVersion;
         }
         if (options.cwd) {
-          options.cwd = path21.isAbsolute(options.cwd) ? options.cwd : path21.join(defaultCwd, options.cwd);
+          options.cwd = path25.isAbsolute(options.cwd) ? options.cwd : path25.join(defaultCwd, options.cwd);
         } else {
           options.cwd = defaultCwd;
         }
@@ -16539,7 +16539,7 @@ var require_electron_store = __commonJS({
         initDataListener();
       }
       async openInEditor() {
-        const error = await shell2.openPath(this.path);
+        const error = await shell3.openPath(this.path);
         if (error) {
           throw new Error(error);
         }
@@ -16608,6 +16608,8 @@ var init_preferences = __esm({
       recordingMicrophone: "",
       recordingSystemAudio: false,
       recordingShowCursor: true,
+      recordingCursorStyle: "recorded",
+      recordingCursorMotion: "natural",
       recordingCamera: "",
       recordingFps: 30,
       defaultBeautifierConfig: { ...defaultBeautifierConfig },
@@ -16615,15 +16617,224 @@ var init_preferences = __esm({
       r2Bucket: "",
       r2PublicBaseURL: "",
       r2AccessKeyID: "",
-      r2SecretAccessKey: ""
+      r2SecretAccessKey: "",
+      onboardingSeenVersion: 0
     };
     store = null;
   }
 });
 
+// electron/shortcuts.ts
+function toAccelerator(s) {
+  const parts = [];
+  if (s.modifiers & MOD_CTRL) parts.push("Control");
+  if (s.modifiers & MOD_ALT) parts.push("Alt");
+  if (s.modifiers & MOD_SHIFT) parts.push("Shift");
+  if (s.modifiers & MOD_WIN) parts.push("Super");
+  parts.push(vkName(s.keyCode));
+  return parts.join("+");
+}
+function vkName(vk) {
+  if (vk >= 65 && vk <= 90) return String.fromCharCode(vk);
+  if (vk >= 48 && vk <= 57) return String.fromCharCode(vk);
+  const map = {
+    [VK.Space]: "Space",
+    [VK.Delete]: "Delete",
+    [VK.Esc]: "Esc",
+    [VK.Return]: "Return",
+    [VK.Minus]: "-",
+    [VK.Equal]: "="
+  };
+  return map[vk] ?? `Key${vk}`;
+}
+function displayString(s) {
+  const parts = [];
+  if (s.modifiers & MOD_CTRL) parts.push("Ctrl");
+  if (s.modifiers & MOD_ALT) parts.push("Alt");
+  if (s.modifiers & MOD_SHIFT) parts.push("Shift");
+  if (s.modifiers & MOD_WIN) parts.push("Win");
+  parts.push(vkName(s.keyCode));
+  return parts.join("+");
+}
+function defaultShortcut(action) {
+  switch (action) {
+    case 1 /* region */:
+      return { keyCode: VK.Digit4, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
+    case 2 /* fullscreen */:
+      return { keyCode: VK.Digit3, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
+    case 4 /* ocr */:
+      return { keyCode: VK.O, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
+    case 5 /* colorPicker */:
+      return { keyCode: VK.C, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
+    case 6 /* recording */:
+      return { keyCode: VK.Digit2, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
+    case 7 /* recordingOptions */:
+      return { keyCode: VK.Digit5, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
+    default:
+      return null;
+  }
+}
+function effectiveShortcut(action) {
+  const stored = getPref("shortcuts")[String(action)];
+  return stored ?? defaultShortcut(action);
+}
+function onShortcut(action, handler) {
+  handlers.set(action, handler);
+}
+function registerShortcuts() {
+  unregisterShortcuts();
+  for (const [action, handler] of handlers) {
+    const s = effectiveShortcut(action);
+    if (!s || !s.enabled) continue;
+    const accel = toAccelerator(s);
+    try {
+      const ok = import_electron2.globalShortcut.register(accel, handler);
+      if (ok) registeredAccels.push(accel);
+      else console.warn(`[Reflecto] accelerator in use: ${accel} (action ${action})`);
+    } catch (e) {
+      console.warn(`[Reflecto] failed to register ${accel} for action ${action}:`, e);
+    }
+  }
+}
+function unregisterShortcuts() {
+  for (const accel of registeredAccels) {
+    try {
+      import_electron2.globalShortcut.unregister(accel);
+    } catch {
+    }
+  }
+  registeredAccels.length = 0;
+}
+function findShortcutConflict(action, shortcut) {
+  const accel = toAccelerator(shortcut);
+  for (const other of Object.values(Action).filter((v) => typeof v === "number")) {
+    if (other === action) continue;
+    const s = effectiveShortcut(other);
+    if (s && s.enabled && toAccelerator(s) === accel) return other;
+  }
+  return null;
+}
+function setShortcutBinding(action, shortcut) {
+  if (shortcut) {
+    const hasMod = Boolean(shortcut.modifiers & (MOD_CTRL | MOD_ALT | MOD_WIN));
+    if (!hasMod) return { ok: false, error: "Global shortcuts need Ctrl, Alt, or Win" };
+    const conflict = findShortcutConflict(action, shortcut);
+    if (conflict != null) {
+      return { ok: false, error: `Conflicts with ${ACTION_TITLE[conflict] || conflict}`, conflict: ACTION_TITLE[conflict] };
+    }
+  }
+  const current2 = { ...getPref("shortcuts") };
+  current2[String(action)] = shortcut;
+  setPref("shortcuts", current2);
+  registerShortcuts();
+  return { ok: true };
+}
+var import_electron2, Action, VK, MOD_ALT, MOD_CTRL, MOD_SHIFT, MOD_WIN, ACTION_TITLE, handlers, registeredAccels;
+var init_shortcuts = __esm({
+  "electron/shortcuts.ts"() {
+    "use strict";
+    import_electron2 = require("electron");
+    init_preferences();
+    Action = /* @__PURE__ */ ((Action2) => {
+      Action2[Action2["region"] = 1] = "region";
+      Action2[Action2["fullscreen"] = 2] = "fullscreen";
+      Action2[Action2["window"] = 3] = "window";
+      Action2[Action2["ocr"] = 4] = "ocr";
+      Action2[Action2["colorPicker"] = 5] = "colorPicker";
+      Action2[Action2["recording"] = 6] = "recording";
+      Action2[Action2["recordingOptions"] = 7] = "recordingOptions";
+      Action2[Action2["mediaGallery"] = 10] = "mediaGallery";
+      Action2[Action2["restoreLastCapture"] = 11] = "restoreLastCapture";
+      Action2[Action2["pinLastCapture"] = 12] = "pinLastCapture";
+      Action2[Action2["openImage"] = 13] = "openImage";
+      Action2[Action2["openSettings"] = 14] = "openSettings";
+      Action2[Action2["unpinAll"] = 16] = "unpinAll";
+      Action2[Action2["previousRegion"] = 20] = "previousRegion";
+      Action2[Action2["timedRegion"] = 21] = "timedRegion";
+      Action2[Action2["regionCopy"] = 22] = "regionCopy";
+      Action2[Action2["regionSave"] = 23] = "regionSave";
+      Action2[Action2["regionEdit"] = 24] = "regionEdit";
+      Action2[Action2["regionPin"] = 25] = "regionPin";
+      Action2[Action2["ocrSingleLine"] = 30] = "ocrSingleLine";
+      Action2[Action2["recordArea"] = 40] = "recordArea";
+      Action2[Action2["stopRecording"] = 41] = "stopRecording";
+      Action2[Action2["pauseRecording"] = 42] = "pauseRecording";
+      Action2[Action2["restartRecording"] = 43] = "restartRecording";
+      Action2[Action2["discardRecording"] = 44] = "discardRecording";
+      Action2[Action2["togglePreviews"] = 50] = "togglePreviews";
+      Action2[Action2["savePreviews"] = 51] = "savePreviews";
+      Action2[Action2["closePreviews"] = 52] = "closePreviews";
+      return Action2;
+    })(Action || {});
+    VK = {
+      A: 65,
+      C: 67,
+      B: 66,
+      H: 72,
+      L: 76,
+      O: 79,
+      P: 80,
+      R: 82,
+      S: 83,
+      T: 84,
+      V: 86,
+      X: 88,
+      Z: 90,
+      Digit1: 49,
+      Digit2: 50,
+      Digit3: 51,
+      Digit4: 52,
+      Digit5: 53,
+      Digit0: 48,
+      Space: 32,
+      Delete: 46,
+      Esc: 27,
+      Return: 13,
+      Minus: 189,
+      Equal: 187
+    };
+    MOD_ALT = 1;
+    MOD_CTRL = 2;
+    MOD_SHIFT = 4;
+    MOD_WIN = 8;
+    ACTION_TITLE = {
+      [1 /* region */]: "Capture Region",
+      [2 /* fullscreen */]: "Capture Fullscreen",
+      [3 /* window */]: "Capture Window",
+      [4 /* ocr */]: "Capture Text",
+      [5 /* colorPicker */]: "Pick Color",
+      [6 /* recording */]: "Capture & Recording Bar",
+      [7 /* recordingOptions */]: "Recording Options",
+      [10 /* mediaGallery */]: "Open Media Gallery",
+      [11 /* restoreLastCapture */]: "Restore Last Capture",
+      [12 /* pinLastCapture */]: "Pin Last Capture",
+      [13 /* openImage */]: "Open Image from File",
+      [14 /* openSettings */]: "Open Settings",
+      [16 /* unpinAll */]: "Unpin All Captures",
+      [20 /* previousRegion */]: "Capture Previous Region",
+      [21 /* timedRegion */]: "Capture Region with Timer",
+      [22 /* regionCopy */]: "Capture Region & Copy",
+      [23 /* regionSave */]: "Capture Region & Save",
+      [24 /* regionEdit */]: "Capture Region & Annotate",
+      [25 /* regionPin */]: "Capture Region & Pin",
+      [30 /* ocrSingleLine */]: "Capture Text without Line Breaks",
+      [40 /* recordArea */]: "Record Area",
+      [41 /* stopRecording */]: "Stop & Save Recording",
+      [42 /* pauseRecording */]: "Pause / Resume Recording",
+      [43 /* restartRecording */]: "Restart Recording",
+      [44 /* discardRecording */]: "Discard Recording",
+      [50 /* togglePreviews */]: "Hide / Show Capture Deck",
+      [51 /* savePreviews */]: "Save All Captures in Deck",
+      [52 /* closePreviews */]: "Close All Captures in Deck"
+    };
+    handlers = /* @__PURE__ */ new Map();
+    registeredAccels = [];
+  }
+});
+
 // electron/overlay/windows.ts
 function createRegionOverlayWindow(display) {
-  const win = new import_electron3.BrowserWindow({
+  const win2 = new import_electron3.BrowserWindow({
     x: display.bounds.x,
     y: display.bounds.y,
     width: display.bounds.width,
@@ -16641,11 +16852,11 @@ function createRegionOverlayWindow(display) {
       contextIsolation: true
     }
   });
-  win.setAlwaysOnTop(true, "screen-saver");
+  win2.setAlwaysOnTop(true, "screen-saver");
   const devURL = process.env.VITE_DEV_SERVER_URL;
-  if (devURL) win.loadURL(`${devURL}/src/entries/overlay.html`);
-  else win.loadFile("dist/src/entries/overlay.html");
-  return win;
+  if (devURL) win2.loadURL(`${devURL}/src/entries/overlay.html`);
+  else win2.loadFile("dist/src/entries/overlay.html");
+  return win2;
 }
 async function captureDisplay(displayId) {
   const displays = import_electron3.screen.getAllDisplays();
@@ -16727,9 +16938,9 @@ function startRegionSelection(allowsWindowSelection = true, mode = "capture", ca
     const displays = import_electron4.screen.getAllDisplays();
     const lastRegion = getPref("lastRegionRect");
     for (const display of displays) {
-      const win = createRegionOverlayWindow(display);
-      win.webContents.once("did-finish-load", () => {
-        win.webContents.send("regionoverlay:start", {
+      const win2 = createRegionOverlayWindow(display);
+      win2.webContents.once("did-finish-load", () => {
+        win2.webContents.send("regionoverlay:start", {
           displayId: display.id,
           bounds: display.bounds,
           scaleFactor: display.scaleFactor,
@@ -16738,14 +16949,14 @@ function startRegionSelection(allowsWindowSelection = true, mode = "capture", ca
           capturesOnRelease: getPref("captureRegionOnRelease")
         });
       });
-      win.show();
-      active.push(win);
+      win2.show();
+      active.push(win2);
     }
   });
 }
 function finish(outcome) {
-  for (const win of active) {
-    if (!win.isDestroyed()) win.destroy();
+  for (const win2 of active) {
+    if (!win2.isDestroyed()) win2.destroy();
   }
   active = [];
   const resolve = resolver;
@@ -16756,6 +16967,9 @@ function finish(outcome) {
   if (outcome.kind !== "cancelled") {
     onComplete?.(outcome, mode, captureKind);
   }
+}
+function cancelRegionSelection() {
+  finish({ kind: "cancelled" });
 }
 function registerRegionOverlayHandlers() {
   import_electron4.ipcMain.handle("regionoverlay:complete", (_e, payload) => {
@@ -16896,7 +17110,7 @@ function startColorPicker() {
     for (const display of displays) {
       const source = await captureDisplay(display.id);
       const dataUrl = source.thumbnail.toDataURL();
-      const win = new import_electron6.BrowserWindow({
+      const win2 = new import_electron6.BrowserWindow({
         x: display.bounds.x,
         y: display.bounds.y,
         width: display.bounds.width,
@@ -16913,10 +17127,10 @@ function startColorPicker() {
           contextIsolation: false
         }
       });
-      win.setAlwaysOnTop(true, "screen-saver");
-      win.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(loupeHTML(dataUrl))}`);
-      win.show();
-      pickerWins.push(win);
+      win2.setAlwaysOnTop(true, "screen-saver");
+      win2.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(loupeHTML(dataUrl))}`);
+      win2.show();
+      pickerWins.push(win2);
     }
   });
 }
@@ -17141,14 +17355,33 @@ var init_store = __esm({
           return raw === normalized || beautified === normalized || display === normalized;
         }) ?? null;
       }
-      deleteRecord(record) {
-        this.records = this.records.filter((r) => r.id !== record.id);
-        this.saveRecords();
+      async deleteRecord(record) {
+        const file = this.urlForRecord(record);
+        const share = record.shareURL ?? null;
+        let trashed = false;
         try {
-          const file = this.urlForRecord(record);
-          if (file.startsWith(this.storageDir) && import_node_fs.default.existsSync(file)) import_node_fs.default.unlinkSync(file);
+          if (file && import_node_fs.default.existsSync(file)) {
+            await import_electron7.shell.trashItem(file);
+            trashed = !import_node_fs.default.existsSync(file);
+          }
         } catch {
+          try {
+            if (file && import_node_fs.default.existsSync(file) && file.startsWith(this.storageDir)) import_node_fs.default.unlinkSync(file);
+            trashed = !import_node_fs.default.existsSync(file);
+          } catch {
+          }
         }
+        if (share) {
+          const index = this.records.findIndex((r) => r.id === record.id);
+          if (index >= 0) {
+            this.records[index] = { ...this.records[index], localDeleted: true };
+            this.saveRecords();
+          }
+        } else {
+          this.records = this.records.filter((r) => r.id !== record.id);
+          this.saveRecords();
+        }
+        return { trashed, keptShare: share };
       }
       recent(kind, limit = 12) {
         const list = kind ? this.records.filter((r) => r.kind === kind) : this.records;
@@ -17298,7 +17531,7 @@ var init_deckStaging = __esm({
         try {
           import_node_fs3.default.copyFileSync(filePath, preview);
         } catch {
-          HistoryStore.shared.deleteRecord(record);
+          void HistoryStore.shared.deleteRecord(record);
           return filePath;
         }
         HistoryStore.shared.setBeautifiedPath(preview, record.id);
@@ -17446,7 +17679,7 @@ function pinCapture(filePath, displayId) {
   const y = Math.round(workArea.y + workArea.height / 2 - baseH / 2 - cascade * 20);
   cascade += 1;
   const id = `pin-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-  const win = new import_electron10.BrowserWindow({
+  const win2 = new import_electron10.BrowserWindow({
     x,
     y,
     width: baseW,
@@ -17464,13 +17697,13 @@ function pinCapture(filePath, displayId) {
       contextIsolation: false
     }
   });
-  win.setAlwaysOnTop(true, "floating");
+  win2.setAlwaysOnTop(true, "floating");
   const dataUrl = img.toDataURL();
   const html = pinHTML(id, dataUrl);
-  win.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
-  win.once("ready-to-show", () => win.show());
-  win.on("closed", () => pins.delete(id));
-  pins.set(id, { id, win, filePath, scale: 1, baseW, baseH });
+  win2.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
+  win2.once("ready-to-show", () => win2.show());
+  win2.on("closed", () => pins.delete(id));
+  pins.set(id, { id, win: win2, filePath, scale: 1, baseW, baseH });
 }
 function unpinAll() {
   for (const pin of [...pins.values()]) {
@@ -18231,7 +18464,7 @@ async function showCountdown(seconds, displayId) {
   if (seconds <= 0) return;
   const displays = displayId != null ? import_electron14.screen.getAllDisplays().filter((d) => d.id === displayId) : [import_electron14.screen.getDisplayNearestPoint(import_electron14.screen.getCursorScreenPoint())];
   for (const display of displays) {
-    const win = new import_electron14.BrowserWindow({
+    const win2 = new import_electron14.BrowserWindow({
       x: display.bounds.x,
       y: display.bounds.y,
       width: display.bounds.width,
@@ -18249,10 +18482,10 @@ async function showCountdown(seconds, displayId) {
         contextIsolation: false
       }
     });
-    win.setAlwaysOnTop(true, "screen-saver");
-    win.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(countdownHTML())}`);
-    win.showInactive();
-    wins.push(win);
+    win2.setAlwaysOnTop(true, "screen-saver");
+    win2.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(countdownHTML())}`);
+    win2.showInactive();
+    wins.push(win2);
   }
   for (let i = seconds; i > 0; i -= 1) {
     for (const w of wins) {
@@ -18328,9 +18561,9 @@ function ensureWorker() {
 }
 async function beautifyPNG(png, config = defaultBeautifierConfig) {
   if (config.style.kind === "none" && !config.border?.enabled) return png;
-  const win = await ensureWorker();
+  const win2 = await ensureWorker();
   const dataUrl = import_electron15.nativeImage.createFromBuffer(png).toDataURL();
-  const result = await win.webContents.executeJavaScript(
+  const result = await win2.webContents.executeJavaScript(
     `window.__reflectoBeautify(${JSON.stringify(dataUrl)}, ${JSON.stringify(config)})`,
     true
   );
@@ -18654,54 +18887,54 @@ var require_polyfills = __commonJS({
     }
     var chdir;
     module2.exports = patch;
-    function patch(fs13) {
+    function patch(fs16) {
       if (constants.hasOwnProperty("O_SYMLINK") && process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-        patchLchmod(fs13);
+        patchLchmod(fs16);
       }
-      if (!fs13.lutimes) {
-        patchLutimes(fs13);
+      if (!fs16.lutimes) {
+        patchLutimes(fs16);
       }
-      fs13.chown = chownFix(fs13.chown);
-      fs13.fchown = chownFix(fs13.fchown);
-      fs13.lchown = chownFix(fs13.lchown);
-      fs13.chmod = chmodFix(fs13.chmod);
-      fs13.fchmod = chmodFix(fs13.fchmod);
-      fs13.lchmod = chmodFix(fs13.lchmod);
-      fs13.chownSync = chownFixSync(fs13.chownSync);
-      fs13.fchownSync = chownFixSync(fs13.fchownSync);
-      fs13.lchownSync = chownFixSync(fs13.lchownSync);
-      fs13.chmodSync = chmodFixSync(fs13.chmodSync);
-      fs13.fchmodSync = chmodFixSync(fs13.fchmodSync);
-      fs13.lchmodSync = chmodFixSync(fs13.lchmodSync);
-      fs13.stat = statFix(fs13.stat);
-      fs13.fstat = statFix(fs13.fstat);
-      fs13.lstat = statFix(fs13.lstat);
-      fs13.statSync = statFixSync(fs13.statSync);
-      fs13.fstatSync = statFixSync(fs13.fstatSync);
-      fs13.lstatSync = statFixSync(fs13.lstatSync);
-      if (fs13.chmod && !fs13.lchmod) {
-        fs13.lchmod = function(path21, mode, cb) {
+      fs16.chown = chownFix(fs16.chown);
+      fs16.fchown = chownFix(fs16.fchown);
+      fs16.lchown = chownFix(fs16.lchown);
+      fs16.chmod = chmodFix(fs16.chmod);
+      fs16.fchmod = chmodFix(fs16.fchmod);
+      fs16.lchmod = chmodFix(fs16.lchmod);
+      fs16.chownSync = chownFixSync(fs16.chownSync);
+      fs16.fchownSync = chownFixSync(fs16.fchownSync);
+      fs16.lchownSync = chownFixSync(fs16.lchownSync);
+      fs16.chmodSync = chmodFixSync(fs16.chmodSync);
+      fs16.fchmodSync = chmodFixSync(fs16.fchmodSync);
+      fs16.lchmodSync = chmodFixSync(fs16.lchmodSync);
+      fs16.stat = statFix(fs16.stat);
+      fs16.fstat = statFix(fs16.fstat);
+      fs16.lstat = statFix(fs16.lstat);
+      fs16.statSync = statFixSync(fs16.statSync);
+      fs16.fstatSync = statFixSync(fs16.fstatSync);
+      fs16.lstatSync = statFixSync(fs16.lstatSync);
+      if (fs16.chmod && !fs16.lchmod) {
+        fs16.lchmod = function(path25, mode, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs13.lchmodSync = function() {
+        fs16.lchmodSync = function() {
         };
       }
-      if (fs13.chown && !fs13.lchown) {
-        fs13.lchown = function(path21, uid, gid, cb) {
+      if (fs16.chown && !fs16.lchown) {
+        fs16.lchown = function(path25, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs13.lchownSync = function() {
+        fs16.lchownSync = function() {
         };
       }
       if (platform === "win32") {
-        fs13.rename = typeof fs13.rename !== "function" ? fs13.rename : function(fs$rename) {
+        fs16.rename = typeof fs16.rename !== "function" ? fs16.rename : function(fs$rename) {
           function rename(from, to, cb) {
             var start = Date.now();
             var backoff = 0;
             fs$rename(from, to, function CB(er) {
               if (er && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY") && Date.now() - start < 6e4) {
                 setTimeout(function() {
-                  fs13.stat(to, function(stater, st) {
+                  fs16.stat(to, function(stater, st) {
                     if (stater && stater.code === "ENOENT")
                       fs$rename(from, to, CB);
                     else
@@ -18717,9 +18950,9 @@ var require_polyfills = __commonJS({
           }
           if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
           return rename;
-        }(fs13.rename);
+        }(fs16.rename);
       }
-      fs13.read = typeof fs13.read !== "function" ? fs13.read : function(fs$read) {
+      fs16.read = typeof fs16.read !== "function" ? fs16.read : function(fs$read) {
         function read(fd, buffer, offset, length, position, callback_) {
           var callback;
           if (callback_ && typeof callback_ === "function") {
@@ -18727,22 +18960,22 @@ var require_polyfills = __commonJS({
             callback = function(er, _, __) {
               if (er && er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
-                return fs$read.call(fs13, fd, buffer, offset, length, position, callback);
+                return fs$read.call(fs16, fd, buffer, offset, length, position, callback);
               }
               callback_.apply(this, arguments);
             };
           }
-          return fs$read.call(fs13, fd, buffer, offset, length, position, callback);
+          return fs$read.call(fs16, fd, buffer, offset, length, position, callback);
         }
         if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
         return read;
-      }(fs13.read);
-      fs13.readSync = typeof fs13.readSync !== "function" ? fs13.readSync : /* @__PURE__ */ function(fs$readSync) {
+      }(fs16.read);
+      fs16.readSync = typeof fs16.readSync !== "function" ? fs16.readSync : /* @__PURE__ */ function(fs$readSync) {
         return function(fd, buffer, offset, length, position) {
           var eagCounter = 0;
           while (true) {
             try {
-              return fs$readSync.call(fs13, fd, buffer, offset, length, position);
+              return fs$readSync.call(fs16, fd, buffer, offset, length, position);
             } catch (er) {
               if (er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
@@ -18752,11 +18985,11 @@ var require_polyfills = __commonJS({
             }
           }
         };
-      }(fs13.readSync);
-      function patchLchmod(fs14) {
-        fs14.lchmod = function(path21, mode, callback) {
-          fs14.open(
-            path21,
+      }(fs16.readSync);
+      function patchLchmod(fs17) {
+        fs17.lchmod = function(path25, mode, callback) {
+          fs17.open(
+            path25,
             constants.O_WRONLY | constants.O_SYMLINK,
             mode,
             function(err, fd) {
@@ -18764,80 +18997,80 @@ var require_polyfills = __commonJS({
                 if (callback) callback(err);
                 return;
               }
-              fs14.fchmod(fd, mode, function(err2) {
-                fs14.close(fd, function(err22) {
+              fs17.fchmod(fd, mode, function(err2) {
+                fs17.close(fd, function(err22) {
                   if (callback) callback(err2 || err22);
                 });
               });
             }
           );
         };
-        fs14.lchmodSync = function(path21, mode) {
-          var fd = fs14.openSync(path21, constants.O_WRONLY | constants.O_SYMLINK, mode);
+        fs17.lchmodSync = function(path25, mode) {
+          var fd = fs17.openSync(path25, constants.O_WRONLY | constants.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
-            ret = fs14.fchmodSync(fd, mode);
+            ret = fs17.fchmodSync(fd, mode);
             threw = false;
           } finally {
             if (threw) {
               try {
-                fs14.closeSync(fd);
+                fs17.closeSync(fd);
               } catch (er) {
               }
             } else {
-              fs14.closeSync(fd);
+              fs17.closeSync(fd);
             }
           }
           return ret;
         };
       }
-      function patchLutimes(fs14) {
-        if (constants.hasOwnProperty("O_SYMLINK") && fs14.futimes) {
-          fs14.lutimes = function(path21, at, mt, cb) {
-            fs14.open(path21, constants.O_SYMLINK, function(er, fd) {
+      function patchLutimes(fs17) {
+        if (constants.hasOwnProperty("O_SYMLINK") && fs17.futimes) {
+          fs17.lutimes = function(path25, at, mt, cb) {
+            fs17.open(path25, constants.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
               }
-              fs14.futimes(fd, at, mt, function(er2) {
-                fs14.close(fd, function(er22) {
+              fs17.futimes(fd, at, mt, function(er2) {
+                fs17.close(fd, function(er22) {
                   if (cb) cb(er2 || er22);
                 });
               });
             });
           };
-          fs14.lutimesSync = function(path21, at, mt) {
-            var fd = fs14.openSync(path21, constants.O_SYMLINK);
+          fs17.lutimesSync = function(path25, at, mt) {
+            var fd = fs17.openSync(path25, constants.O_SYMLINK);
             var ret;
             var threw = true;
             try {
-              ret = fs14.futimesSync(fd, at, mt);
+              ret = fs17.futimesSync(fd, at, mt);
               threw = false;
             } finally {
               if (threw) {
                 try {
-                  fs14.closeSync(fd);
+                  fs17.closeSync(fd);
                 } catch (er) {
                 }
               } else {
-                fs14.closeSync(fd);
+                fs17.closeSync(fd);
               }
             }
             return ret;
           };
-        } else if (fs14.futimes) {
-          fs14.lutimes = function(_a, _b, _c, cb) {
+        } else if (fs17.futimes) {
+          fs17.lutimes = function(_a, _b, _c, cb) {
             if (cb) process.nextTick(cb);
           };
-          fs14.lutimesSync = function() {
+          fs17.lutimesSync = function() {
           };
         }
       }
       function chmodFix(orig) {
         if (!orig) return orig;
         return function(target, mode, cb) {
-          return orig.call(fs13, target, mode, function(er) {
+          return orig.call(fs16, target, mode, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -18847,7 +19080,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, mode) {
           try {
-            return orig.call(fs13, target, mode);
+            return orig.call(fs16, target, mode);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -18856,7 +19089,7 @@ var require_polyfills = __commonJS({
       function chownFix(orig) {
         if (!orig) return orig;
         return function(target, uid, gid, cb) {
-          return orig.call(fs13, target, uid, gid, function(er) {
+          return orig.call(fs16, target, uid, gid, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -18866,7 +19099,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, uid, gid) {
           try {
-            return orig.call(fs13, target, uid, gid);
+            return orig.call(fs16, target, uid, gid);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -18886,13 +19119,13 @@ var require_polyfills = __commonJS({
             }
             if (cb) cb.apply(this, arguments);
           }
-          return options ? orig.call(fs13, target, options, callback) : orig.call(fs13, target, callback);
+          return options ? orig.call(fs16, target, options, callback) : orig.call(fs16, target, callback);
         };
       }
       function statFixSync(orig) {
         if (!orig) return orig;
         return function(target, options) {
-          var stats = options ? orig.call(fs13, target, options) : orig.call(fs13, target);
+          var stats = options ? orig.call(fs16, target, options) : orig.call(fs16, target);
           if (stats) {
             if (stats.uid < 0) stats.uid += 4294967296;
             if (stats.gid < 0) stats.gid += 4294967296;
@@ -18921,16 +19154,16 @@ var require_legacy_streams = __commonJS({
   "node_modules/graceful-fs/legacy-streams.js"(exports2, module2) {
     var Stream = require("stream").Stream;
     module2.exports = legacy;
-    function legacy(fs13) {
+    function legacy(fs16) {
       return {
         ReadStream,
         WriteStream
       };
-      function ReadStream(path21, options) {
-        if (!(this instanceof ReadStream)) return new ReadStream(path21, options);
+      function ReadStream(path25, options) {
+        if (!(this instanceof ReadStream)) return new ReadStream(path25, options);
         Stream.call(this);
         var self2 = this;
-        this.path = path21;
+        this.path = path25;
         this.fd = null;
         this.readable = true;
         this.paused = false;
@@ -18964,7 +19197,7 @@ var require_legacy_streams = __commonJS({
           });
           return;
         }
-        fs13.open(this.path, this.flags, this.mode, function(err, fd) {
+        fs16.open(this.path, this.flags, this.mode, function(err, fd) {
           if (err) {
             self2.emit("error", err);
             self2.readable = false;
@@ -18975,10 +19208,10 @@ var require_legacy_streams = __commonJS({
           self2._read();
         });
       }
-      function WriteStream(path21, options) {
-        if (!(this instanceof WriteStream)) return new WriteStream(path21, options);
+      function WriteStream(path25, options) {
+        if (!(this instanceof WriteStream)) return new WriteStream(path25, options);
         Stream.call(this);
-        this.path = path21;
+        this.path = path25;
         this.fd = null;
         this.writable = true;
         this.flags = "w";
@@ -19003,7 +19236,7 @@ var require_legacy_streams = __commonJS({
         this.busy = false;
         this._queue = [];
         if (this.fd === null) {
-          this._open = fs13.open;
+          this._open = fs16.open;
           this._queue.push([this._open, this.path, this.flags, this.mode, void 0]);
           this.flush();
         }
@@ -19038,7 +19271,7 @@ var require_clone = __commonJS({
 // node_modules/graceful-fs/graceful-fs.js
 var require_graceful_fs = __commonJS({
   "node_modules/graceful-fs/graceful-fs.js"(exports2, module2) {
-    var fs13 = require("fs");
+    var fs16 = require("fs");
     var polyfills = require_polyfills();
     var legacy = require_legacy_streams();
     var clone = require_clone();
@@ -19070,12 +19303,12 @@ var require_graceful_fs = __commonJS({
         m = "GFS4: " + m.split(/\n/).join("\nGFS4: ");
         console.error(m);
       };
-    if (!fs13[gracefulQueue]) {
+    if (!fs16[gracefulQueue]) {
       queue = global[gracefulQueue] || [];
-      publishQueue(fs13, queue);
-      fs13.close = function(fs$close) {
+      publishQueue(fs16, queue);
+      fs16.close = function(fs$close) {
         function close(fd, cb) {
-          return fs$close.call(fs13, fd, function(err) {
+          return fs$close.call(fs16, fd, function(err) {
             if (!err) {
               resetQueue();
             }
@@ -19087,48 +19320,48 @@ var require_graceful_fs = __commonJS({
           value: fs$close
         });
         return close;
-      }(fs13.close);
-      fs13.closeSync = function(fs$closeSync) {
+      }(fs16.close);
+      fs16.closeSync = function(fs$closeSync) {
         function closeSync(fd) {
-          fs$closeSync.apply(fs13, arguments);
+          fs$closeSync.apply(fs16, arguments);
           resetQueue();
         }
         Object.defineProperty(closeSync, previousSymbol, {
           value: fs$closeSync
         });
         return closeSync;
-      }(fs13.closeSync);
+      }(fs16.closeSync);
       if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || "")) {
         process.on("exit", function() {
-          debug(fs13[gracefulQueue]);
-          require("assert").equal(fs13[gracefulQueue].length, 0);
+          debug(fs16[gracefulQueue]);
+          require("assert").equal(fs16[gracefulQueue].length, 0);
         });
       }
     }
     var queue;
     if (!global[gracefulQueue]) {
-      publishQueue(global, fs13[gracefulQueue]);
+      publishQueue(global, fs16[gracefulQueue]);
     }
-    module2.exports = patch(clone(fs13));
-    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs13.__patched) {
-      module2.exports = patch(fs13);
-      fs13.__patched = true;
+    module2.exports = patch(clone(fs16));
+    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs16.__patched) {
+      module2.exports = patch(fs16);
+      fs16.__patched = true;
     }
-    function patch(fs14) {
-      polyfills(fs14);
-      fs14.gracefulify = patch;
-      fs14.createReadStream = createReadStream;
-      fs14.createWriteStream = createWriteStream;
-      var fs$readFile = fs14.readFile;
-      fs14.readFile = readFile;
-      function readFile(path21, options, cb) {
+    function patch(fs17) {
+      polyfills(fs17);
+      fs17.gracefulify = patch;
+      fs17.createReadStream = createReadStream;
+      fs17.createWriteStream = createWriteStream;
+      var fs$readFile = fs17.readFile;
+      fs17.readFile = readFile;
+      function readFile(path25, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$readFile(path21, options, cb);
-        function go$readFile(path22, options2, cb2, startTime) {
-          return fs$readFile(path22, options2, function(err) {
+        return go$readFile(path25, options, cb);
+        function go$readFile(path26, options2, cb2, startTime) {
+          return fs$readFile(path26, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$readFile, [path22, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$readFile, [path26, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19136,16 +19369,16 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$writeFile = fs14.writeFile;
-      fs14.writeFile = writeFile;
-      function writeFile(path21, data, options, cb) {
+      var fs$writeFile = fs17.writeFile;
+      fs17.writeFile = writeFile;
+      function writeFile(path25, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$writeFile(path21, data, options, cb);
-        function go$writeFile(path22, data2, options2, cb2, startTime) {
-          return fs$writeFile(path22, data2, options2, function(err) {
+        return go$writeFile(path25, data, options, cb);
+        function go$writeFile(path26, data2, options2, cb2, startTime) {
+          return fs$writeFile(path26, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$writeFile, [path22, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$writeFile, [path26, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19153,17 +19386,17 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$appendFile = fs14.appendFile;
+      var fs$appendFile = fs17.appendFile;
       if (fs$appendFile)
-        fs14.appendFile = appendFile;
-      function appendFile(path21, data, options, cb) {
+        fs17.appendFile = appendFile;
+      function appendFile(path25, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$appendFile(path21, data, options, cb);
-        function go$appendFile(path22, data2, options2, cb2, startTime) {
-          return fs$appendFile(path22, data2, options2, function(err) {
+        return go$appendFile(path25, data, options, cb);
+        function go$appendFile(path26, data2, options2, cb2, startTime) {
+          return fs$appendFile(path26, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$appendFile, [path22, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$appendFile, [path26, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19171,9 +19404,9 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$copyFile = fs14.copyFile;
+      var fs$copyFile = fs17.copyFile;
       if (fs$copyFile)
-        fs14.copyFile = copyFile;
+        fs17.copyFile = copyFile;
       function copyFile(src, dest, flags, cb) {
         if (typeof flags === "function") {
           cb = flags;
@@ -19191,34 +19424,34 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$readdir = fs14.readdir;
-      fs14.readdir = readdir;
+      var fs$readdir = fs17.readdir;
+      fs17.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path21, options, cb) {
+      function readdir(path25, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path22, options2, cb2, startTime) {
-          return fs$readdir(path22, fs$readdirCallback(
-            path22,
+        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path26, options2, cb2, startTime) {
+          return fs$readdir(path26, fs$readdirCallback(
+            path26,
             options2,
             cb2,
             startTime
           ));
-        } : function go$readdir2(path22, options2, cb2, startTime) {
-          return fs$readdir(path22, options2, fs$readdirCallback(
-            path22,
+        } : function go$readdir2(path26, options2, cb2, startTime) {
+          return fs$readdir(path26, options2, fs$readdirCallback(
+            path26,
             options2,
             cb2,
             startTime
           ));
         };
-        return go$readdir(path21, options, cb);
-        function fs$readdirCallback(path22, options2, cb2, startTime) {
+        return go$readdir(path25, options, cb);
+        function fs$readdirCallback(path26, options2, cb2, startTime) {
           return function(err, files) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
               enqueue([
                 go$readdir,
-                [path22, options2, cb2],
+                [path26, options2, cb2],
                 err,
                 startTime || Date.now(),
                 Date.now()
@@ -19233,21 +19466,21 @@ var require_graceful_fs = __commonJS({
         }
       }
       if (process.version.substr(0, 4) === "v0.8") {
-        var legStreams = legacy(fs14);
+        var legStreams = legacy(fs17);
         ReadStream = legStreams.ReadStream;
         WriteStream = legStreams.WriteStream;
       }
-      var fs$ReadStream = fs14.ReadStream;
+      var fs$ReadStream = fs17.ReadStream;
       if (fs$ReadStream) {
         ReadStream.prototype = Object.create(fs$ReadStream.prototype);
         ReadStream.prototype.open = ReadStream$open;
       }
-      var fs$WriteStream = fs14.WriteStream;
+      var fs$WriteStream = fs17.WriteStream;
       if (fs$WriteStream) {
         WriteStream.prototype = Object.create(fs$WriteStream.prototype);
         WriteStream.prototype.open = WriteStream$open;
       }
-      Object.defineProperty(fs14, "ReadStream", {
+      Object.defineProperty(fs17, "ReadStream", {
         get: function() {
           return ReadStream;
         },
@@ -19257,7 +19490,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      Object.defineProperty(fs14, "WriteStream", {
+      Object.defineProperty(fs17, "WriteStream", {
         get: function() {
           return WriteStream;
         },
@@ -19268,7 +19501,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileReadStream = ReadStream;
-      Object.defineProperty(fs14, "FileReadStream", {
+      Object.defineProperty(fs17, "FileReadStream", {
         get: function() {
           return FileReadStream;
         },
@@ -19279,7 +19512,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileWriteStream = WriteStream;
-      Object.defineProperty(fs14, "FileWriteStream", {
+      Object.defineProperty(fs17, "FileWriteStream", {
         get: function() {
           return FileWriteStream;
         },
@@ -19289,7 +19522,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      function ReadStream(path21, options) {
+      function ReadStream(path25, options) {
         if (this instanceof ReadStream)
           return fs$ReadStream.apply(this, arguments), this;
         else
@@ -19309,7 +19542,7 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function WriteStream(path21, options) {
+      function WriteStream(path25, options) {
         if (this instanceof WriteStream)
           return fs$WriteStream.apply(this, arguments), this;
         else
@@ -19327,22 +19560,22 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function createReadStream(path21, options) {
-        return new fs14.ReadStream(path21, options);
+      function createReadStream(path25, options) {
+        return new fs17.ReadStream(path25, options);
       }
-      function createWriteStream(path21, options) {
-        return new fs14.WriteStream(path21, options);
+      function createWriteStream(path25, options) {
+        return new fs17.WriteStream(path25, options);
       }
-      var fs$open = fs14.open;
-      fs14.open = open;
-      function open(path21, flags, mode, cb) {
+      var fs$open = fs17.open;
+      fs17.open = open;
+      function open(path25, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
-        return go$open(path21, flags, mode, cb);
-        function go$open(path22, flags2, mode2, cb2, startTime) {
-          return fs$open(path22, flags2, mode2, function(err, fd) {
+        return go$open(path25, flags, mode, cb);
+        function go$open(path26, flags2, mode2, cb2, startTime) {
+          return fs$open(path26, flags2, mode2, function(err, fd) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$open, [path22, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$open, [path26, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19350,20 +19583,20 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      return fs14;
+      return fs17;
     }
     function enqueue(elem) {
       debug("ENQUEUE", elem[0].name, elem[1]);
-      fs13[gracefulQueue].push(elem);
+      fs16[gracefulQueue].push(elem);
       retry();
     }
     var retryTimer;
     function resetQueue() {
       var now = Date.now();
-      for (var i = 0; i < fs13[gracefulQueue].length; ++i) {
-        if (fs13[gracefulQueue][i].length > 2) {
-          fs13[gracefulQueue][i][3] = now;
-          fs13[gracefulQueue][i][4] = now;
+      for (var i = 0; i < fs16[gracefulQueue].length; ++i) {
+        if (fs16[gracefulQueue][i].length > 2) {
+          fs16[gracefulQueue][i][3] = now;
+          fs16[gracefulQueue][i][4] = now;
         }
       }
       retry();
@@ -19371,9 +19604,9 @@ var require_graceful_fs = __commonJS({
     function retry() {
       clearTimeout(retryTimer);
       retryTimer = void 0;
-      if (fs13[gracefulQueue].length === 0)
+      if (fs16[gracefulQueue].length === 0)
         return;
-      var elem = fs13[gracefulQueue].shift();
+      var elem = fs16[gracefulQueue].shift();
       var fn = elem[0];
       var args = elem[1];
       var err = elem[2];
@@ -19395,7 +19628,7 @@ var require_graceful_fs = __commonJS({
           debug("RETRY", fn.name, args);
           fn.apply(null, args.concat([startTime]));
         } else {
-          fs13[gracefulQueue].push(elem);
+          fs16[gracefulQueue].push(elem);
         }
       }
       if (retryTimer === void 0) {
@@ -19410,7 +19643,7 @@ var require_fs2 = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/fs/index.js"(exports2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var fs13 = require_graceful_fs();
+    var fs16 = require_graceful_fs();
     var api = [
       "access",
       "appendFile",
@@ -19447,26 +19680,26 @@ var require_fs2 = __commonJS({
       "utimes",
       "writeFile"
     ].filter((key) => {
-      return typeof fs13[key] === "function";
+      return typeof fs16[key] === "function";
     });
-    Object.assign(exports2, fs13);
+    Object.assign(exports2, fs16);
     api.forEach((method) => {
-      exports2[method] = u(fs13[method]);
+      exports2[method] = u(fs16[method]);
     });
     exports2.exists = function(filename, callback) {
       if (typeof callback === "function") {
-        return fs13.exists(filename, callback);
+        return fs16.exists(filename, callback);
       }
       return new Promise((resolve) => {
-        return fs13.exists(filename, resolve);
+        return fs16.exists(filename, resolve);
       });
     };
     exports2.read = function(fd, buffer, offset, length, position, callback) {
       if (typeof callback === "function") {
-        return fs13.read(fd, buffer, offset, length, position, callback);
+        return fs16.read(fd, buffer, offset, length, position, callback);
       }
       return new Promise((resolve, reject) => {
-        fs13.read(fd, buffer, offset, length, position, (err, bytesRead, buffer2) => {
+        fs16.read(fd, buffer, offset, length, position, (err, bytesRead, buffer2) => {
           if (err) return reject(err);
           resolve({ bytesRead, buffer: buffer2 });
         });
@@ -19474,30 +19707,30 @@ var require_fs2 = __commonJS({
     };
     exports2.write = function(fd, buffer, ...args) {
       if (typeof args[args.length - 1] === "function") {
-        return fs13.write(fd, buffer, ...args);
+        return fs16.write(fd, buffer, ...args);
       }
       return new Promise((resolve, reject) => {
-        fs13.write(fd, buffer, ...args, (err, bytesWritten, buffer2) => {
+        fs16.write(fd, buffer, ...args, (err, bytesWritten, buffer2) => {
           if (err) return reject(err);
           resolve({ bytesWritten, buffer: buffer2 });
         });
       });
     };
-    if (typeof fs13.writev === "function") {
+    if (typeof fs16.writev === "function") {
       exports2.writev = function(fd, buffers, ...args) {
         if (typeof args[args.length - 1] === "function") {
-          return fs13.writev(fd, buffers, ...args);
+          return fs16.writev(fd, buffers, ...args);
         }
         return new Promise((resolve, reject) => {
-          fs13.writev(fd, buffers, ...args, (err, bytesWritten, buffers2) => {
+          fs16.writev(fd, buffers, ...args, (err, bytesWritten, buffers2) => {
             if (err) return reject(err);
             resolve({ bytesWritten, buffers: buffers2 });
           });
         });
       };
     }
-    if (typeof fs13.realpath.native === "function") {
-      exports2.realpath.native = u(fs13.realpath.native);
+    if (typeof fs16.realpath.native === "function") {
+      exports2.realpath.native = u(fs16.realpath.native);
     } else {
       process.emitWarning(
         "fs.realpath.native is not a function. Is fs being monkey-patched?",
@@ -19512,10 +19745,10 @@ var require_fs2 = __commonJS({
 var require_utils2 = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/mkdirs/utils.js"(exports2, module2) {
     "use strict";
-    var path21 = require("path");
+    var path25 = require("path");
     module2.exports.checkPath = function checkPath(pth) {
       if (process.platform === "win32") {
-        const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path21.parse(pth).root, ""));
+        const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path25.parse(pth).root, ""));
         if (pathHasInvalidWinCharacters) {
           const error = new Error(`Path contains invalid characters: ${pth}`);
           error.code = "EINVAL";
@@ -19530,7 +19763,7 @@ var require_utils2 = __commonJS({
 var require_make_dir = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/mkdirs/make-dir.js"(exports2, module2) {
     "use strict";
-    var fs13 = require_fs2();
+    var fs16 = require_fs2();
     var { checkPath } = require_utils2();
     var getMode = (options) => {
       const defaults = { mode: 511 };
@@ -19539,14 +19772,14 @@ var require_make_dir = __commonJS({
     };
     module2.exports.makeDir = async (dir, options) => {
       checkPath(dir);
-      return fs13.mkdir(dir, {
+      return fs16.mkdir(dir, {
         mode: getMode(options),
         recursive: true
       });
     };
     module2.exports.makeDirSync = (dir, options) => {
       checkPath(dir);
-      return fs13.mkdirSync(dir, {
+      return fs16.mkdirSync(dir, {
         mode: getMode(options),
         recursive: true
       });
@@ -19578,13 +19811,13 @@ var require_path_exists2 = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/path-exists/index.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var fs13 = require_fs2();
-    function pathExists(path21) {
-      return fs13.access(path21).then(() => true).catch(() => false);
+    var fs16 = require_fs2();
+    function pathExists(path25) {
+      return fs16.access(path25).then(() => true).catch(() => false);
     }
     module2.exports = {
       pathExists: u(pathExists),
-      pathExistsSync: fs13.existsSync
+      pathExistsSync: fs16.existsSync
     };
   }
 });
@@ -19593,21 +19826,21 @@ var require_path_exists2 = __commonJS({
 var require_utimes = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/util/utimes.js"(exports2, module2) {
     "use strict";
-    var fs13 = require_graceful_fs();
-    function utimesMillis(path21, atime, mtime, callback) {
-      fs13.open(path21, "r+", (err, fd) => {
+    var fs16 = require_graceful_fs();
+    function utimesMillis(path25, atime, mtime, callback) {
+      fs16.open(path25, "r+", (err, fd) => {
         if (err) return callback(err);
-        fs13.futimes(fd, atime, mtime, (futimesErr) => {
-          fs13.close(fd, (closeErr) => {
+        fs16.futimes(fd, atime, mtime, (futimesErr) => {
+          fs16.close(fd, (closeErr) => {
             if (callback) callback(futimesErr || closeErr);
           });
         });
       });
     }
-    function utimesMillisSync(path21, atime, mtime) {
-      const fd = fs13.openSync(path21, "r+");
-      fs13.futimesSync(fd, atime, mtime);
-      return fs13.closeSync(fd);
+    function utimesMillisSync(path25, atime, mtime) {
+      const fd = fs16.openSync(path25, "r+");
+      fs16.futimesSync(fd, atime, mtime);
+      return fs16.closeSync(fd);
     }
     module2.exports = {
       utimesMillis,
@@ -19620,11 +19853,11 @@ var require_utimes = __commonJS({
 var require_stat = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/util/stat.js"(exports2, module2) {
     "use strict";
-    var fs13 = require_fs2();
-    var path21 = require("path");
+    var fs16 = require_fs2();
+    var path25 = require("path");
     var util = require("util");
     function getStats(src, dest, opts) {
-      const statFunc = opts.dereference ? (file) => fs13.stat(file, { bigint: true }) : (file) => fs13.lstat(file, { bigint: true });
+      const statFunc = opts.dereference ? (file) => fs16.stat(file, { bigint: true }) : (file) => fs16.lstat(file, { bigint: true });
       return Promise.all([
         statFunc(src),
         statFunc(dest).catch((err) => {
@@ -19635,7 +19868,7 @@ var require_stat = __commonJS({
     }
     function getStatsSync(src, dest, opts) {
       let destStat;
-      const statFunc = opts.dereference ? (file) => fs13.statSync(file, { bigint: true }) : (file) => fs13.lstatSync(file, { bigint: true });
+      const statFunc = opts.dereference ? (file) => fs16.statSync(file, { bigint: true }) : (file) => fs16.lstatSync(file, { bigint: true });
       const srcStat = statFunc(src);
       try {
         destStat = statFunc(dest);
@@ -19651,8 +19884,8 @@ var require_stat = __commonJS({
         const { srcStat, destStat } = stats;
         if (destStat) {
           if (areIdentical(srcStat, destStat)) {
-            const srcBaseName = path21.basename(src);
-            const destBaseName = path21.basename(dest);
+            const srcBaseName = path25.basename(src);
+            const destBaseName = path25.basename(dest);
             if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
               return cb(null, { srcStat, destStat, isChangingCase: true });
             }
@@ -19675,8 +19908,8 @@ var require_stat = __commonJS({
       const { srcStat, destStat } = getStatsSync(src, dest, opts);
       if (destStat) {
         if (areIdentical(srcStat, destStat)) {
-          const srcBaseName = path21.basename(src);
-          const destBaseName = path21.basename(dest);
+          const srcBaseName = path25.basename(src);
+          const destBaseName = path25.basename(dest);
           if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
             return { srcStat, destStat, isChangingCase: true };
           }
@@ -19695,10 +19928,10 @@ var require_stat = __commonJS({
       return { srcStat, destStat };
     }
     function checkParentPaths(src, srcStat, dest, funcName, cb) {
-      const srcParent = path21.resolve(path21.dirname(src));
-      const destParent = path21.resolve(path21.dirname(dest));
-      if (destParent === srcParent || destParent === path21.parse(destParent).root) return cb();
-      fs13.stat(destParent, { bigint: true }, (err, destStat) => {
+      const srcParent = path25.resolve(path25.dirname(src));
+      const destParent = path25.resolve(path25.dirname(dest));
+      if (destParent === srcParent || destParent === path25.parse(destParent).root) return cb();
+      fs16.stat(destParent, { bigint: true }, (err, destStat) => {
         if (err) {
           if (err.code === "ENOENT") return cb();
           return cb(err);
@@ -19710,12 +19943,12 @@ var require_stat = __commonJS({
       });
     }
     function checkParentPathsSync(src, srcStat, dest, funcName) {
-      const srcParent = path21.resolve(path21.dirname(src));
-      const destParent = path21.resolve(path21.dirname(dest));
-      if (destParent === srcParent || destParent === path21.parse(destParent).root) return;
+      const srcParent = path25.resolve(path25.dirname(src));
+      const destParent = path25.resolve(path25.dirname(dest));
+      if (destParent === srcParent || destParent === path25.parse(destParent).root) return;
       let destStat;
       try {
-        destStat = fs13.statSync(destParent, { bigint: true });
+        destStat = fs16.statSync(destParent, { bigint: true });
       } catch (err) {
         if (err.code === "ENOENT") return;
         throw err;
@@ -19729,8 +19962,8 @@ var require_stat = __commonJS({
       return destStat.ino && destStat.dev && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev;
     }
     function isSrcSubdir(src, dest) {
-      const srcArr = path21.resolve(src).split(path21.sep).filter((i) => i);
-      const destArr = path21.resolve(dest).split(path21.sep).filter((i) => i);
+      const srcArr = path25.resolve(src).split(path25.sep).filter((i) => i);
+      const destArr = path25.resolve(dest).split(path25.sep).filter((i) => i);
       return srcArr.reduce((acc, cur, i) => acc && destArr[i] === cur, true);
     }
     function errMsg(src, dest, funcName) {
@@ -19751,8 +19984,8 @@ var require_stat = __commonJS({
 var require_copy = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/copy/copy.js"(exports2, module2) {
     "use strict";
-    var fs13 = require_graceful_fs();
-    var path21 = require("path");
+    var fs16 = require_graceful_fs();
+    var path25 = require("path");
     var mkdirs = require_mkdirs().mkdirs;
     var pathExists = require_path_exists2().pathExists;
     var utimesMillis = require_utimes().utimesMillis;
@@ -19787,7 +20020,7 @@ var require_copy = __commonJS({
       });
     }
     function checkParentDir(destStat, src, dest, opts, cb) {
-      const destParent = path21.dirname(dest);
+      const destParent = path25.dirname(dest);
       pathExists(destParent, (err, dirExists) => {
         if (err) return cb(err);
         if (dirExists) return getStats(destStat, src, dest, opts, cb);
@@ -19808,7 +20041,7 @@ var require_copy = __commonJS({
       return getStats(destStat, src, dest, opts, cb);
     }
     function getStats(destStat, src, dest, opts, cb) {
-      const stat2 = opts.dereference ? fs13.stat : fs13.lstat;
+      const stat2 = opts.dereference ? fs16.stat : fs16.lstat;
       stat2(src, (err, srcStat) => {
         if (err) return cb(err);
         if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts, cb);
@@ -19825,7 +20058,7 @@ var require_copy = __commonJS({
     }
     function mayCopyFile(srcStat, src, dest, opts, cb) {
       if (opts.overwrite) {
-        fs13.unlink(dest, (err) => {
+        fs16.unlink(dest, (err) => {
           if (err) return cb(err);
           return copyFile(srcStat, src, dest, opts, cb);
         });
@@ -19834,7 +20067,7 @@ var require_copy = __commonJS({
       } else return cb();
     }
     function copyFile(srcStat, src, dest, opts, cb) {
-      fs13.copyFile(src, dest, (err) => {
+      fs16.copyFile(src, dest, (err) => {
         if (err) return cb(err);
         if (opts.preserveTimestamps) return handleTimestampsAndMode(srcStat.mode, src, dest, cb);
         return setDestMode(dest, srcStat.mode, cb);
@@ -19862,10 +20095,10 @@ var require_copy = __commonJS({
       });
     }
     function setDestMode(dest, srcMode, cb) {
-      return fs13.chmod(dest, srcMode, cb);
+      return fs16.chmod(dest, srcMode, cb);
     }
     function setDestTimestamps(src, dest, cb) {
-      fs13.stat(src, (err, updatedSrcStat) => {
+      fs16.stat(src, (err, updatedSrcStat) => {
         if (err) return cb(err);
         return utimesMillis(dest, updatedSrcStat.atime, updatedSrcStat.mtime, cb);
       });
@@ -19875,7 +20108,7 @@ var require_copy = __commonJS({
       return copyDir(src, dest, opts, cb);
     }
     function mkDirAndCopy(srcMode, src, dest, opts, cb) {
-      fs13.mkdir(dest, (err) => {
+      fs16.mkdir(dest, (err) => {
         if (err) return cb(err);
         copyDir(src, dest, opts, (err2) => {
           if (err2) return cb(err2);
@@ -19884,7 +20117,7 @@ var require_copy = __commonJS({
       });
     }
     function copyDir(src, dest, opts, cb) {
-      fs13.readdir(src, (err, items2) => {
+      fs16.readdir(src, (err, items2) => {
         if (err) return cb(err);
         return copyDirItems(items2, src, dest, opts, cb);
       });
@@ -19895,8 +20128,8 @@ var require_copy = __commonJS({
       return copyDirItem(items2, item, src, dest, opts, cb);
     }
     function copyDirItem(items2, item, src, dest, opts, cb) {
-      const srcItem = path21.join(src, item);
-      const destItem = path21.join(dest, item);
+      const srcItem = path25.join(src, item);
+      const destItem = path25.join(dest, item);
       stat.checkPaths(srcItem, destItem, "copy", opts, (err, stats) => {
         if (err) return cb(err);
         const { destStat } = stats;
@@ -19907,21 +20140,21 @@ var require_copy = __commonJS({
       });
     }
     function onLink(destStat, src, dest, opts, cb) {
-      fs13.readlink(src, (err, resolvedSrc) => {
+      fs16.readlink(src, (err, resolvedSrc) => {
         if (err) return cb(err);
         if (opts.dereference) {
-          resolvedSrc = path21.resolve(process.cwd(), resolvedSrc);
+          resolvedSrc = path25.resolve(process.cwd(), resolvedSrc);
         }
         if (!destStat) {
-          return fs13.symlink(resolvedSrc, dest, cb);
+          return fs16.symlink(resolvedSrc, dest, cb);
         } else {
-          fs13.readlink(dest, (err2, resolvedDest) => {
+          fs16.readlink(dest, (err2, resolvedDest) => {
             if (err2) {
-              if (err2.code === "EINVAL" || err2.code === "UNKNOWN") return fs13.symlink(resolvedSrc, dest, cb);
+              if (err2.code === "EINVAL" || err2.code === "UNKNOWN") return fs16.symlink(resolvedSrc, dest, cb);
               return cb(err2);
             }
             if (opts.dereference) {
-              resolvedDest = path21.resolve(process.cwd(), resolvedDest);
+              resolvedDest = path25.resolve(process.cwd(), resolvedDest);
             }
             if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
               return cb(new Error(`Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`));
@@ -19935,9 +20168,9 @@ var require_copy = __commonJS({
       });
     }
     function copyLink(resolvedSrc, dest, cb) {
-      fs13.unlink(dest, (err) => {
+      fs16.unlink(dest, (err) => {
         if (err) return cb(err);
-        return fs13.symlink(resolvedSrc, dest, cb);
+        return fs16.symlink(resolvedSrc, dest, cb);
       });
     }
     module2.exports = copy;
@@ -19948,8 +20181,8 @@ var require_copy = __commonJS({
 var require_copy_sync = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/copy/copy-sync.js"(exports2, module2) {
     "use strict";
-    var fs13 = require_graceful_fs();
-    var path21 = require("path");
+    var fs16 = require_graceful_fs();
+    var path25 = require("path");
     var mkdirsSync = require_mkdirs().mkdirsSync;
     var utimesMillisSync = require_utimes().utimesMillisSync;
     var stat = require_stat();
@@ -19973,8 +20206,8 @@ var require_copy_sync = __commonJS({
     }
     function handleFilterAndCopy(destStat, src, dest, opts) {
       if (opts.filter && !opts.filter(src, dest)) return;
-      const destParent = path21.dirname(dest);
-      if (!fs13.existsSync(destParent)) mkdirsSync(destParent);
+      const destParent = path25.dirname(dest);
+      if (!fs16.existsSync(destParent)) mkdirsSync(destParent);
       return getStats(destStat, src, dest, opts);
     }
     function startCopy(destStat, src, dest, opts) {
@@ -19982,7 +20215,7 @@ var require_copy_sync = __commonJS({
       return getStats(destStat, src, dest, opts);
     }
     function getStats(destStat, src, dest, opts) {
-      const statSync = opts.dereference ? fs13.statSync : fs13.lstatSync;
+      const statSync = opts.dereference ? fs16.statSync : fs16.lstatSync;
       const srcStat = statSync(src);
       if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts);
       else if (srcStat.isFile() || srcStat.isCharacterDevice() || srcStat.isBlockDevice()) return onFile(srcStat, destStat, src, dest, opts);
@@ -19997,14 +20230,14 @@ var require_copy_sync = __commonJS({
     }
     function mayCopyFile(srcStat, src, dest, opts) {
       if (opts.overwrite) {
-        fs13.unlinkSync(dest);
+        fs16.unlinkSync(dest);
         return copyFile(srcStat, src, dest, opts);
       } else if (opts.errorOnExist) {
         throw new Error(`'${dest}' already exists`);
       }
     }
     function copyFile(srcStat, src, dest, opts) {
-      fs13.copyFileSync(src, dest);
+      fs16.copyFileSync(src, dest);
       if (opts.preserveTimestamps) handleTimestamps(srcStat.mode, src, dest);
       return setDestMode(dest, srcStat.mode);
     }
@@ -20019,10 +20252,10 @@ var require_copy_sync = __commonJS({
       return setDestMode(dest, srcMode | 128);
     }
     function setDestMode(dest, srcMode) {
-      return fs13.chmodSync(dest, srcMode);
+      return fs16.chmodSync(dest, srcMode);
     }
     function setDestTimestamps(src, dest) {
-      const updatedSrcStat = fs13.statSync(src);
+      const updatedSrcStat = fs16.statSync(src);
       return utimesMillisSync(dest, updatedSrcStat.atime, updatedSrcStat.mtime);
     }
     function onDir(srcStat, destStat, src, dest, opts) {
@@ -20030,49 +20263,49 @@ var require_copy_sync = __commonJS({
       return copyDir(src, dest, opts);
     }
     function mkDirAndCopy(srcMode, src, dest, opts) {
-      fs13.mkdirSync(dest);
+      fs16.mkdirSync(dest);
       copyDir(src, dest, opts);
       return setDestMode(dest, srcMode);
     }
     function copyDir(src, dest, opts) {
-      fs13.readdirSync(src).forEach((item) => copyDirItem(item, src, dest, opts));
+      fs16.readdirSync(src).forEach((item) => copyDirItem(item, src, dest, opts));
     }
     function copyDirItem(item, src, dest, opts) {
-      const srcItem = path21.join(src, item);
-      const destItem = path21.join(dest, item);
+      const srcItem = path25.join(src, item);
+      const destItem = path25.join(dest, item);
       const { destStat } = stat.checkPathsSync(srcItem, destItem, "copy", opts);
       return startCopy(destStat, srcItem, destItem, opts);
     }
     function onLink(destStat, src, dest, opts) {
-      let resolvedSrc = fs13.readlinkSync(src);
+      let resolvedSrc = fs16.readlinkSync(src);
       if (opts.dereference) {
-        resolvedSrc = path21.resolve(process.cwd(), resolvedSrc);
+        resolvedSrc = path25.resolve(process.cwd(), resolvedSrc);
       }
       if (!destStat) {
-        return fs13.symlinkSync(resolvedSrc, dest);
+        return fs16.symlinkSync(resolvedSrc, dest);
       } else {
         let resolvedDest;
         try {
-          resolvedDest = fs13.readlinkSync(dest);
+          resolvedDest = fs16.readlinkSync(dest);
         } catch (err) {
-          if (err.code === "EINVAL" || err.code === "UNKNOWN") return fs13.symlinkSync(resolvedSrc, dest);
+          if (err.code === "EINVAL" || err.code === "UNKNOWN") return fs16.symlinkSync(resolvedSrc, dest);
           throw err;
         }
         if (opts.dereference) {
-          resolvedDest = path21.resolve(process.cwd(), resolvedDest);
+          resolvedDest = path25.resolve(process.cwd(), resolvedDest);
         }
         if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
           throw new Error(`Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`);
         }
-        if (fs13.statSync(dest).isDirectory() && stat.isSrcSubdir(resolvedDest, resolvedSrc)) {
+        if (fs16.statSync(dest).isDirectory() && stat.isSrcSubdir(resolvedDest, resolvedSrc)) {
           throw new Error(`Cannot overwrite '${resolvedDest}' with '${resolvedSrc}'.`);
         }
         return copyLink(resolvedSrc, dest);
       }
     }
     function copyLink(resolvedSrc, dest) {
-      fs13.unlinkSync(dest);
-      return fs13.symlinkSync(resolvedSrc, dest);
+      fs16.unlinkSync(dest);
+      return fs16.symlinkSync(resolvedSrc, dest);
     }
     module2.exports = copySync;
   }
@@ -20094,8 +20327,8 @@ var require_copy2 = __commonJS({
 var require_rimraf = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/remove/rimraf.js"(exports2, module2) {
     "use strict";
-    var fs13 = require_graceful_fs();
-    var path21 = require("path");
+    var fs16 = require_graceful_fs();
+    var path25 = require("path");
     var assert = require("assert");
     var isWindows = process.platform === "win32";
     function defaults(options) {
@@ -20108,9 +20341,9 @@ var require_rimraf = __commonJS({
         "readdir"
       ];
       methods.forEach((m) => {
-        options[m] = options[m] || fs13[m];
+        options[m] = options[m] || fs16[m];
         m = m + "Sync";
-        options[m] = options[m] || fs13[m];
+        options[m] = options[m] || fs16[m];
       });
       options.maxBusyTries = options.maxBusyTries || 3;
     }
@@ -20240,7 +20473,7 @@ var require_rimraf = __commonJS({
         let errState;
         if (n === 0) return options.rmdir(p, cb);
         files.forEach((f) => {
-          rimraf(path21.join(p, f), options, (er2) => {
+          rimraf(path25.join(p, f), options, (er2) => {
             if (errState) {
               return;
             }
@@ -20305,7 +20538,7 @@ var require_rimraf = __commonJS({
     function rmkidsSync(p, options) {
       assert(p);
       assert(options);
-      options.readdirSync(p).forEach((f) => rimrafSync(path21.join(p, f), options));
+      options.readdirSync(p).forEach((f) => rimrafSync(path25.join(p, f), options));
       if (isWindows) {
         const startTime = Date.now();
         do {
@@ -20329,16 +20562,16 @@ var require_rimraf = __commonJS({
 var require_remove = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/remove/index.js"(exports2, module2) {
     "use strict";
-    var fs13 = require_graceful_fs();
+    var fs16 = require_graceful_fs();
     var u = require_universalify().fromCallback;
     var rimraf = require_rimraf();
-    function remove(path21, callback) {
-      if (fs13.rm) return fs13.rm(path21, { recursive: true, force: true }, callback);
-      rimraf(path21, callback);
+    function remove(path25, callback) {
+      if (fs16.rm) return fs16.rm(path25, { recursive: true, force: true }, callback);
+      rimraf(path25, callback);
     }
-    function removeSync(path21) {
-      if (fs13.rmSync) return fs13.rmSync(path21, { recursive: true, force: true });
-      rimraf.sync(path21);
+    function removeSync(path25) {
+      if (fs16.rmSync) return fs16.rmSync(path25, { recursive: true, force: true });
+      rimraf.sync(path25);
     }
     module2.exports = {
       remove: u(remove),
@@ -20352,28 +20585,28 @@ var require_empty = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/empty/index.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var fs13 = require_fs2();
-    var path21 = require("path");
+    var fs16 = require_fs2();
+    var path25 = require("path");
     var mkdir = require_mkdirs();
     var remove = require_remove();
     var emptyDir = u(async function emptyDir2(dir) {
       let items2;
       try {
-        items2 = await fs13.readdir(dir);
+        items2 = await fs16.readdir(dir);
       } catch {
         return mkdir.mkdirs(dir);
       }
-      return Promise.all(items2.map((item) => remove.remove(path21.join(dir, item))));
+      return Promise.all(items2.map((item) => remove.remove(path25.join(dir, item))));
     });
     function emptyDirSync(dir) {
       let items2;
       try {
-        items2 = fs13.readdirSync(dir);
+        items2 = fs16.readdirSync(dir);
       } catch {
         return mkdir.mkdirsSync(dir);
       }
       items2.forEach((item) => {
-        item = path21.join(dir, item);
+        item = path25.join(dir, item);
         remove.removeSync(item);
       });
     }
@@ -20391,20 +20624,20 @@ var require_file = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/file.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var path21 = require("path");
-    var fs13 = require_graceful_fs();
+    var path25 = require("path");
+    var fs16 = require_graceful_fs();
     var mkdir = require_mkdirs();
     function createFile(file, callback) {
       function makeFile() {
-        fs13.writeFile(file, "", (err) => {
+        fs16.writeFile(file, "", (err) => {
           if (err) return callback(err);
           callback();
         });
       }
-      fs13.stat(file, (err, stats) => {
+      fs16.stat(file, (err, stats) => {
         if (!err && stats.isFile()) return callback();
-        const dir = path21.dirname(file);
-        fs13.stat(dir, (err2, stats2) => {
+        const dir = path25.dirname(file);
+        fs16.stat(dir, (err2, stats2) => {
           if (err2) {
             if (err2.code === "ENOENT") {
               return mkdir.mkdirs(dir, (err3) => {
@@ -20416,7 +20649,7 @@ var require_file = __commonJS({
           }
           if (stats2.isDirectory()) makeFile();
           else {
-            fs13.readdir(dir, (err3) => {
+            fs16.readdir(dir, (err3) => {
               if (err3) return callback(err3);
             });
           }
@@ -20426,20 +20659,20 @@ var require_file = __commonJS({
     function createFileSync(file) {
       let stats;
       try {
-        stats = fs13.statSync(file);
+        stats = fs16.statSync(file);
       } catch {
       }
       if (stats && stats.isFile()) return;
-      const dir = path21.dirname(file);
+      const dir = path25.dirname(file);
       try {
-        if (!fs13.statSync(dir).isDirectory()) {
-          fs13.readdirSync(dir);
+        if (!fs16.statSync(dir).isDirectory()) {
+          fs16.readdirSync(dir);
         }
       } catch (err) {
         if (err && err.code === "ENOENT") mkdir.mkdirsSync(dir);
         else throw err;
       }
-      fs13.writeFileSync(file, "");
+      fs16.writeFileSync(file, "");
     }
     module2.exports = {
       createFile: u(createFile),
@@ -20453,26 +20686,26 @@ var require_link = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/link.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var path21 = require("path");
-    var fs13 = require_graceful_fs();
+    var path25 = require("path");
+    var fs16 = require_graceful_fs();
     var mkdir = require_mkdirs();
     var pathExists = require_path_exists2().pathExists;
     var { areIdentical } = require_stat();
     function createLink(srcpath, dstpath, callback) {
       function makeLink(srcpath2, dstpath2) {
-        fs13.link(srcpath2, dstpath2, (err) => {
+        fs16.link(srcpath2, dstpath2, (err) => {
           if (err) return callback(err);
           callback(null);
         });
       }
-      fs13.lstat(dstpath, (_, dstStat) => {
-        fs13.lstat(srcpath, (err, srcStat) => {
+      fs16.lstat(dstpath, (_, dstStat) => {
+        fs16.lstat(srcpath, (err, srcStat) => {
           if (err) {
             err.message = err.message.replace("lstat", "ensureLink");
             return callback(err);
           }
           if (dstStat && areIdentical(srcStat, dstStat)) return callback(null);
-          const dir = path21.dirname(dstpath);
+          const dir = path25.dirname(dstpath);
           pathExists(dir, (err2, dirExists) => {
             if (err2) return callback(err2);
             if (dirExists) return makeLink(srcpath, dstpath);
@@ -20487,21 +20720,21 @@ var require_link = __commonJS({
     function createLinkSync(srcpath, dstpath) {
       let dstStat;
       try {
-        dstStat = fs13.lstatSync(dstpath);
+        dstStat = fs16.lstatSync(dstpath);
       } catch {
       }
       try {
-        const srcStat = fs13.lstatSync(srcpath);
+        const srcStat = fs16.lstatSync(srcpath);
         if (dstStat && areIdentical(srcStat, dstStat)) return;
       } catch (err) {
         err.message = err.message.replace("lstat", "ensureLink");
         throw err;
       }
-      const dir = path21.dirname(dstpath);
-      const dirExists = fs13.existsSync(dir);
-      if (dirExists) return fs13.linkSync(srcpath, dstpath);
+      const dir = path25.dirname(dstpath);
+      const dirExists = fs16.existsSync(dir);
+      if (dirExists) return fs16.linkSync(srcpath, dstpath);
       mkdir.mkdirsSync(dir);
-      return fs13.linkSync(srcpath, dstpath);
+      return fs16.linkSync(srcpath, dstpath);
     }
     module2.exports = {
       createLink: u(createLink),
@@ -20514,12 +20747,12 @@ var require_link = __commonJS({
 var require_symlink_paths = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/symlink-paths.js"(exports2, module2) {
     "use strict";
-    var path21 = require("path");
-    var fs13 = require_graceful_fs();
+    var path25 = require("path");
+    var fs16 = require_graceful_fs();
     var pathExists = require_path_exists2().pathExists;
     function symlinkPaths(srcpath, dstpath, callback) {
-      if (path21.isAbsolute(srcpath)) {
-        return fs13.lstat(srcpath, (err) => {
+      if (path25.isAbsolute(srcpath)) {
+        return fs16.lstat(srcpath, (err) => {
           if (err) {
             err.message = err.message.replace("lstat", "ensureSymlink");
             return callback(err);
@@ -20530,8 +20763,8 @@ var require_symlink_paths = __commonJS({
           });
         });
       } else {
-        const dstdir = path21.dirname(dstpath);
-        const relativeToDst = path21.join(dstdir, srcpath);
+        const dstdir = path25.dirname(dstpath);
+        const relativeToDst = path25.join(dstdir, srcpath);
         return pathExists(relativeToDst, (err, exists) => {
           if (err) return callback(err);
           if (exists) {
@@ -20540,14 +20773,14 @@ var require_symlink_paths = __commonJS({
               toDst: srcpath
             });
           } else {
-            return fs13.lstat(srcpath, (err2) => {
+            return fs16.lstat(srcpath, (err2) => {
               if (err2) {
                 err2.message = err2.message.replace("lstat", "ensureSymlink");
                 return callback(err2);
               }
               return callback(null, {
                 toCwd: srcpath,
-                toDst: path21.relative(dstdir, srcpath)
+                toDst: path25.relative(dstdir, srcpath)
               });
             });
           }
@@ -20556,28 +20789,28 @@ var require_symlink_paths = __commonJS({
     }
     function symlinkPathsSync(srcpath, dstpath) {
       let exists;
-      if (path21.isAbsolute(srcpath)) {
-        exists = fs13.existsSync(srcpath);
+      if (path25.isAbsolute(srcpath)) {
+        exists = fs16.existsSync(srcpath);
         if (!exists) throw new Error("absolute srcpath does not exist");
         return {
           toCwd: srcpath,
           toDst: srcpath
         };
       } else {
-        const dstdir = path21.dirname(dstpath);
-        const relativeToDst = path21.join(dstdir, srcpath);
-        exists = fs13.existsSync(relativeToDst);
+        const dstdir = path25.dirname(dstpath);
+        const relativeToDst = path25.join(dstdir, srcpath);
+        exists = fs16.existsSync(relativeToDst);
         if (exists) {
           return {
             toCwd: relativeToDst,
             toDst: srcpath
           };
         } else {
-          exists = fs13.existsSync(srcpath);
+          exists = fs16.existsSync(srcpath);
           if (!exists) throw new Error("relative srcpath does not exist");
           return {
             toCwd: srcpath,
-            toDst: path21.relative(dstdir, srcpath)
+            toDst: path25.relative(dstdir, srcpath)
           };
         }
       }
@@ -20593,12 +20826,12 @@ var require_symlink_paths = __commonJS({
 var require_symlink_type = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/symlink-type.js"(exports2, module2) {
     "use strict";
-    var fs13 = require_graceful_fs();
+    var fs16 = require_graceful_fs();
     function symlinkType(srcpath, type, callback) {
       callback = typeof type === "function" ? type : callback;
       type = typeof type === "function" ? false : type;
       if (type) return callback(null, type);
-      fs13.lstat(srcpath, (err, stats) => {
+      fs16.lstat(srcpath, (err, stats) => {
         if (err) return callback(null, "file");
         type = stats && stats.isDirectory() ? "dir" : "file";
         callback(null, type);
@@ -20608,7 +20841,7 @@ var require_symlink_type = __commonJS({
       let stats;
       if (type) return type;
       try {
-        stats = fs13.lstatSync(srcpath);
+        stats = fs16.lstatSync(srcpath);
       } catch {
         return "file";
       }
@@ -20626,8 +20859,8 @@ var require_symlink = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/symlink.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var path21 = require("path");
-    var fs13 = require_fs2();
+    var path25 = require("path");
+    var fs16 = require_fs2();
     var _mkdirs = require_mkdirs();
     var mkdirs = _mkdirs.mkdirs;
     var mkdirsSync = _mkdirs.mkdirsSync;
@@ -20642,11 +20875,11 @@ var require_symlink = __commonJS({
     function createSymlink(srcpath, dstpath, type, callback) {
       callback = typeof type === "function" ? type : callback;
       type = typeof type === "function" ? false : type;
-      fs13.lstat(dstpath, (err, stats) => {
+      fs16.lstat(dstpath, (err, stats) => {
         if (!err && stats.isSymbolicLink()) {
           Promise.all([
-            fs13.stat(srcpath),
-            fs13.stat(dstpath)
+            fs16.stat(srcpath),
+            fs16.stat(dstpath)
           ]).then(([srcStat, dstStat]) => {
             if (areIdentical(srcStat, dstStat)) return callback(null);
             _createSymlink(srcpath, dstpath, type, callback);
@@ -20660,13 +20893,13 @@ var require_symlink = __commonJS({
         srcpath = relative.toDst;
         symlinkType(relative.toCwd, type, (err2, type2) => {
           if (err2) return callback(err2);
-          const dir = path21.dirname(dstpath);
+          const dir = path25.dirname(dstpath);
           pathExists(dir, (err3, dirExists) => {
             if (err3) return callback(err3);
-            if (dirExists) return fs13.symlink(srcpath, dstpath, type2, callback);
+            if (dirExists) return fs16.symlink(srcpath, dstpath, type2, callback);
             mkdirs(dir, (err4) => {
               if (err4) return callback(err4);
-              fs13.symlink(srcpath, dstpath, type2, callback);
+              fs16.symlink(srcpath, dstpath, type2, callback);
             });
           });
         });
@@ -20675,22 +20908,22 @@ var require_symlink = __commonJS({
     function createSymlinkSync(srcpath, dstpath, type) {
       let stats;
       try {
-        stats = fs13.lstatSync(dstpath);
+        stats = fs16.lstatSync(dstpath);
       } catch {
       }
       if (stats && stats.isSymbolicLink()) {
-        const srcStat = fs13.statSync(srcpath);
-        const dstStat = fs13.statSync(dstpath);
+        const srcStat = fs16.statSync(srcpath);
+        const dstStat = fs16.statSync(dstpath);
         if (areIdentical(srcStat, dstStat)) return;
       }
       const relative = symlinkPathsSync(srcpath, dstpath);
       srcpath = relative.toDst;
       type = symlinkTypeSync(relative.toCwd, type);
-      const dir = path21.dirname(dstpath);
-      const exists = fs13.existsSync(dir);
-      if (exists) return fs13.symlinkSync(srcpath, dstpath, type);
+      const dir = path25.dirname(dstpath);
+      const exists = fs16.existsSync(dir);
+      if (exists) return fs16.symlinkSync(srcpath, dstpath, type);
       mkdirsSync(dir);
-      return fs13.symlinkSync(srcpath, dstpath, type);
+      return fs16.symlinkSync(srcpath, dstpath, type);
     }
     module2.exports = {
       createSymlink: u(createSymlink),
@@ -20760,9 +20993,9 @@ var require_jsonfile = __commonJS({
       if (typeof options === "string") {
         options = { encoding: options };
       }
-      const fs13 = options.fs || _fs;
+      const fs16 = options.fs || _fs;
       const shouldThrow = "throws" in options ? options.throws : true;
-      let data = await universalify.fromCallback(fs13.readFile)(file, options);
+      let data = await universalify.fromCallback(fs16.readFile)(file, options);
       data = stripBom(data);
       let obj;
       try {
@@ -20782,10 +21015,10 @@ var require_jsonfile = __commonJS({
       if (typeof options === "string") {
         options = { encoding: options };
       }
-      const fs13 = options.fs || _fs;
+      const fs16 = options.fs || _fs;
       const shouldThrow = "throws" in options ? options.throws : true;
       try {
-        let content = fs13.readFileSync(file, options);
+        let content = fs16.readFileSync(file, options);
         content = stripBom(content);
         return JSON.parse(content, options.reviver);
       } catch (err) {
@@ -20798,15 +21031,15 @@ var require_jsonfile = __commonJS({
       }
     }
     async function _writeFile(file, obj, options = {}) {
-      const fs13 = options.fs || _fs;
+      const fs16 = options.fs || _fs;
       const str = stringify(obj, options);
-      await universalify.fromCallback(fs13.writeFile)(file, str, options);
+      await universalify.fromCallback(fs16.writeFile)(file, str, options);
     }
     var writeFile = universalify.fromPromise(_writeFile);
     function writeFileSync(file, obj, options = {}) {
-      const fs13 = options.fs || _fs;
+      const fs16 = options.fs || _fs;
       const str = stringify(obj, options);
-      return fs13.writeFileSync(file, str, options);
+      return fs16.writeFileSync(file, str, options);
     }
     module2.exports = {
       readFile,
@@ -20837,8 +21070,8 @@ var require_output_file = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/output-file/index.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var fs13 = require_graceful_fs();
-    var path21 = require("path");
+    var fs16 = require_graceful_fs();
+    var path25 = require("path");
     var mkdir = require_mkdirs();
     var pathExists = require_path_exists2().pathExists;
     function outputFile(file, data, encoding, callback) {
@@ -20846,23 +21079,23 @@ var require_output_file = __commonJS({
         callback = encoding;
         encoding = "utf8";
       }
-      const dir = path21.dirname(file);
+      const dir = path25.dirname(file);
       pathExists(dir, (err, itDoes) => {
         if (err) return callback(err);
-        if (itDoes) return fs13.writeFile(file, data, encoding, callback);
+        if (itDoes) return fs16.writeFile(file, data, encoding, callback);
         mkdir.mkdirs(dir, (err2) => {
           if (err2) return callback(err2);
-          fs13.writeFile(file, data, encoding, callback);
+          fs16.writeFile(file, data, encoding, callback);
         });
       });
     }
     function outputFileSync(file, ...args) {
-      const dir = path21.dirname(file);
-      if (fs13.existsSync(dir)) {
-        return fs13.writeFileSync(file, ...args);
+      const dir = path25.dirname(file);
+      if (fs16.existsSync(dir)) {
+        return fs16.writeFileSync(file, ...args);
       }
       mkdir.mkdirsSync(dir);
-      fs13.writeFileSync(file, ...args);
+      fs16.writeFileSync(file, ...args);
     }
     module2.exports = {
       outputFile: u(outputFile),
@@ -20921,8 +21154,8 @@ var require_json = __commonJS({
 var require_move = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/move/move.js"(exports2, module2) {
     "use strict";
-    var fs13 = require_graceful_fs();
-    var path21 = require("path");
+    var fs16 = require_graceful_fs();
+    var path25 = require("path");
     var copy = require_copy2().copy;
     var remove = require_remove().remove;
     var mkdirp = require_mkdirs().mkdirp;
@@ -20941,7 +21174,7 @@ var require_move = __commonJS({
         stat.checkParentPaths(src, srcStat, dest, "move", (err2) => {
           if (err2) return cb(err2);
           if (isParentRoot(dest)) return doRename(src, dest, overwrite, isChangingCase, cb);
-          mkdirp(path21.dirname(dest), (err3) => {
+          mkdirp(path25.dirname(dest), (err3) => {
             if (err3) return cb(err3);
             return doRename(src, dest, overwrite, isChangingCase, cb);
           });
@@ -20949,8 +21182,8 @@ var require_move = __commonJS({
       });
     }
     function isParentRoot(dest) {
-      const parent = path21.dirname(dest);
-      const parsedPath = path21.parse(parent);
+      const parent = path25.dirname(dest);
+      const parsedPath = path25.parse(parent);
       return parsedPath.root === parent;
     }
     function doRename(src, dest, overwrite, isChangingCase, cb) {
@@ -20968,7 +21201,7 @@ var require_move = __commonJS({
       });
     }
     function rename(src, dest, overwrite, cb) {
-      fs13.rename(src, dest, (err) => {
+      fs16.rename(src, dest, (err) => {
         if (!err) return cb();
         if (err.code !== "EXDEV") return cb(err);
         return moveAcrossDevice(src, dest, overwrite, cb);
@@ -20992,8 +21225,8 @@ var require_move = __commonJS({
 var require_move_sync = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/move/move-sync.js"(exports2, module2) {
     "use strict";
-    var fs13 = require_graceful_fs();
-    var path21 = require("path");
+    var fs16 = require_graceful_fs();
+    var path25 = require("path");
     var copySync = require_copy2().copySync;
     var removeSync = require_remove().removeSync;
     var mkdirpSync = require_mkdirs().mkdirpSync;
@@ -21003,12 +21236,12 @@ var require_move_sync = __commonJS({
       const overwrite = opts.overwrite || opts.clobber || false;
       const { srcStat, isChangingCase = false } = stat.checkPathsSync(src, dest, "move", opts);
       stat.checkParentPathsSync(src, srcStat, dest, "move");
-      if (!isParentRoot(dest)) mkdirpSync(path21.dirname(dest));
+      if (!isParentRoot(dest)) mkdirpSync(path25.dirname(dest));
       return doRename(src, dest, overwrite, isChangingCase);
     }
     function isParentRoot(dest) {
-      const parent = path21.dirname(dest);
-      const parsedPath = path21.parse(parent);
+      const parent = path25.dirname(dest);
+      const parsedPath = path25.parse(parent);
       return parsedPath.root === parent;
     }
     function doRename(src, dest, overwrite, isChangingCase) {
@@ -21017,12 +21250,12 @@ var require_move_sync = __commonJS({
         removeSync(dest);
         return rename(src, dest, overwrite);
       }
-      if (fs13.existsSync(dest)) throw new Error("dest already exists.");
+      if (fs16.existsSync(dest)) throw new Error("dest already exists.");
       return rename(src, dest, overwrite);
     }
     function rename(src, dest, overwrite) {
       try {
-        fs13.renameSync(src, dest);
+        fs16.renameSync(src, dest);
       } catch (err) {
         if (err.code !== "EXDEV") throw err;
         return moveAcrossDevice(src, dest, overwrite);
@@ -21673,7 +21906,7 @@ var require_has_flag = __commonJS({
 var require_supports_color = __commonJS({
   "node_modules/supports-color/index.js"(exports2, module2) {
     "use strict";
-    var os = require("os");
+    var os2 = require("os");
     var tty = require("tty");
     var hasFlag = require_has_flag();
     var { env } = process;
@@ -21730,7 +21963,7 @@ var require_supports_color = __commonJS({
         return min;
       }
       if (process.platform === "win32") {
-        const osRelease = os.release().split(".");
+        const osRelease = os2.release().split(".");
         if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
           return Number(osRelease[2]) >= 14931 ? 3 : 2;
         }
@@ -21789,7 +22022,7 @@ var require_node = __commonJS({
     var tty = require("tty");
     var util = require("util");
     exports2.init = init;
-    exports2.log = log2;
+    exports2.log = log3;
     exports2.formatArgs = formatArgs;
     exports2.save = save;
     exports2.load = load;
@@ -21924,7 +22157,7 @@ var require_node = __commonJS({
       }
       return (/* @__PURE__ */ new Date()).toISOString() + " ";
     }
-    function log2(...args) {
+    function log3(...args) {
       return process.stderr.write(util.formatWithOptions(exports2.inspectOpts, ...args) + "\n");
     }
     function save(namespaces) {
@@ -22307,8 +22540,8 @@ Please double check that your authentication token is correct. Due to security r
         }
         const hostname = options.hostname;
         const port = options.port ? `:${options.port}` : "";
-        const path21 = options.path || "/";
-        return new url_1.URL(`${protocol}//${hostname}${port}${path21}`);
+        const path25 = options.path || "/";
+        return new url_1.URL(`${protocol}//${hostname}${port}${path25}`);
       }
       static isCrossOriginRedirect(originalUrl, redirectUrl) {
         if (originalUrl.hostname.toLowerCase() !== redirectUrl.hostname.toLowerCase()) {
@@ -30509,7 +30742,7 @@ var require_DownloadedUpdateHelper = __commonJS({
     var fs_1 = require("fs");
     var isEqual = require_lodash();
     var fs_extra_1 = require_lib();
-    var path21 = require("path");
+    var path25 = require("path");
     var DownloadedUpdateHelper = class {
       constructor(cacheDir) {
         this.cacheDir = cacheDir;
@@ -30529,7 +30762,7 @@ var require_DownloadedUpdateHelper = __commonJS({
         return this._packageFile;
       }
       get cacheDirForPendingUpdate() {
-        return path21.join(this.cacheDir, "pending");
+        return path25.join(this.cacheDir, "pending");
       }
       async validateDownloadedPath(updateFile, updateInfo, fileInfo, logger) {
         if (this.versionInfo != null && this.file === updateFile && this.fileInfo != null) {
@@ -30608,7 +30841,7 @@ var require_DownloadedUpdateHelper = __commonJS({
           await this.cleanCacheDirForPendingUpdate();
           return null;
         }
-        const updateFile = path21.join(this.cacheDirForPendingUpdate, cachedInfo.fileName);
+        const updateFile = path25.join(this.cacheDirForPendingUpdate, cachedInfo.fileName);
         if (!await (0, fs_extra_1.pathExists)(updateFile)) {
           logger.info("Cached update file doesn't exist");
           return null;
@@ -30623,7 +30856,7 @@ var require_DownloadedUpdateHelper = __commonJS({
         return updateFile;
       }
       getUpdateInfoFile() {
-        return path21.join(this.cacheDirForPendingUpdate, "update-info.json");
+        return path25.join(this.cacheDirForPendingUpdate, "update-info.json");
       }
     };
     exports2.DownloadedUpdateHelper = DownloadedUpdateHelper;
@@ -30641,9 +30874,9 @@ var require_DownloadedUpdateHelper = __commonJS({
         }).pipe(hash, { end: false });
       });
     }
-    async function createTempUpdateFile(name, cacheDir, log2) {
+    async function createTempUpdateFile(name, cacheDir, log3) {
       let nameCounter = 0;
-      let result = path21.join(cacheDir, name);
+      let result = path25.join(cacheDir, name);
       for (let i = 0; i < 3; i++) {
         try {
           await (0, fs_extra_1.unlink)(result);
@@ -30652,8 +30885,8 @@ var require_DownloadedUpdateHelper = __commonJS({
           if (e.code === "ENOENT") {
             return result;
           }
-          log2.warn(`Error on remove temp update file: ${e}`);
-          result = path21.join(cacheDir, `${nameCounter++}-${name}`);
+          log3.warn(`Error on remove temp update file: ${e}`);
+          result = path25.join(cacheDir, `${nameCounter++}-${name}`);
         }
       }
       return result;
@@ -30667,17 +30900,17 @@ var require_AppAdapter = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getAppCacheDir = getAppCacheDir;
-    var path21 = require("path");
+    var path25 = require("path");
     var os_1 = require("os");
     function getAppCacheDir() {
       const homedir = (0, os_1.homedir)();
       let result;
       if (process.platform === "win32") {
-        result = process.env["LOCALAPPDATA"] || path21.join(homedir, "AppData", "Local");
+        result = process.env["LOCALAPPDATA"] || path25.join(homedir, "AppData", "Local");
       } else if (process.platform === "darwin") {
-        result = path21.join(homedir, "Library", "Caches");
+        result = path25.join(homedir, "Library", "Caches");
       } else {
-        result = process.env["XDG_CACHE_HOME"] || path21.join(homedir, ".cache");
+        result = process.env["XDG_CACHE_HOME"] || path25.join(homedir, ".cache");
       }
       return result;
     }
@@ -30690,11 +30923,11 @@ var require_ElectronAppAdapter = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ElectronAppAdapter = void 0;
-    var path21 = require("path");
+    var path25 = require("path");
     var AppAdapter_1 = require_AppAdapter();
     var ElectronAppAdapter = class {
-      constructor(app10 = require("electron").app) {
-        this.app = app10;
+      constructor(app12 = require("electron").app) {
+        this.app = app12;
       }
       whenReady() {
         return this.app.whenReady();
@@ -30709,7 +30942,7 @@ var require_ElectronAppAdapter = __commonJS({
         return this.app.isPackaged === true;
       }
       get appUpdateConfigPath() {
-        return this.isPackaged ? path21.join(process.resourcesPath, "app-update.yml") : path21.join(this.app.getAppPath(), "dev-app-update.yml");
+        return this.isPackaged ? path25.join(process.resourcesPath, "app-update.yml") : path25.join(this.app.getAppPath(), "dev-app-update.yml");
       }
       get userDataPath() {
         return this.app.getPath("userData");
@@ -31650,7 +31883,7 @@ var require_PrivateGitHubProvider = __commonJS({
     exports2.PrivateGitHubProvider = void 0;
     var builder_util_runtime_1 = require_out();
     var js_yaml_1 = require_js_yaml();
-    var path21 = require("path");
+    var path25 = require("path");
     var url_1 = require("url");
     var util_1 = require_util3();
     var GitHubProvider_1 = require_GitHubProvider();
@@ -31721,7 +31954,7 @@ var require_PrivateGitHubProvider = __commonJS({
       }
       resolveFiles(updateInfo) {
         return (0, Provider_1.getFileList)(updateInfo).map((it) => {
-          const name = path21.posix.basename(it.url).replace(/ /g, "-");
+          const name = path25.posix.basename(it.url).replace(/ /g, "-");
           const asset = updateInfo.assets.find((it2) => it2 != null && it2.name === name);
           if (asset == null) {
             throw (0, builder_util_runtime_1.newError)(`Cannot find asset "${name}" in: ${JSON.stringify(updateInfo.assets, null, 2)}`, "ERR_UPDATER_ASSET_NOT_FOUND");
@@ -32672,7 +32905,7 @@ var require_AppUpdater = __commonJS({
     var fs_extra_1 = require_lib();
     var js_yaml_1 = require_js_yaml();
     var lazy_val_1 = require_main();
-    var path21 = require("path");
+    var path25 = require("path");
     var semver_1 = require_semver4();
     var DownloadedUpdateHelper_1 = require_DownloadedUpdateHelper();
     var ElectronAppAdapter_1 = require_ElectronAppAdapter();
@@ -32762,7 +32995,7 @@ var require_AppUpdater = __commonJS({
           this._isUserWithinRollout = value;
         }
       }
-      constructor(options, app10) {
+      constructor(options, app12) {
         super();
         this.autoDownload = true;
         this.autoInstallOnAppQuit = true;
@@ -32792,11 +33025,11 @@ var require_AppUpdater = __commonJS({
         this.on("error", (error) => {
           this._logger.error(`Error: ${error.stack || error.message}`);
         });
-        if (app10 == null) {
+        if (app12 == null) {
           this.app = new ElectronAppAdapter_1.ElectronAppAdapter();
           this.httpExecutor = new electronHttpExecutor_1.ElectronHttpExecutor((authInfo, callback) => this.emit("login", authInfo, callback));
         } else {
-          this.app = app10;
+          this.app = app12;
           this.httpExecutor = null;
         }
         const currentVersionString = this.app.version;
@@ -33070,7 +33303,7 @@ var require_AppUpdater = __commonJS({
         return this.computeFinalHeaders({ accept: "*/*" });
       }
       async getOrCreateStagingUserId() {
-        const file = path21.join(this.app.userDataPath, ".updaterId");
+        const file = path25.join(this.app.userDataPath, ".updaterId");
         try {
           const id2 = await (0, fs_extra_1.readFile)(file, "utf-8");
           if (builder_util_runtime_1.UUID.check(id2)) {
@@ -33114,7 +33347,7 @@ var require_AppUpdater = __commonJS({
           if (dirName == null) {
             logger.error("updaterCacheDirName is not specified in app-update.yml Was app build using at least electron-builder 20.34.0?");
           }
-          const cacheDir = path21.join(this.app.baseCachePath, dirName || this.app.name);
+          const cacheDir = path25.join(this.app.baseCachePath, dirName || this.app.name);
           if (logger.debug != null) {
             logger.debug(`updater cache dir: ${cacheDir}`);
           }
@@ -33140,31 +33373,31 @@ var require_AppUpdater = __commonJS({
         function getCacheUpdateFileName() {
           const urlPath = decodeURIComponent(taskOptions.fileInfo.url.pathname);
           if (urlPath.toLowerCase().endsWith(`.${taskOptions.fileExtension.toLowerCase()}`)) {
-            return path21.basename(urlPath);
+            return path25.basename(urlPath);
           } else {
-            return path21.basename(taskOptions.fileInfo.info.url);
+            return path25.basename(taskOptions.fileInfo.info.url);
           }
         }
         const downloadedUpdateHelper = await this.getOrCreateDownloadHelper();
         const cacheDir = downloadedUpdateHelper.cacheDirForPendingUpdate;
         await (0, fs_extra_1.mkdir)(cacheDir, { recursive: true });
         const updateFileName = getCacheUpdateFileName();
-        let updateFile = path21.join(cacheDir, updateFileName);
-        const packageFile = packageInfo == null ? null : path21.join(cacheDir, `package-${version}${path21.extname(packageInfo.path) || ".7z"}`);
+        let updateFile = path25.join(cacheDir, updateFileName);
+        const packageFile = packageInfo == null ? null : path25.join(cacheDir, `package-${version}${path25.extname(packageInfo.path) || ".7z"}`);
         const done = async (isSaveCache) => {
           await downloadedUpdateHelper.setDownloadedFile(updateFile, packageFile, updateInfo, fileInfo, updateFileName, isSaveCache);
           await taskOptions.done({
             ...updateInfo,
             downloadedFile: updateFile
           });
-          const currentBlockMapFile = path21.join(cacheDir, "current.blockmap");
+          const currentBlockMapFile = path25.join(cacheDir, "current.blockmap");
           if (await (0, fs_extra_1.pathExists)(currentBlockMapFile)) {
-            await (0, fs_extra_1.copyFile)(currentBlockMapFile, path21.join(downloadedUpdateHelper.cacheDir, "current.blockmap"));
+            await (0, fs_extra_1.copyFile)(currentBlockMapFile, path25.join(downloadedUpdateHelper.cacheDir, "current.blockmap"));
           }
           return packageFile == null ? [updateFile] : [updateFile, packageFile];
         };
-        const log2 = this._logger;
-        const cachedUpdateFile = await downloadedUpdateHelper.validateDownloadedPath(updateFile, updateInfo, fileInfo, log2);
+        const log3 = this._logger;
+        const cachedUpdateFile = await downloadedUpdateHelper.validateDownloadedPath(updateFile, updateInfo, fileInfo, log3);
         if (cachedUpdateFile != null) {
           updateFile = cachedUpdateFile;
           return await done(false);
@@ -33175,7 +33408,7 @@ var require_AppUpdater = __commonJS({
           return await (0, fs_extra_1.unlink)(updateFile).catch(() => {
           });
         };
-        const tempUpdateFile = await (0, DownloadedUpdateHelper_1.createTempUpdateFile)(`temp-${updateFileName}`, cacheDir, log2);
+        const tempUpdateFile = await (0, DownloadedUpdateHelper_1.createTempUpdateFile)(`temp-${updateFileName}`, cacheDir, log3);
         try {
           await taskOptions.task(tempUpdateFile, downloadOptions, packageFile, removeFileIfAny);
           await (0, builder_util_runtime_1.retry)(() => (0, fs_extra_1.rename)(tempUpdateFile, updateFile), {
@@ -33185,19 +33418,19 @@ var require_AppUpdater = __commonJS({
               if (error instanceof Error && /^EBUSY:/.test(error.message)) {
                 return true;
               }
-              log2.warn(`Cannot rename temp file to final file: ${error.message || error.stack}`);
+              log3.warn(`Cannot rename temp file to final file: ${error.message || error.stack}`);
               return false;
             }
           });
         } catch (e) {
           await removeFileIfAny();
           if (e instanceof builder_util_runtime_1.CancellationError) {
-            log2.info("cancelled");
+            log3.info("cancelled");
             this.emit("update-cancelled", updateInfo);
           }
           throw e;
         }
-        log2.info(`New version ${version} has been downloaded to ${updateFile}`);
+        log3.info(`New version ${version} has been downloaded to ${updateFile}`);
         return await done(true);
       }
       async differentialDownloadInstaller(fileInfo, downloadUpdateOptions, installerPath, provider, oldInstallerFileName) {
@@ -33224,7 +33457,7 @@ var require_AppUpdater = __commonJS({
           };
           const downloadOptions = {
             newUrl: fileInfo.url,
-            oldFile: path21.join(this.downloadedUpdateHelper.cacheDir, oldInstallerFileName),
+            oldFile: path25.join(this.downloadedUpdateHelper.cacheDir, oldInstallerFileName),
             logger: this._logger,
             newFile: installerPath,
             isUseMultipleRangeRequest: provider2.isUseMultipleRangeRequest,
@@ -33235,11 +33468,11 @@ var require_AppUpdater = __commonJS({
             downloadOptions.onProgress = (it) => this.emit(types_1.DOWNLOAD_PROGRESS, it);
           }
           const saveBlockMapToCacheDir = async (blockMapData, cacheDir) => {
-            const blockMapFile = path21.join(cacheDir, "current.blockmap");
+            const blockMapFile = path25.join(cacheDir, "current.blockmap");
             await (0, fs_extra_1.outputFile)(blockMapFile, (0, zlib_1.gzipSync)(JSON.stringify(blockMapData)));
           };
           const getBlockMapFromCacheDir = async (cacheDir) => {
-            const blockMapFile = path21.join(cacheDir, "current.blockmap");
+            const blockMapFile = path25.join(cacheDir, "current.blockmap");
             try {
               if (await (0, fs_extra_1.pathExists)(blockMapFile)) {
                 return JSON.parse((0, zlib_1.gunzipSync)(await (0, fs_extra_1.readFile)(blockMapFile)).toString());
@@ -33293,11 +33526,11 @@ var require_BaseUpdater = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.BaseUpdater = void 0;
     var child_process_1 = require("child_process");
-    var path21 = require("path");
+    var path25 = require("path");
     var AppUpdater_1 = require_AppUpdater();
     var BaseUpdater = class extends AppUpdater_1.AppUpdater {
-      constructor(options, app10) {
-        super(options, app10);
+      constructor(options, app12) {
+        super(options, app12);
         this.quitAndInstallCalled = false;
         this.quitHandlerAdded = false;
       }
@@ -33380,7 +33613,7 @@ var require_BaseUpdater = __commonJS({
        * a trusted package manager binary.
        */
       sanitizeEnvPath(envPath) {
-        return envPath.split(path21.delimiter).filter((dir) => path21.isAbsolute(dir)).join(path21.delimiter);
+        return envPath.split(path25.delimiter).filter((dir) => path25.isAbsolute(dir)).join(path25.delimiter);
       }
       spawnSyncLog(cmd, args = [], env = {}) {
         var _a;
@@ -33482,14 +33715,14 @@ var require_AppImageUpdater = __commonJS({
     var child_process_1 = require("child_process");
     var fs_extra_1 = require_lib();
     var fs_1 = require("fs");
-    var path21 = require("path");
+    var path25 = require("path");
     var BaseUpdater_1 = require_BaseUpdater();
     var FileWithEmbeddedBlockMapDifferentialDownloader_1 = require_FileWithEmbeddedBlockMapDifferentialDownloader();
     var Provider_1 = require_Provider();
     var types_1 = require_types3();
     var AppImageUpdater = class extends BaseUpdater_1.BaseUpdater {
-      constructor(options, app10) {
-        super(options, app10);
+      constructor(options, app12) {
+        super(options, app12);
       }
       isUpdaterActive() {
         if (process.env["APPIMAGE"] == null && !this.forceDevUpdateConfig) {
@@ -33548,21 +33781,21 @@ var require_AppImageUpdater = __commonJS({
         if (appImageFile == null) {
           throw (0, builder_util_runtime_1.newError)("APPIMAGE env is not defined", "ERR_UPDATER_OLD_FILE_NOT_FOUND");
         }
-        if (!path21.isAbsolute(appImageFile) || appImageFile.includes("\0")) {
+        if (!path25.isAbsolute(appImageFile) || appImageFile.includes("\0")) {
           throw (0, builder_util_runtime_1.newError)(`APPIMAGE env is not a valid absolute path: "${appImageFile}"`, "ERR_UPDATER_OLD_FILE_NOT_FOUND");
         }
         (0, fs_1.unlinkSync)(appImageFile);
         let destination;
-        const existingBaseName = path21.basename(appImageFile);
+        const existingBaseName = path25.basename(appImageFile);
         const installerPath = this.installerPath;
         if (installerPath == null) {
           this.dispatchError(new Error("No update filepath provided, can't quit and install"));
           return false;
         }
-        if (path21.basename(installerPath) === existingBaseName || !/\d+\.\d+\.\d+/.test(existingBaseName)) {
+        if (path25.basename(installerPath) === existingBaseName || !/\d+\.\d+\.\d+/.test(existingBaseName)) {
           destination = appImageFile;
         } else {
-          destination = path21.join(path21.dirname(appImageFile), path21.basename(installerPath));
+          destination = path25.join(path25.dirname(appImageFile), path25.basename(installerPath));
         }
         (0, child_process_1.execFileSync)("mv", ["-f", installerPath, destination]);
         if (destination !== appImageFile) {
@@ -33594,8 +33827,8 @@ var require_LinuxUpdater = __commonJS({
     var BaseUpdater_1 = require_BaseUpdater();
     var SAFE_PM_REGEX = /^[a-zA-Z0-9_-]+$/;
     var LinuxUpdater = class extends BaseUpdater_1.BaseUpdater {
-      constructor(options, app10) {
-        super(options, app10);
+      constructor(options, app12) {
+        super(options, app12);
       }
       /**
        * Returns true if the current process is running as root.
@@ -33706,8 +33939,8 @@ var require_DebUpdater = __commonJS({
     var types_1 = require_types3();
     var LinuxUpdater_1 = require_LinuxUpdater();
     var DebUpdater = class _DebUpdater extends LinuxUpdater_1.LinuxUpdater {
-      constructor(options, app10) {
-        super(options, app10);
+      constructor(options, app12) {
+        super(options, app12);
       }
       /*** @private */
       doDownloadUpdate(downloadUpdateOptions) {
@@ -33790,8 +34023,8 @@ var require_PacmanUpdater = __commonJS({
     var Provider_1 = require_Provider();
     var LinuxUpdater_1 = require_LinuxUpdater();
     var PacmanUpdater = class _PacmanUpdater extends LinuxUpdater_1.LinuxUpdater {
-      constructor(options, app10) {
-        super(options, app10);
+      constructor(options, app12) {
+        super(options, app12);
       }
       /*** @private */
       doDownloadUpdate(downloadUpdateOptions) {
@@ -33857,8 +34090,8 @@ var require_RpmUpdater = __commonJS({
     var Provider_1 = require_Provider();
     var LinuxUpdater_1 = require_LinuxUpdater();
     var RpmUpdater = class _RpmUpdater extends LinuxUpdater_1.LinuxUpdater {
-      constructor(options, app10) {
-        super(options, app10);
+      constructor(options, app12) {
+        super(options, app12);
       }
       /*** @private */
       doDownloadUpdate(downloadUpdateOptions) {
@@ -33925,15 +34158,15 @@ var require_MacUpdater = __commonJS({
     var builder_util_runtime_1 = require_out();
     var fs_extra_1 = require_lib();
     var fs_1 = require("fs");
-    var path21 = require("path");
+    var path25 = require("path");
     var http_1 = require("http");
     var AppUpdater_1 = require_AppUpdater();
     var Provider_1 = require_Provider();
     var child_process_1 = require("child_process");
     var crypto_1 = require("crypto");
     var MacUpdater = class _MacUpdater extends AppUpdater_1.AppUpdater {
-      constructor(options, app10) {
-        super(options, app10);
+      constructor(options, app12) {
+        super(options, app12);
         this.nativeUpdater = require("electron").autoUpdater;
         this.squirrelDownloadedUpdate = false;
         this.nativeUpdater.on("error", (it) => {
@@ -33975,26 +34208,26 @@ var require_MacUpdater = __commonJS({
       }
       async doDownloadUpdate(downloadUpdateOptions) {
         let files = downloadUpdateOptions.updateInfoAndProvider.provider.resolveFiles(downloadUpdateOptions.updateInfoAndProvider.info);
-        const log2 = this._logger;
+        const log3 = this._logger;
         const sysctlRosettaInfoKey = "sysctl.proc_translated";
         let isRosetta = false;
         try {
           this.debug("Checking for macOS Rosetta environment");
           const result = (0, child_process_1.execFileSync)("sysctl", [sysctlRosettaInfoKey], { encoding: "utf8" });
           isRosetta = result.includes(`${sysctlRosettaInfoKey}: 1`);
-          log2.info(`Checked for macOS Rosetta environment (isRosetta=${isRosetta})`);
+          log3.info(`Checked for macOS Rosetta environment (isRosetta=${isRosetta})`);
         } catch (e) {
-          log2.warn(`sysctl shell command to check for macOS Rosetta environment failed: ${e}`);
+          log3.warn(`sysctl shell command to check for macOS Rosetta environment failed: ${e}`);
         }
         let isArm64Mac = false;
         try {
           this.debug("Checking for arm64 in uname");
           const result = (0, child_process_1.execFileSync)("uname", ["-a"], { encoding: "utf8" });
           const isArm = result.includes("ARM");
-          log2.info(`Checked 'uname -a': arm64=${isArm}`);
+          log3.info(`Checked 'uname -a': arm64=${isArm}`);
           isArm64Mac = isArm64Mac || isArm;
         } catch (e) {
-          log2.warn(`uname shell command to check for arm64 failed: ${e}`);
+          log3.warn(`uname shell command to check for arm64 failed: ${e}`);
         }
         isArm64Mac = isArm64Mac || process.arch === "arm64" || isRosetta;
         files = _MacUpdater.filterFilesForArch(files, isArm64Mac);
@@ -34009,10 +34242,10 @@ var require_MacUpdater = __commonJS({
           fileInfo: zipFileInfo,
           downloadUpdateOptions,
           task: async (destinationFile, downloadOptions) => {
-            const cachedUpdateFilePath = path21.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
+            const cachedUpdateFilePath = path25.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
             const canDifferentialDownload = () => {
               if (!(0, fs_extra_1.pathExistsSync)(cachedUpdateFilePath)) {
-                log2.info("Unable to locate previous update.zip for differential download (is this first install?), falling back to full download");
+                log3.info("Unable to locate previous update.zip for differential download (is this first install?), falling back to full download");
                 return false;
               }
               return !downloadUpdateOptions.disableDifferentialDownload;
@@ -34028,7 +34261,7 @@ var require_MacUpdater = __commonJS({
           done: async (event) => {
             if (!downloadUpdateOptions.disableDifferentialDownload) {
               try {
-                const cachedUpdateFilePath = path21.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
+                const cachedUpdateFilePath = path25.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
                 await (0, fs_extra_1.copyFile)(event.downloadedFile, cachedUpdateFilePath);
               } catch (error) {
                 this._logger.warn(`Unable to copy file for caching for future differential downloads: ${error.message}`);
@@ -34042,14 +34275,14 @@ var require_MacUpdater = __commonJS({
         var _a;
         const downloadedFile = event.downloadedFile;
         const updateFileSize = (_a = zipFileInfo.info.size) !== null && _a !== void 0 ? _a : (await (0, fs_extra_1.stat)(downloadedFile)).size;
-        const log2 = this._logger;
+        const log3 = this._logger;
         const logContext = `fileToProxy=${zipFileInfo.url.href}`;
         this.closeServerIfExists();
         this.debug(`Creating proxy server for native Squirrel.Mac (${logContext})`);
         this.server = (0, http_1.createServer)();
         this.debug(`Proxy server for native Squirrel.Mac is created (${logContext})`);
         this.server.on("close", () => {
-          log2.info(`Proxy server for native Squirrel.Mac is closed (${logContext})`);
+          log3.info(`Proxy server for native Squirrel.Mac is closed (${logContext})`);
         });
         const getServerUrl = (s) => {
           const address = s.address();
@@ -34064,13 +34297,13 @@ var require_MacUpdater = __commonJS({
           const fileUrl = `/${(0, crypto_1.randomBytes)(64).toString("hex")}.zip`;
           this.server.on("request", (request, response) => {
             const requestUrl = request.url;
-            log2.info(`${requestUrl} requested`);
+            log3.info(`${requestUrl} requested`);
             if (requestUrl === "/") {
               if (!request.headers.authorization || request.headers.authorization.indexOf("Basic ") === -1) {
                 response.statusCode = 401;
                 response.statusMessage = "Invalid Authentication Credentials";
                 response.end();
-                log2.warn("No authenthication info");
+                log3.warn("No authenthication info");
                 return;
               }
               const base64Credentials = request.headers.authorization.split(" ")[1];
@@ -34080,7 +34313,7 @@ var require_MacUpdater = __commonJS({
                 response.statusCode = 401;
                 response.statusMessage = "Invalid Authentication Credentials";
                 response.end();
-                log2.warn("Invalid authenthication credentials");
+                log3.warn("Invalid authenthication credentials");
                 return;
               }
               const data = Buffer.from(`{ "url": "${getServerUrl(this.server)}${fileUrl}" }`);
@@ -34089,12 +34322,12 @@ var require_MacUpdater = __commonJS({
               return;
             }
             if (!requestUrl.startsWith(fileUrl)) {
-              log2.warn(`${requestUrl} requested, but not supported`);
+              log3.warn(`${requestUrl} requested, but not supported`);
               response.writeHead(404);
               response.end();
               return;
             }
-            log2.info(`${fileUrl} requested by Squirrel.Mac, pipe ${downloadedFile}`);
+            log3.info(`${fileUrl} requested by Squirrel.Mac, pipe ${downloadedFile}`);
             let errorOccurred = false;
             response.on("finish", () => {
               if (!errorOccurred) {
@@ -34107,7 +34340,7 @@ var require_MacUpdater = __commonJS({
               try {
                 response.end();
               } catch (e) {
-                log2.warn(`cannot end response: ${e}`);
+                log3.warn(`cannot end response: ${e}`);
               }
               errorOccurred = true;
               this.nativeUpdater.removeListener("error", reject);
@@ -34170,8 +34403,8 @@ var require_windowsExecutableCodeSignatureVerifier = __commonJS({
     exports2.verifySignature = verifySignature;
     var builder_util_runtime_1 = require_out();
     var child_process_1 = require("child_process");
-    var os = require("os");
-    var path21 = require("path");
+    var os2 = require("os");
+    var path25 = require("path");
     function preparePowerShellExec(command, timeout) {
       const executable = `set "PSModulePath=" & chcp 65001 >NUL & powershell.exe`;
       const args = ["-NoProfile", "-NonInteractive", "-InputFormat", "None", "-Command", command];
@@ -34196,8 +34429,8 @@ var require_windowsExecutableCodeSignatureVerifier = __commonJS({
             const data = parseOut(stdout);
             if (data.Status === 0) {
               try {
-                const normlaizedUpdateFilePath = path21.normalize(data.Path);
-                const normalizedTempUpdateFile = path21.normalize(unescapedTempUpdateFile);
+                const normlaizedUpdateFilePath = path25.normalize(data.Path);
+                const normalizedTempUpdateFile = path25.normalize(unescapedTempUpdateFile);
                 logger.info(`LiteralPath: ${normlaizedUpdateFilePath}. Update Path: ${normalizedTempUpdateFile}`);
                 if (normlaizedUpdateFilePath !== normalizedTempUpdateFile) {
                   handleError(logger, new Error(`LiteralPath of ${normlaizedUpdateFilePath} is different than ${normalizedTempUpdateFile}`), stderr, reject);
@@ -34271,7 +34504,7 @@ var require_windowsExecutableCodeSignatureVerifier = __commonJS({
       }
     }
     function isOldWin6() {
-      const winVersion = os.release();
+      const winVersion = os2.release();
       return winVersion.startsWith("6.") && !winVersion.startsWith("6.3");
     }
   }
@@ -34284,7 +34517,7 @@ var require_NsisUpdater = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.NsisUpdater = void 0;
     var builder_util_runtime_1 = require_out();
-    var path21 = require("path");
+    var path25 = require("path");
     var BaseUpdater_1 = require_BaseUpdater();
     var FileWithEmbeddedBlockMapDifferentialDownloader_1 = require_FileWithEmbeddedBlockMapDifferentialDownloader();
     var types_1 = require_types3();
@@ -34293,8 +34526,8 @@ var require_NsisUpdater = __commonJS({
     var windowsExecutableCodeSignatureVerifier_1 = require_windowsExecutableCodeSignatureVerifier();
     var url_1 = require("url");
     var NsisUpdater = class extends BaseUpdater_1.BaseUpdater {
-      constructor(options, app10) {
-        super(options, app10);
+      constructor(options, app12) {
+        super(options, app12);
         this._verifyUpdateCodeSignature = (publisherNames, unescapedTempUpdateFile) => (0, windowsExecutableCodeSignatureVerifier_1.verifySignature)(publisherNames, unescapedTempUpdateFile, this._logger);
       }
       /**
@@ -34393,7 +34626,7 @@ var require_NsisUpdater = __commonJS({
           args.push(`--package-file=${packagePath}`);
         }
         const callUsingElevation = () => {
-          this.spawnLog(path21.join(process.resourcesPath, "elevate.exe"), [installerPath].concat(args)).catch((e) => this.dispatchError(e));
+          this.spawnLog(path25.join(process.resourcesPath, "elevate.exe"), [installerPath].concat(args)).catch((e) => this.dispatchError(e));
         };
         if (options.isAdminRightsRequired) {
           this._logger.info("isAdminRightsRequired is set to true, run installer using elevate.exe");
@@ -34420,7 +34653,7 @@ var require_NsisUpdater = __commonJS({
         try {
           const downloadOptions = {
             newUrl: new url_1.URL(packageInfo.path),
-            oldFile: path21.join(this.downloadedUpdateHelper.cacheDir, builder_util_runtime_1.CURRENT_APP_PACKAGE_FILE_NAME),
+            oldFile: path25.join(this.downloadedUpdateHelper.cacheDir, builder_util_runtime_1.CURRENT_APP_PACKAGE_FILE_NAME),
             logger: this._logger,
             newFile: packagePath,
             requestHeaders: this.requestHeaders,
@@ -34465,7 +34698,7 @@ var require_main2 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.NsisUpdater = exports2.MacUpdater = exports2.RpmUpdater = exports2.PacmanUpdater = exports2.DebUpdater = exports2.AppImageUpdater = exports2.Provider = exports2.NoOpLogger = exports2.AppUpdater = exports2.BaseUpdater = void 0;
     var fs_extra_1 = require_lib();
-    var path21 = require("path");
+    var path25 = require("path");
     var BaseUpdater_1 = require_BaseUpdater();
     Object.defineProperty(exports2, "BaseUpdater", { enumerable: true, get: function() {
       return BaseUpdater_1.BaseUpdater;
@@ -34515,7 +34748,7 @@ var require_main2 = __commonJS({
       } else {
         _autoUpdater = new (require_AppImageUpdater()).AppImageUpdater();
         try {
-          const identity = path21.join(process.resourcesPath, "package-type");
+          const identity = path25.join(process.resourcesPath, "package-type");
           if (!(0, fs_extra_1.existsSync)(identity)) {
             return _autoUpdater;
           }
@@ -34552,12 +34785,12 @@ var require_main2 = __commonJS({
 var require_path_is_absolute = __commonJS({
   "node_modules/path-is-absolute/index.js"(exports2, module2) {
     "use strict";
-    function posix(path21) {
-      return path21.charAt(0) === "/";
+    function posix(path25) {
+      return path25.charAt(0) === "/";
     }
-    function win32(path21) {
+    function win32(path25) {
       var splitDeviceRe = /^([a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?([\\\/])?([\s\S]*?)$/;
-      var result = splitDeviceRe.exec(path21);
+      var result = splitDeviceRe.exec(path25);
       var device = result[1] || "";
       var isUnc = Boolean(device && device.charAt(1) !== ":");
       return Boolean(result[2] || isUnc);
@@ -34572,9 +34805,9 @@ var require_path_is_absolute = __commonJS({
 var require_registry = __commonJS({
   "node_modules/winreg/lib/registry.js"(exports2, module2) {
     var util = require("util");
-    var path21 = require("path");
-    var spawn4 = require("child_process").spawn;
-    var log2 = function() {
+    var path25 = require("path");
+    var spawn5 = require("child_process").spawn;
+    var log3 = function() {
     };
     var HKLM = "HKLM";
     var HKCU = "HKCU";
@@ -34641,7 +34874,7 @@ var require_registry = __commonJS({
     }
     function getRegExePath() {
       if (process.platform === "win32") {
-        return path21.join(process.env.windir, "system32", "reg.exe");
+        return path25.join(process.env.windir, "system32", "reg.exe");
       } else {
         return "REG";
       }
@@ -34728,24 +34961,24 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["QUERY", this.path];
       pushArch(args, this.arch);
-      var proc = spawn4(getRegExePath(), args, {
+      var proc2 = spawn5(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
       }), buffer = "", self2 = this, error = null;
-      var output = captureOutput(proc);
-      proc.on("close", function(code) {
+      var output = captureOutput(proc2);
+      proc2.on("close", function(code) {
         if (error) {
           return;
         } else if (code !== 0) {
-          log2("process exited with code " + code);
+          log3("process exited with code " + code);
           cb(mkErrorMsg("QUERY", code, output), null);
         } else {
           var items2 = [], result = [], lines = buffer.split("\n"), lineNumber = 0;
           for (var i = 0, l = lines.length; i < l; i++) {
             var line = lines[i].trim();
             if (line.length > 0) {
-              log2(line);
+              log3(line);
               if (lineNumber != 0) {
                 items2.push(line);
               }
@@ -34764,10 +34997,10 @@ var require_registry = __commonJS({
           cb(null, result);
         }
       });
-      proc.stdout.on("data", function(data) {
+      proc2.stdout.on("data", function(data) {
         buffer += data.toString();
       });
-      proc.on("error", function(err) {
+      proc2.on("error", function(err) {
         error = err;
         cb(err);
       });
@@ -34778,29 +35011,29 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["QUERY", this.path];
       pushArch(args, this.arch);
-      var proc = spawn4(getRegExePath(), args, {
+      var proc2 = spawn5(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
       }), buffer = "", self2 = this, error = null;
-      var output = captureOutput(proc);
-      proc.on("close", function(code) {
+      var output = captureOutput(proc2);
+      proc2.on("close", function(code) {
         if (error) {
           return;
         } else if (code !== 0) {
-          log2("process exited with code " + code);
+          log3("process exited with code " + code);
           cb(mkErrorMsg("QUERY", code, output), null);
         }
       });
-      proc.stdout.on("data", function(data) {
+      proc2.stdout.on("data", function(data) {
         buffer += data.toString();
       });
-      proc.stdout.on("end", function() {
+      proc2.stdout.on("end", function() {
         var items2 = [], result = [], lines = buffer.split("\n");
         for (var i = 0, l = lines.length; i < l; i++) {
           var line = lines[i].trim();
           if (line.length > 0) {
-            log2(line);
+            log3(line);
             items2.push(line);
           }
         }
@@ -34821,7 +35054,7 @@ var require_registry = __commonJS({
         }
         cb(null, result);
       });
-      proc.on("error", function(err) {
+      proc2.on("error", function(err) {
         error = err;
         cb(err);
       });
@@ -34836,24 +35069,24 @@ var require_registry = __commonJS({
       else
         args = args.concat(["/v", name]);
       pushArch(args, this.arch);
-      var proc = spawn4(getRegExePath(), args, {
+      var proc2 = spawn5(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
       }), buffer = "", self2 = this, error = null;
-      var output = captureOutput(proc);
-      proc.on("close", function(code) {
+      var output = captureOutput(proc2);
+      proc2.on("close", function(code) {
         if (error) {
           return;
         } else if (code !== 0) {
-          log2("process exited with code " + code);
+          log3("process exited with code " + code);
           cb(mkErrorMsg("QUERY", code, output), null);
         } else {
           var items2 = [], result = null, lines = buffer.split("\n"), lineNumber = 0;
           for (var i = 0, l = lines.length; i < l; i++) {
             var line = lines[i].trim();
             if (line.length > 0) {
-              log2(line);
+              log3(line);
               if (lineNumber != 0) {
                 items2.push(line);
               }
@@ -34870,10 +35103,10 @@ var require_registry = __commonJS({
           cb(null, result);
         }
       });
-      proc.stdout.on("data", function(data) {
+      proc2.stdout.on("data", function(data) {
         buffer += data.toString();
       });
-      proc.on("error", function(err) {
+      proc2.on("error", function(err) {
         error = err;
         cb(err);
       });
@@ -34891,26 +35124,26 @@ var require_registry = __commonJS({
         args = args.concat(["/v", name]);
       args = args.concat(["/t", type, "/d", value, "/f"]);
       pushArch(args, this.arch);
-      var proc = spawn4(getRegExePath(), args, {
+      var proc2 = spawn5(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
       }), error = null;
-      var output = captureOutput(proc);
-      proc.on("close", function(code) {
+      var output = captureOutput(proc2);
+      proc2.on("close", function(code) {
         if (error) {
           return;
         } else if (code !== 0) {
-          log2("process exited with code " + code);
+          log3("process exited with code " + code);
           cb(mkErrorMsg("ADD", code, output, null));
         } else {
           cb(null);
         }
       });
-      proc.stdout.on("data", function(data) {
-        log2("" + data);
+      proc2.stdout.on("data", function(data) {
+        log3("" + data);
       });
-      proc.on("error", function(err) {
+      proc2.on("error", function(err) {
         error = err;
         cb(err);
       });
@@ -34921,26 +35154,26 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = name ? ["DELETE", this.path, "/f", "/v", name] : ["DELETE", this.path, "/f", "/ve"];
       pushArch(args, this.arch);
-      var proc = spawn4(getRegExePath(), args, {
+      var proc2 = spawn5(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
       }), error = null;
-      var output = captureOutput(proc);
-      proc.on("close", function(code) {
+      var output = captureOutput(proc2);
+      proc2.on("close", function(code) {
         if (error) {
           return;
         } else if (code !== 0) {
-          log2("process exited with code " + code);
+          log3("process exited with code " + code);
           cb(mkErrorMsg("DELETE", code, output), null);
         } else {
           cb(null);
         }
       });
-      proc.stdout.on("data", function(data) {
-        log2("" + data);
+      proc2.stdout.on("data", function(data) {
+        log3("" + data);
       });
-      proc.on("error", function(err) {
+      proc2.on("error", function(err) {
         error = err;
         cb(err);
       });
@@ -34951,26 +35184,26 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["DELETE", this.path, "/f", "/va"];
       pushArch(args, this.arch);
-      var proc = spawn4(getRegExePath(), args, {
+      var proc2 = spawn5(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
       }), error = null;
-      var output = captureOutput(proc);
-      proc.on("close", function(code) {
+      var output = captureOutput(proc2);
+      proc2.on("close", function(code) {
         if (error) {
           return;
         } else if (code !== 0) {
-          log2("process exited with code " + code);
+          log3("process exited with code " + code);
           cb(mkErrorMsg("DELETE", code, output), null);
         } else {
           cb(null);
         }
       });
-      proc.stdout.on("data", function(data) {
-        log2("" + data);
+      proc2.stdout.on("data", function(data) {
+        log3("" + data);
       });
-      proc.on("error", function(err) {
+      proc2.on("error", function(err) {
         error = err;
         cb(err);
       });
@@ -34982,26 +35215,26 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["DELETE", this.path, "/f"];
       pushArch(args, this.arch);
-      var proc = spawn4(getRegExePath(), args, {
+      var proc2 = spawn5(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
       }), error = null;
-      var output = captureOutput(proc);
-      proc.on("close", function(code) {
+      var output = captureOutput(proc2);
+      proc2.on("close", function(code) {
         if (error) {
           return;
         } else if (code !== 0) {
-          log2("process exited with code " + code);
+          log3("process exited with code " + code);
           cb(mkErrorMsg("DELETE", code, output), null);
         } else {
           cb(null);
         }
       });
-      proc.stdout.on("data", function(data) {
-        log2("" + data);
+      proc2.stdout.on("data", function(data) {
+        log3("" + data);
       });
-      proc.on("error", function(err) {
+      proc2.on("error", function(err) {
         error = err;
         cb(err);
       });
@@ -35012,26 +35245,26 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["ADD", this.path, "/f"];
       pushArch(args, this.arch);
-      var proc = spawn4(getRegExePath(), args, {
+      var proc2 = spawn5(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
       }), error = null;
-      var output = captureOutput(proc);
-      proc.on("close", function(code) {
+      var output = captureOutput(proc2);
+      proc2.on("close", function(code) {
         if (error) {
           return;
         } else if (code !== 0) {
-          log2("process exited with code " + code);
+          log3("process exited with code " + code);
           cb(mkErrorMsg("ADD", code, output), null);
         } else {
           cb(null);
         }
       });
-      proc.stdout.on("data", function(data) {
-        log2("" + data);
+      proc2.stdout.on("data", function(data) {
+        log3("" + data);
       });
-      proc.on("error", function(err) {
+      proc2.on("error", function(err) {
         error = err;
         cb(err);
       });
@@ -35069,11 +35302,11 @@ var require_registry = __commonJS({
 var require_AutoLaunchWindows = __commonJS({
   "node_modules/auto-launch/dist/AutoLaunchWindows.js"(exports2, module2) {
     var Winreg;
-    var fs13;
-    var path21;
+    var fs16;
+    var path25;
     var regKey;
-    fs13 = require("fs");
-    path21 = require("path");
+    fs16 = require("fs");
+    path25 = require("path");
     Winreg = require_registry();
     regKey = new Winreg({
       hive: Winreg.HKCU,
@@ -35088,10 +35321,10 @@ var require_AutoLaunchWindows = __commonJS({
           var args, pathToAutoLaunchedApp, ref, updateDotExe;
           pathToAutoLaunchedApp = appPath;
           args = "";
-          updateDotExe = path21.join(path21.dirname(process.execPath), "..", "update.exe");
-          if (((ref = process.versions) != null ? ref.electron : void 0) != null && fs13.existsSync(updateDotExe)) {
+          updateDotExe = path25.join(path25.dirname(process.execPath), "..", "update.exe");
+          if (((ref = process.versions) != null ? ref.electron : void 0) != null && fs16.existsSync(updateDotExe)) {
             pathToAutoLaunchedApp = updateDotExe;
-            args = ' --processStart "' + path21.basename(process.execPath) + '"';
+            args = ' --processStart "' + path25.basename(process.execPath) + '"';
             if (isHiddenOnLaunch) {
               args += ' --process-start-args "--hidden"';
             }
@@ -35232,7 +35465,7 @@ var require_applescript_parser = __commonJS({
 // node_modules/applescript/lib/applescript.js
 var require_applescript = __commonJS({
   "node_modules/applescript/lib/applescript.js"(exports2) {
-    var spawn4 = require("child_process").spawn;
+    var spawn5 = require("child_process").spawn;
     exports2.Parsers = require_applescript_parser();
     var parse = exports2.Parsers.parse;
     exports2.osascript = "osascript";
@@ -35257,7 +35490,7 @@ var require_applescript = __commonJS({
       if (!isString) {
         args.push(strOrPath);
       }
-      var interpreter = spawn4(exports2.osascript, args);
+      var interpreter = spawn5(exports2.osascript, args);
       bufferBody(interpreter.stdout);
       bufferBody(interpreter.stderr);
       interpreter.on("exit", function(code) {
@@ -35304,8 +35537,8 @@ var require_untildify = __commonJS({
 // node_modules/mkdirp/index.js
 var require_mkdirp = __commonJS({
   "node_modules/mkdirp/index.js"(exports2, module2) {
-    var path21 = require("path");
-    var fs13 = require("fs");
+    var path25 = require("path");
+    var fs16 = require("fs");
     var _0777 = parseInt("0777", 8);
     module2.exports = mkdirP.mkdirp = mkdirP.mkdirP = mkdirP;
     function mkdirP(p, opts, f, made) {
@@ -35316,7 +35549,7 @@ var require_mkdirp = __commonJS({
         opts = { mode: opts };
       }
       var mode = opts.mode;
-      var xfs = opts.fs || fs13;
+      var xfs = opts.fs || fs16;
       if (mode === void 0) {
         mode = _0777;
       }
@@ -35324,7 +35557,7 @@ var require_mkdirp = __commonJS({
       var cb = f || /* istanbul ignore next */
       function() {
       };
-      p = path21.resolve(p);
+      p = path25.resolve(p);
       xfs.mkdir(p, mode, function(er) {
         if (!er) {
           made = made || p;
@@ -35332,8 +35565,8 @@ var require_mkdirp = __commonJS({
         }
         switch (er.code) {
           case "ENOENT":
-            if (path21.dirname(p) === p) return cb(er);
-            mkdirP(path21.dirname(p), opts, function(er2, made2) {
+            if (path25.dirname(p) === p) return cb(er);
+            mkdirP(path25.dirname(p), opts, function(er2, made2) {
               if (er2) cb(er2, made2);
               else mkdirP(p, opts, cb, made2);
             });
@@ -35355,19 +35588,19 @@ var require_mkdirp = __commonJS({
         opts = { mode: opts };
       }
       var mode = opts.mode;
-      var xfs = opts.fs || fs13;
+      var xfs = opts.fs || fs16;
       if (mode === void 0) {
         mode = _0777;
       }
       if (!made) made = null;
-      p = path21.resolve(p);
+      p = path25.resolve(p);
       try {
         xfs.mkdirSync(p, mode);
         made = made || p;
       } catch (err0) {
         switch (err0.code) {
           case "ENOENT":
-            made = sync(path21.dirname(p), opts, made);
+            made = sync(path25.dirname(p), opts, made);
             sync(p, opts, made);
             break;
           // In the case of any other error, just see if there's a dir
@@ -35392,9 +35625,9 @@ var require_mkdirp = __commonJS({
 // node_modules/auto-launch/dist/fileBasedUtilities.js
 var require_fileBasedUtilities = __commonJS({
   "node_modules/auto-launch/dist/fileBasedUtilities.js"(exports2, module2) {
-    var fs13;
+    var fs16;
     var mkdirp;
-    fs13 = require("fs");
+    fs16 = require("fs");
     mkdirp = require_mkdirp();
     module2.exports = {
       /* Public */
@@ -35406,7 +35639,7 @@ var require_fileBasedUtilities = __commonJS({
             if (mkdirErr != null) {
               return reject(mkdirErr);
             }
-            return fs13.writeFile(filePath, data, function(writeErr) {
+            return fs16.writeFile(filePath, data, function(writeErr) {
               if (writeErr != null) {
                 return reject(writeErr);
               }
@@ -35418,7 +35651,7 @@ var require_fileBasedUtilities = __commonJS({
       isEnabled: function(filePath) {
         return new Promise(/* @__PURE__ */ function(_this) {
           return function(resolve, reject) {
-            return fs13.stat(filePath, function(err, stat) {
+            return fs16.stat(filePath, function(err, stat) {
               if (err != null) {
                 return resolve(false);
               }
@@ -35430,11 +35663,11 @@ var require_fileBasedUtilities = __commonJS({
       removeFile: function(filePath) {
         return new Promise(/* @__PURE__ */ function(_this) {
           return function(resolve, reject) {
-            return fs13.stat(filePath, function(statErr) {
+            return fs16.stat(filePath, function(statErr) {
               if (statErr != null) {
                 return resolve();
               }
-              return fs13.unlink(filePath, function(unlinkErr) {
+              return fs16.unlink(filePath, function(unlinkErr) {
                 if (unlinkErr != null) {
                   return reject(unlinkErr);
                 }
@@ -35572,8 +35805,8 @@ var require_dist3 = __commonJS({
     isPathAbsolute = require_path_is_absolute();
     module2.exports = AutoLaunch2 = function() {
       function AutoLaunch3(arg) {
-        var isHidden, mac, name, path21, versions;
-        name = arg.name, isHidden = arg.isHidden, mac = arg.mac, path21 = arg.path;
+        var isHidden, mac, name, path25, versions;
+        name = arg.name, isHidden = arg.isHidden, mac = arg.mac, path25 = arg.path;
         this.fixOpts = bind(this.fixOpts, this);
         this.isEnabled = bind(this.isEnabled, this);
         this.disable = bind(this.disable, this);
@@ -35587,11 +35820,11 @@ var require_dist3 = __commonJS({
           mac: mac != null ? mac : {}
         };
         versions = typeof process !== "undefined" && process !== null ? process.versions : void 0;
-        if (path21 != null) {
-          if (!isPathAbsolute(path21)) {
+        if (path25 != null) {
+          if (!isPathAbsolute(path25)) {
             throw new Error("path must be absolute");
           }
-          this.opts.appPath = path21;
+          this.opts.appPath = path25;
         } else if (versions != null && (versions.nw != null || versions["node-webkit"] != null || versions.electron != null)) {
           this.opts.appPath = process.execPath;
         } else {
@@ -35618,12 +35851,12 @@ var require_dist3 = __commonJS({
       AutoLaunch3.prototype.isEnabled = function() {
         return this.api.isEnabled(this.opts.appName, this.opts.mac);
       };
-      AutoLaunch3.prototype.fixMacExecPath = function(path21, macOptions) {
-        path21 = path21.replace(/(^.+?[^\/]+?\.app)\/Contents\/(Frameworks\/((\1|[^\/]+?) Helper)\.app\/Contents\/MacOS\/\3|MacOS\/Electron)/, "$1");
+      AutoLaunch3.prototype.fixMacExecPath = function(path25, macOptions) {
+        path25 = path25.replace(/(^.+?[^\/]+?\.app)\/Contents\/(Frameworks\/((\1|[^\/]+?) Helper)\.app\/Contents\/MacOS\/\3|MacOS\/Electron)/, "$1");
         if (!macOptions.useLaunchAgent) {
-          path21 = path21.replace(/\.app\/Contents\/MacOS\/[^\/]*$/, ".app");
+          path25 = path25.replace(/\.app\/Contents\/MacOS\/[^\/]*$/, ".app");
         }
-        return path21;
+        return path25;
       };
       AutoLaunch3.prototype.fixOpts = function() {
         var tempPath;
@@ -35661,22 +35894,22 @@ __export(ffmpeg_exports, {
 function resolveFfmpeg() {
   try {
     const staticPath = require("ffmpeg-static");
-    if (staticPath && import_node_fs9.default.existsSync(staticPath)) return staticPath;
+    if (staticPath && import_node_fs8.default.existsSync(staticPath)) return staticPath;
   } catch {
   }
-  const bundled = import_node_path15.default.join(process.resourcesPath || "", "ffmpeg.exe");
-  if (import_node_fs9.default.existsSync(bundled)) return bundled;
+  const bundled = import_node_path13.default.join(process.resourcesPath || "", "ffmpeg.exe");
+  if (import_node_fs8.default.existsSync(bundled)) return bundled;
   return "ffmpeg";
 }
 function runFfmpeg(args, stdinClose = false) {
   return new Promise((resolve, reject) => {
-    const proc = (0, import_node_child_process.spawn)(resolveFfmpeg(), args, { stdio: ["ignore", "pipe", "pipe"] });
+    const proc2 = (0, import_node_child_process.spawn)(resolveFfmpeg(), args, { stdio: ["ignore", "pipe", "pipe"] });
     let err = "";
-    proc.stderr.on("data", (d) => {
+    proc2.stderr.on("data", (d) => {
       err += String(d);
     });
-    proc.on("error", reject);
-    proc.on("close", (code) => {
+    proc2.on("error", reject);
+    proc2.on("close", (code) => {
       if (code === 0 || stdinClose) resolve();
       else reject(new Error(err.split("\n").slice(-8).join("\n") || `ffmpeg exited ${code}`));
     });
@@ -35684,17 +35917,17 @@ function runFfmpeg(args, stdinClose = false) {
 }
 async function listDshowDevices() {
   return new Promise((resolve) => {
-    const proc = (0, import_node_child_process.spawn)(resolveFfmpeg(), ["-list_devices", "true", "-f", "dshow", "-i", "dummy"], {
+    const proc2 = (0, import_node_child_process.spawn)(resolveFfmpeg(), ["-list_devices", "true", "-f", "dshow", "-i", "dummy"], {
       stdio: ["ignore", "pipe", "pipe"]
     });
     let out = "";
-    proc.stderr.on("data", (d) => {
+    proc2.stderr.on("data", (d) => {
       out += String(d);
     });
-    proc.stdout.on("data", (d) => {
+    proc2.stdout.on("data", (d) => {
       out += String(d);
     });
-    proc.on("close", () => {
+    proc2.on("close", () => {
       const devices = [];
       let kind = null;
       for (const line of out.split("\n")) {
@@ -35716,32 +35949,303 @@ async function listDshowDevices() {
       }
       resolve(devices);
     });
-    proc.on("error", () => resolve([]));
+    proc2.on("error", () => resolve([]));
   });
 }
 function even(n) {
   const i = Math.max(2, Math.round(n));
   return i % 2 === 0 ? i : i - 1;
 }
-var import_node_fs9, import_node_path15, import_node_child_process;
+var import_node_fs8, import_node_path13, import_node_child_process;
 var init_ffmpeg = __esm({
   "electron/recording/ffmpeg.ts"() {
     "use strict";
-    import_node_fs9 = __toESM(require("node:fs"));
-    import_node_path15 = __toESM(require("node:path"));
+    import_node_fs8 = __toESM(require("node:fs"));
+    import_node_path13 = __toESM(require("node:path"));
     import_node_child_process = require("node:child_process");
+  }
+});
+
+// electron/win32.ts
+function parseCapturerHwnd(sourceId) {
+  const m = sourceId.match(/^window:(\d+)/i);
+  if (!m) return null;
+  const n = Number(m[1]);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+function nativeHwnd(win2) {
+  const buf = win2.getNativeWindowHandle();
+  if (buf.length >= 8) {
+    const n = Number(buf.readBigUInt64LE(0) & 0xffffffffn);
+    if (n) return n;
+  }
+  return buf.readUInt32LE(0);
+}
+function ensureScript() {
+  const body = [
+    "param([int64]$Hwnd)",
+    'Add-Type -TypeDefinition @"',
+    "using System;",
+    "using System.Runtime.InteropServices;",
+    "public struct RECT { public int L; public int T; public int R; public int B; }",
+    "public static class RW {",
+    '  [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out RECT r);',
+    "}",
+    '"@',
+    "$r = New-Object RECT",
+    "if (-not [RW]::GetWindowRect([IntPtr]$Hwnd, [ref]$r)) { throw 'GetWindowRect failed' }",
+    'Write-Output ("{0},{1},{2},{3}" -f $r.L,$r.T,$r.R,$r.B)'
+  ].join("\n");
+  import_node_fs9.default.writeFileSync(scriptPath, body, "utf8");
+}
+function getWindowRect(hwnd) {
+  try {
+    ensureScript();
+    const out = (0, import_node_child_process2.execFileSync)("powershell.exe", ["-NoProfile", "-STA", "-File", scriptPath, String(hwnd)], {
+      encoding: "utf8",
+      timeout: 12e3,
+      windowsHide: true
+    }).trim();
+    const m = out.match(/(-?\d+),(-?\d+),(-?\d+),(-?\d+)/);
+    if (!m) return null;
+    const l = Number(m[1]), t = Number(m[2]), r = Number(m[3]), b = Number(m[4]);
+    return { x: l, y: t, width: Math.max(2, r - l), height: Math.max(2, b - t) };
+  } catch {
+    return null;
+  }
+}
+function evenRect(rect) {
+  return {
+    x: rect.x,
+    y: rect.y,
+    width: rect.width - rect.width % 2,
+    height: rect.height - rect.height % 2
+  };
+}
+var import_node_child_process2, import_node_fs9, import_node_os, import_node_path14, scriptPath;
+var init_win32 = __esm({
+  "electron/win32.ts"() {
+    "use strict";
+    import_node_child_process2 = require("node:child_process");
+    import_node_fs9 = __toESM(require("node:fs"));
+    import_node_os = __toESM(require("node:os"));
+    import_node_path14 = __toESM(require("node:path"));
+    scriptPath = import_node_path14.default.join(import_node_os.default.tmpdir(), "reflecto-getwindowrect.ps1");
+  }
+});
+
+// electron/recording/gdigrab.ts
+function toPhysical(rect) {
+  return evenRect(import_electron19.screen.dipToScreenRect(null, rect));
+}
+function clampToDesktop(rect) {
+  let minX = 0, minY = 0, maxX = 0, maxY = 0;
+  for (const d of import_electron19.screen.getAllDisplays()) {
+    const p = import_electron19.screen.dipToScreenRect(null, d.bounds);
+    minX = Math.min(minX, p.x);
+    minY = Math.min(minY, p.y);
+    maxX = Math.max(maxX, p.x + p.width);
+    maxY = Math.max(maxY, p.y + p.height);
+  }
+  const x = Math.max(minX, rect.x);
+  const y = Math.max(minY, rect.y);
+  const right = Math.min(maxX, rect.x + rect.width);
+  const bottom = Math.min(maxY, rect.y + rect.height);
+  return evenRect({
+    x,
+    y,
+    width: Math.max(2, right - x),
+    height: Math.max(2, bottom - y)
+  });
+}
+function resetGdiInfo() {
+  lastInfo = null;
+}
+function lastGdiInfo() {
+  return lastInfo;
+}
+function log(msg) {
+  console.log("[Reflecto:gdigrab]", msg);
+}
+function needsGdiGrab(opts) {
+  if (opts.sourceType === "window") return true;
+  if (opts.showCursor === false) return true;
+  if (opts.cursorStyle && opts.cursorStyle !== "recorded") return true;
+  return false;
+}
+async function startGdiGrab(start) {
+  await stopGdiGrab(false);
+  const dest = import_node_path15.default.join(import_electron19.app.getPath("temp"), `reflecto-gdi-${(0, import_node_crypto6.randomUUID)()}.mkv`);
+  const fps = start.fps || 30;
+  const args = [
+    "-y",
+    "-f",
+    "gdigrab",
+    "-framerate",
+    String(fps),
+    "-draw_mouse",
+    start.drawMouse ? "1" : "0",
+    "-thread_queue_size",
+    "1024"
+  ];
+  let expected = null;
+  if (start.kind === "window") {
+    expected = start.rect ? evenRect(start.rect) : start.hwnd ? getWindowRect(start.hwnd) : null;
+    if (expected) {
+      const r = clampToDesktop(expected);
+      expected = r;
+      args.push(
+        "-offset_x",
+        String(r.x),
+        "-offset_y",
+        String(r.y),
+        "-video_size",
+        `${r.width}x${r.height}`,
+        "-i",
+        "desktop"
+      );
+    } else if (start.title) {
+      args.push("-i", `title=${start.title}`);
+    } else {
+      throw new Error("Window recording needs bounds or a window title (gdigrab has no hwnd= input)");
+    }
+  } else if (start.kind === "area" && start.rect) {
+    const r = toPhysical(start.rect);
+    expected = r;
+    args.push(
+      "-offset_x",
+      String(r.x),
+      "-offset_y",
+      String(r.y),
+      "-video_size",
+      `${Math.max(2, r.width)}x${Math.max(2, r.height)}`,
+      "-i",
+      "desktop"
+    );
+  } else {
+    const d = import_electron19.screen.getPrimaryDisplay();
+    const r = toPhysical(d.bounds);
+    expected = r;
+    args.push(
+      "-offset_x",
+      String(r.x),
+      "-offset_y",
+      String(r.y),
+      "-video_size",
+      `${r.width}x${r.height}`,
+      "-i",
+      "desktop"
+    );
+  }
+  args.push(
+    "-an",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "ultrafast",
+    "-pix_fmt",
+    "yuv420p",
+    "-flush_packets",
+    "1",
+    dest
+  );
+  stderrBuf = "";
+  current = dest;
+  lastInfo = { args, dest, expected, kind: start.kind };
+  log(args.join(" "));
+  await new Promise((resolve, reject) => {
+    proc = (0, import_node_child_process3.spawn)(resolveFfmpeg(), args, { stdio: ["pipe", "ignore", "pipe"] });
+    let started = false;
+    const done = (err) => {
+      if (started) return;
+      started = true;
+      if (err) reject(err);
+      else resolve();
+    };
+    proc.stderr?.on("data", (d) => {
+      const t = String(d);
+      stderrBuf += t;
+      if (/error|failed/i.test(t) && /gdigrab|Immediate/i.test(t)) {
+        log(t.trim().slice(0, 240));
+      }
+      if (/frame=\s*[1-9]|time=\s*\d/.test(stderrBuf)) done();
+    });
+    proc.on("error", (err) => done(err));
+    proc.on("close", (code) => {
+      if (!started) done(new Error(`gdigrab exited ${code}: ${stderrBuf.slice(-400)}`));
+    });
+    setTimeout(() => done(), 4e3);
+  });
+  return lastInfo;
+}
+async function stopGdiGrab(save) {
+  const file = current;
+  const child = proc;
+  proc = null;
+  current = null;
+  if (!child) return null;
+  await new Promise((resolve) => {
+    const finish3 = () => resolve();
+    child.once("close", finish3);
+    try {
+      child.stdin?.write("q\n");
+    } catch {
+    }
+    setTimeout(() => {
+      try {
+        child.kill();
+      } catch {
+      }
+    }, 2500);
+    setTimeout(finish3, 6e3);
+  });
+  if (!save || !file || !import_node_fs10.default.existsSync(file) || import_node_fs10.default.statSync(file).size < 1024) {
+    log(`discarded gdigrab size=${file && import_node_fs10.default.existsSync(file) ? import_node_fs10.default.statSync(file).size : 0}`);
+    return null;
+  }
+  const dest = import_node_path15.default.join(import_electron19.app.getPath("userData"), "recordings", `reflecto_${(0, import_node_crypto6.randomUUID)()}.mp4`);
+  import_node_fs10.default.mkdirSync(import_node_path15.default.dirname(dest), { recursive: true });
+  try {
+    await runFfmpeg(["-y", "-i", file, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", dest]);
+    try {
+      import_node_fs10.default.unlinkSync(file);
+    } catch {
+    }
+    log(`saved ${dest} bytes=${import_node_fs10.default.statSync(dest).size}`);
+    if (lastInfo) lastInfo.dest = dest;
+    return dest;
+  } catch (err) {
+    log(`transcode failed, keeping mkv: ${err}`);
+    return file;
+  }
+}
+var import_node_child_process3, import_node_fs10, import_node_path15, import_node_crypto6, import_electron19, proc, current, lastInfo, stderrBuf;
+var init_gdigrab = __esm({
+  "electron/recording/gdigrab.ts"() {
+    "use strict";
+    import_node_child_process3 = require("node:child_process");
+    import_node_fs10 = __toESM(require("node:fs"));
+    import_node_path15 = __toESM(require("node:path"));
+    import_node_crypto6 = require("node:crypto");
+    import_electron19 = require("electron");
+    init_ffmpeg();
+    init_win32();
+    proc = null;
+    current = null;
+    lastInfo = null;
+    stderrBuf = "";
   }
 });
 
 // electron/recording/engine.ts
 function lastCameraSidecar() {
-  if (!lastCameraPath || !import_node_fs10.default.existsSync(lastCameraPath)) return null;
-  return { path: lastCameraPath, size: import_node_fs10.default.statSync(lastCameraPath).size };
+  if (!lastCameraPath || !import_node_fs11.default.existsSync(lastCameraPath)) return null;
+  return { path: lastCameraPath, size: import_node_fs11.default.statSync(lastCameraPath).size };
 }
 function lastCaptureWorkerInfo() {
   return lastWorkerInfo;
 }
-function log(msg) {
+function log2(msg) {
   const line = `[${(/* @__PURE__ */ new Date()).toISOString()}] ${msg}`;
   console.log("[Reflecto:record]", msg);
   session?.log.push(line);
@@ -35759,17 +36263,17 @@ function currentElapsed() {
   return session.elapsedBeforePause;
 }
 function grantMediaPermissions() {
-  import_electron21.session.defaultSession.setPermissionRequestHandler((_wc, permission, callback) => {
+  import_electron20.session.defaultSession.setPermissionRequestHandler((_wc, permission, callback) => {
     callback(permission === "media" || permission === "clipboard-sanitized-write");
   });
-  import_electron21.session.defaultSession.setPermissionCheckHandler((_wc, permission) => {
+  import_electron20.session.defaultSession.setPermissionCheckHandler((_wc, permission) => {
     return permission === "media" || permission === "clipboard-sanitized-write";
   });
 }
 async function ensureCaptureWorker() {
   if (worker2 && !worker2.isDestroyed()) return worker2;
   grantMediaPermissions();
-  worker2 = new import_electron21.BrowserWindow({
+  worker2 = new import_electron20.BrowserWindow({
     width: 320,
     height: 240,
     x: -640,
@@ -35804,12 +36308,47 @@ async function startSession(options) {
     log: []
   };
   lastBlob = null;
-  const win = await ensureCaptureWorker();
+  lastWorkerInfo = null;
+  resetGdiInfo();
+  gdiMode = false;
+  const fps = options.fps ?? getPref("recordingFps") ?? 30;
+  const cursorStyle = options.cursorStyle || (options.showCursor === false ? "hidden" : "recorded");
+  const useGdi = needsGdiGrab({
+    sourceType: options.source.type,
+    showCursor: options.showCursor,
+    cursorStyle
+  });
+  if (useGdi) {
+    const sourceId2 = options.source.type === "window" ? options.source.sourceId : await resolveSourceId(options.source);
+    const hwnd = options.source.type === "window" ? parseCapturerHwnd(sourceId2 || "") ?? void 0 : void 0;
+    const title = options.source.type === "window" ? options.source.title : void 0;
+    const winRect = hwnd ? getWindowRect(hwnd) : void 0;
+    if (options.source.type === "window") {
+      log2(`gdigrab window hwnd=${hwnd ?? "none"} title=${title || ""} bounds=${winRect ? `${winRect.width}x${winRect.height}+${winRect.x},${winRect.y}` : "unknown"}`);
+    }
+    const areaRect = options.source.type === "area" ? options.source.rect : void 0;
+    await startGdiGrab({
+      kind: options.source.type,
+      hwnd,
+      title,
+      rect: winRect ?? areaRect,
+      fps,
+      drawMouse: cursorStyle === "recorded" && options.showCursor !== false
+    });
+    gdiMode = true;
+    session.state = "recording";
+    session.startedAt = Date.now();
+    startPointerLog();
+    log2(`gdigrab started draw_mouse=${cursorStyle === "recorded" && options.showCursor !== false ? 1 : 0} style=${cursorStyle}`);
+    if (options.camera) await startCameraSidecar();
+    return;
+  }
+  const win2 = await ensureCaptureWorker();
   const sourceId = await resolveSourceId(options.source);
   if (!sourceId) throw new Error("No desktop capture source for this display/window");
-  log(`sourceId=${sourceId} type=${options.source.type} systemAudio=${Boolean(options.systemAudio)} mic=${options.microphone || "off"} cam=${options.camera || "off"}`);
+  log2(`sourceId=${sourceId} type=${options.source.type} systemAudio=${Boolean(options.systemAudio)} mic=${options.microphone || "off"} cam=${options.camera || "off"}`);
   const area = options.source.type === "area" ? options.source : null;
-  const display = area ? area.displayId != null ? import_electron21.screen.getAllDisplays().find((d) => d.id === area.displayId) : import_electron21.screen.getDisplayMatching(area.rect) : void 0;
+  const display = area ? area.displayId != null ? import_electron20.screen.getAllDisplays().find((d) => d.id === area.displayId) : import_electron20.screen.getDisplayMatching(area.rect) : void 0;
   const crop = area ? {
     x: area.rect.x - (display?.bounds.x ?? 0),
     y: area.rect.y - (display?.bounds.y ?? 0),
@@ -35818,12 +36357,12 @@ async function startSession(options) {
   } : null;
   await new Promise((resolve, reject) => {
     pendingStart = { resolve, reject };
-    win.webContents.send("recording:worker-start", {
+    win2.webContents.send("recording:worker-start", {
       sourceId,
       crop,
-      scaleFactor: display?.scaleFactor ?? import_electron21.screen.getPrimaryDisplay().scaleFactor,
+      scaleFactor: display?.scaleFactor ?? import_electron20.screen.getPrimaryDisplay().scaleFactor,
       microphoneId: options.microphone || null,
-      cameraId: options.camera || null,
+      cameraId: null,
       systemAudio: Boolean(options.systemAudio),
       fps: options.fps ?? getPref("recordingFps") ?? 30
     });
@@ -35836,27 +36375,45 @@ async function startSession(options) {
   });
   session.state = "recording";
   session.startedAt = Date.now();
-  log("MediaRecorder started");
+  startPointerLog();
+  log2("MediaRecorder started");
   if (options.camera) await startCameraSidecar();
 }
 async function pauseSession() {
   if (!session || session.state !== "recording") return;
   session.elapsedBeforePause = currentElapsed();
-  worker2?.webContents.send("recording:worker-pause");
+  if (gdiMode) {
+    log2("gdigrab pause keeps capturing (Windows ffmpeg cannot pause gdigrab mid-stream); elapsed timer paused");
+  } else {
+    worker2?.webContents.send("recording:worker-pause");
+    log2("paused (MediaRecorder.pause)");
+  }
   session.state = "paused";
-  log("paused (MediaRecorder.pause)");
 }
 async function resumeSession() {
   if (!session || session.state !== "paused") return;
-  worker2?.webContents.send("recording:worker-resume");
+  if (!gdiMode) {
+    worker2?.webContents.send("recording:worker-resume");
+    log2("resumed (MediaRecorder.resume)");
+  } else {
+    log2("gdigrab resume (timer only)");
+  }
   session.state = "recording";
   session.startedAt = Date.now();
-  log("resumed (MediaRecorder.resume)");
 }
 async function stopSession(save) {
   if (!session) return null;
   session.elapsedBeforePause = currentElapsed();
+  stopPointerLog();
   await stopCameraSidecar();
+  if (gdiMode) {
+    const notes2 = session.log;
+    session = null;
+    gdiMode = false;
+    const dest2 = await stopGdiGrab(save);
+    logLine(notes2, dest2 ? `gdigrab saved ${dest2}` : "gdigrab discarded");
+    return dest2;
+  }
   await new Promise((resolve) => {
     pendingStop = { resolve };
     worker2?.webContents.send("recording:worker-stop");
@@ -35873,27 +36430,27 @@ async function stopSession(save) {
     logLine(notes, `discarded blob=${blob?.length ?? 0}`);
     return null;
   }
-  const webm = import_node_path16.default.join(import_electron21.app.getPath("temp"), `reflecto-${(0, import_node_crypto6.randomUUID)()}.webm`);
-  import_node_fs10.default.writeFileSync(webm, blob);
-  const dest = import_node_path16.default.join(import_electron21.app.getPath("userData"), "recordings", `reflecto_${(0, import_node_crypto6.randomUUID)()}.mp4`);
-  import_node_fs10.default.mkdirSync(import_node_path16.default.dirname(dest), { recursive: true });
+  const webm = import_node_path16.default.join(import_electron20.app.getPath("temp"), `reflecto-${(0, import_node_crypto7.randomUUID)()}.webm`);
+  import_node_fs11.default.writeFileSync(webm, blob);
+  const dest = import_node_path16.default.join(import_electron20.app.getPath("userData"), "recordings", `reflecto_${(0, import_node_crypto7.randomUUID)()}.mp4`);
+  import_node_fs11.default.mkdirSync(import_node_path16.default.dirname(dest), { recursive: true });
   try {
     await runFfmpeg(["-y", "-i", webm, "-r", String(fps), "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-movflags", "+faststart", dest]);
     try {
-      import_node_fs10.default.unlinkSync(webm);
+      import_node_fs11.default.unlinkSync(webm);
     } catch {
     }
-    logLine(notes, `saved ${dest} bytes=${import_node_fs10.default.statSync(dest).size}`);
-    import_node_fs10.default.appendFileSync(import_node_path16.default.join(import_electron21.app.getPath("userData"), "recording-last.log"), notes.join("\n") + `
+    logLine(notes, `saved ${dest} bytes=${import_node_fs11.default.statSync(dest).size}`);
+    import_node_fs11.default.appendFileSync(import_node_path16.default.join(import_electron20.app.getPath("userData"), "recording-last.log"), notes.join("\n") + `
 saved ${dest}
 `);
     return dest;
   } catch (err) {
     logLine(notes, `transcode failed: ${err}`);
-    import_node_fs10.default.appendFileSync(import_node_path16.default.join(import_electron21.app.getPath("userData"), "recording-last.log"), notes.join("\n") + `
+    import_node_fs11.default.appendFileSync(import_node_path16.default.join(import_electron20.app.getPath("userData"), "recording-last.log"), notes.join("\n") + `
 ${err}
 `);
-    if (import_node_fs10.default.existsSync(webm) && import_node_fs10.default.statSync(webm).size > 1024) return webm;
+    if (import_node_fs11.default.existsSync(webm) && import_node_fs11.default.statSync(webm).size > 1024) return webm;
     throw err;
   }
 }
@@ -35906,50 +36463,114 @@ async function startCameraSidecar() {
   lastCameraPath = null;
   const cam = (await listDshowDevices()).find((d) => d.kind === "video");
   if (!cam) {
-    log("no DirectShow camera for sidecar (BetterShot camera.mov equivalent)");
+    log2("no DirectShow camera for sidecar (BetterShot camera.mov equivalent)");
     return;
   }
-  const dest = import_node_path16.default.join(import_electron21.app.getPath("temp"), `reflecto-camera-${(0, import_node_crypto6.randomUUID)()}.mp4`);
+  const dest = import_node_path16.default.join(import_electron20.app.getPath("temp"), `reflecto-camera-${(0, import_node_crypto7.randomUUID)()}.mkv`);
   lastCameraPath = dest;
-  log(`camera sidecar dshow="${cam.name}" -> ${dest}`);
-  cameraProc = (0, import_node_child_process2.spawn)(resolveFfmpeg(), [
-    "-y",
-    "-f",
-    "dshow",
-    "-rtbufsize",
-    "64M",
-    "-i",
-    `video=${cam.name}`,
-    "-an",
-    "-c:v",
-    "libx264",
-    "-preset",
-    "ultrafast",
-    "-pix_fmt",
-    "yuv420p",
-    dest
-  ], { stdio: ["pipe", "ignore", "pipe"] });
-  cameraProc.stderr?.on("data", (d) => {
-    const line = String(d);
-    if (/error|fail/i.test(line)) log(`camera sidecar: ${line.trim().slice(0, 200)}`);
+  log2(`camera sidecar dshow="${cam.name}" -> ${dest}`);
+  await new Promise((resolve) => {
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+    cameraProc = (0, import_node_child_process4.spawn)(resolveFfmpeg(), [
+      "-y",
+      "-f",
+      "dshow",
+      "-rtbufsize",
+      "64M",
+      "-framerate",
+      "30",
+      "-video_size",
+      "640x360",
+      "-i",
+      `video=${cam.name}`,
+      "-an",
+      "-c:v",
+      "libx264",
+      "-preset",
+      "ultrafast",
+      "-pix_fmt",
+      "yuv420p",
+      "-flush_packets",
+      "1",
+      dest
+    ], { stdio: ["pipe", "ignore", "pipe"] });
+    cameraProc.stderr?.on("data", (d) => {
+      const line = String(d);
+      if (/error|fail/i.test(line) && !/dummy/i.test(line)) log2(`camera sidecar: ${line.trim().slice(0, 220)}`);
+      if (/frame=\s*[1-9]/.test(line) || /time=\s*00:00:0[0-9]\.[1-9]/.test(line)) done();
+    });
+    cameraProc.on("error", (err) => {
+      log2(`camera sidecar spawn: ${err}`);
+      done();
+    });
+    setTimeout(done, 8e3);
   });
 }
 function stopCameraSidecar() {
-  const proc = cameraProc;
+  const child = cameraProc;
   cameraProc = null;
-  if (!proc || proc.killed) return Promise.resolve();
+  if (!child) return Promise.resolve();
   return new Promise((resolve) => {
-    const done = () => resolve();
-    proc.once("close", done);
+    let settled = false;
+    const finish3 = async () => {
+      if (settled) return;
+      settled = true;
+      const src = lastCameraPath;
+      if (src && import_node_fs11.default.existsSync(src) && import_node_fs11.default.statSync(src).size > 2048) {
+        const remux = src.replace(/\.mkv$/i, ".mp4");
+        try {
+          await runFfmpeg(["-y", "-i", src, "-c", "copy", "-movflags", "+faststart", remux]);
+          if (import_node_fs11.default.existsSync(remux) && import_node_fs11.default.statSync(remux).size > 1024) {
+            try {
+              import_node_fs11.default.unlinkSync(src);
+            } catch {
+            }
+            lastCameraPath = remux;
+            log2(`camera sidecar finalized ${remux} bytes=${import_node_fs11.default.statSync(remux).size}`);
+          }
+        } catch (err) {
+          log2(`camera sidecar remux failed, keeping mkv: ${err}`);
+        }
+      } else {
+        log2(`camera sidecar not finalized size=${src && import_node_fs11.default.existsSync(src) ? import_node_fs11.default.statSync(src).size : 0}`);
+      }
+      resolve();
+    };
+    child.once("close", () => {
+      void finish3();
+    });
     try {
-      proc.stdin?.write("q");
+      child.stdin?.write("q\n");
     } catch {
     }
     setTimeout(() => {
-      if (!proc.killed) proc.kill();
-    }, 1500);
-    setTimeout(done, 4e3);
+      try {
+        if (!child.killed) child.kill();
+      } catch {
+      }
+    }, 3e3);
+    setTimeout(() => {
+      void finish3();
+    }, 7e3);
   });
+}
+function startPointerLog() {
+  stopPointerLog();
+  pointerSamples = [];
+  pointerStartedAt = Date.now();
+  pointerTimer = setInterval(() => {
+    const p = import_electron20.screen.getCursorScreenPoint();
+    pointerSamples.push({ t: Date.now() - pointerStartedAt, x: p.x, y: p.y });
+  }, 16);
+}
+function stopPointerLog() {
+  if (pointerTimer) clearInterval(pointerTimer);
+  pointerTimer = null;
 }
 function handleWorkerEvent(kind, payload) {
   if (kind === "started") {
@@ -35957,10 +36578,10 @@ function handleWorkerEvent(kind, payload) {
     pendingStart?.resolve();
     pendingStart = null;
   } else if (kind === "warn") {
-    log(payload?.message || "worker warning");
+    log2(payload?.message || "worker warning");
   } else if (kind === "error") {
     const message = payload?.message || "capture worker error";
-    log(message);
+    log2(message);
     pendingStart?.reject(new Error(message));
     pendingStart = null;
   } else if (kind === "stopped") {
@@ -35974,20 +36595,20 @@ function takeBlob(buffer) {
   lastBlob = buffer;
 }
 async function refreshMediaDevices() {
-  const win = await ensureCaptureWorker();
-  win.webContents.send("recording:worker-list-devices");
+  const win2 = await ensureCaptureWorker();
+  win2.webContents.send("recording:worker-list-devices");
   await new Promise((r) => setTimeout(r, 2500));
   return mediaDevices;
 }
 async function resolveSourceId(source) {
   if ("sourceId" in source && source.sourceId) return source.sourceId;
   const types = source.type === "window" ? ["window"] : ["screen"];
-  const sources = await import_electron21.desktopCapturer.getSources({ types, thumbnailSize: { width: 1, height: 1 } });
+  const sources = await import_electron20.desktopCapturer.getSources({ types, thumbnailSize: { width: 1, height: 1 } });
   if (source.type === "display") {
     if (source.displayId != null) {
       const match = sources.find((s) => s.display_id === String(source.displayId));
       if (match) return match.id;
-      const displays = import_electron21.screen.getAllDisplays();
+      const displays = import_electron20.screen.getAllDisplays();
       const index = displays.findIndex((d) => d.id === source.displayId);
       if (index >= 0 && sources[index]) return sources[index].id;
     }
@@ -35998,7 +36619,7 @@ async function resolveSourceId(source) {
       const match2 = sources.find((s) => s.display_id === String(source.displayId));
       if (match2) return match2.id;
     }
-    const display = import_electron21.screen.getDisplayMatching(source.rect);
+    const display = import_electron20.screen.getDisplayMatching(source.rect);
     const match = sources.find((s) => s.display_id === String(display.id));
     return match?.id ?? sources[0]?.id ?? null;
   }
@@ -36007,18 +36628,20 @@ async function resolveSourceId(source) {
 function isRecordingActive() {
   return Boolean(session && session.state !== "idle");
 }
-var import_electron21, import_node_fs10, import_node_path16, import_node_crypto6, import_node_child_process2, session, worker2, pendingStart, pendingStop, lastBlob, mediaDevices, lastWorkerInfo, cameraProc, lastCameraPath;
+var import_electron20, import_node_fs11, import_node_path16, import_node_crypto7, import_node_child_process4, session, worker2, pendingStart, pendingStop, lastBlob, mediaDevices, lastWorkerInfo, cameraProc, lastCameraPath, gdiMode, pointerTimer, pointerSamples, pointerStartedAt;
 var init_engine = __esm({
   "electron/recording/engine.ts"() {
     "use strict";
-    import_electron21 = require("electron");
-    import_node_fs10 = __toESM(require("node:fs"));
+    import_electron20 = require("electron");
+    import_node_fs11 = __toESM(require("node:fs"));
     import_node_path16 = __toESM(require("node:path"));
-    import_node_crypto6 = require("node:crypto");
-    import_node_child_process2 = require("node:child_process");
+    import_node_crypto7 = require("node:crypto");
+    import_node_child_process4 = require("node:child_process");
     init_ffmpeg();
     init_preferences();
     init_paths();
+    init_gdigrab();
+    init_win32();
     session = null;
     worker2 = null;
     pendingStart = null;
@@ -36028,656 +36651,14 @@ var init_engine = __esm({
     lastWorkerInfo = null;
     cameraProc = null;
     lastCameraPath = null;
+    gdiMode = false;
+    pointerTimer = null;
+    pointerSamples = [];
+    pointerStartedAt = 0;
   }
 });
-
-// electron/recording/exportVideo.ts
-async function exportEditedVideo(req) {
-  const dest = req.dest ?? import_node_path18.default.join(import_electron23.app.getPath("videos"), `Reflecto_${Date.now()}.mp4`);
-  const args = ["-y", "-ss", String(req.trimStart), "-to", String(req.trimEnd), "-i", req.src];
-  const filters = [];
-  let last = "0:v";
-  if (req.crop && req.crop.width > 2 && req.crop.height > 2) {
-    filters.push(`[${last}]crop=${even(req.crop.width)}:${even(req.crop.height)}:${Math.round(req.crop.x)}:${Math.round(req.crop.y)}[c]`);
-    last = "c";
-  }
-  req.masks.forEach((mask, i) => {
-    const tag = `m${i}`;
-    const x = Math.round(mask.x), y = Math.round(mask.y);
-    const w = even(mask.width), h = even(mask.height);
-    if (mask.type === "blur") {
-      filters.push(`[${last}]split[b${i}s][b${i}k]`);
-      filters.push(`[b${i}s]crop=${w}:${h}:${x}:${y},boxblur=8:1[${tag}b]`);
-      filters.push(`[b${i}k][${tag}b]overlay=${x}:${y}[${tag}]`);
-    } else {
-      filters.push(`[${last}]split[p${i}s][p${i}k]`);
-      filters.push(`[p${i}s]crop=${w}:${h}:${x}:${y},scale=iw/16:ih/16,scale=${w}:${h}:flags=neighbor[${tag}p]`);
-      filters.push(`[p${i}k][${tag}p]overlay=${x}:${y}[${tag}]`);
-    }
-    last = tag;
-  });
-  if (filters.length) {
-    args.push("-filter_complex", filters.join(";"), "-map", `[${last}]`);
-  } else {
-    args.push("-map", "0:v");
-  }
-  args.push("-map", "0:a?", "-c:v", "libx264", "-preset", "medium", "-crf", String(req.crf), "-r", String(req.fps), "-c:a", "aac", "-movflags", "+faststart", dest);
-  await runFfmpeg(args);
-  return dest;
-}
-var import_electron23, import_node_path18;
-var init_exportVideo = __esm({
-  "electron/recording/exportVideo.ts"() {
-    "use strict";
-    import_electron23 = require("electron");
-    import_node_path18 = __toESM(require("node:path"));
-    init_ffmpeg();
-  }
-});
-
-// electron/recording/e2e.ts
-var e2e_exports = {};
-__export(e2e_exports, {
-  runRecordingE2E: () => runRecordingE2E
-});
-function sleep2(ms) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-function probe(file) {
-  return new Promise((resolve) => {
-    const proc = (0, import_node_child_process3.spawn)(resolveFfmpeg(), ["-i", file], { stdio: ["ignore", "pipe", "pipe"] });
-    let out = "";
-    proc.stderr.on("data", (d) => {
-      out += String(d);
-    });
-    proc.on("close", () => resolve(out));
-    proc.on("error", (err) => resolve(String(err)));
-  });
-}
-function extractStreamLine(probeText, kind) {
-  const line = probeText.split(/\r?\n/).find((l) => l.includes(`Stream #`) && l.includes(`${kind}:`));
-  return line?.trim() ?? null;
-}
-async function recordClip(options, ms) {
-  await startSession(options);
-  await sleep2(ms);
-  const out = await stopSession(true);
-  return {
-    path: out,
-    size: out && import_node_fs11.default.existsSync(out) ? import_node_fs11.default.statSync(out).size : 0,
-    worker: lastCaptureWorkerInfo(),
-    probe: out ? await probe(out) : ""
-  };
-}
-async function runRecordingE2E() {
-  const reportPath = import_node_path19.default.join(import_electron24.app.getPath("userData"), "recording-e2e.json");
-  const report = { startedAt: (/* @__PURE__ */ new Date()).toISOString() };
-  try {
-    const screens = await import_electron24.desktopCapturer.getSources({ types: ["screen"], thumbnailSize: { width: 16, height: 16 } });
-    report.screens = screens.map((s) => ({ id: s.id, name: s.name, display_id: s.display_id }));
-    if (!screens[0]) throw new Error("desktopCapturer returned no screens");
-    await startSession({
-      source: { type: "display", sourceId: screens[0].id },
-      systemAudio: true,
-      microphone: null,
-      camera: null,
-      fps: 30
-    });
-    report.displayWorker = lastCaptureWorkerInfo();
-    report.started = true;
-    await sleep2(1600);
-    await pauseSession();
-    report.paused = true;
-    await sleep2(400);
-    await resumeSession();
-    report.resumed = true;
-    await sleep2(900);
-    const out = await stopSession(true);
-    report.savedPath = out;
-    if (!out || !import_node_fs11.default.existsSync(out)) throw new Error("stopSession did not write a file");
-    report.size = import_node_fs11.default.statSync(out).size;
-    report.probe = await probe(out);
-    report.videoStream = extractStreamLine(String(report.probe), "Video");
-    report.audioStream = extractStreamLine(String(report.probe), "Audio");
-    const masked = import_node_path19.default.join(import_electron24.app.getPath("userData"), "recordings", "e2e-masked.mp4");
-    const exported = await exportEditedVideo({
-      src: out,
-      dest: masked,
-      trimStart: 0,
-      trimEnd: 1.8,
-      crop: null,
-      masks: [
-        { type: "blur", x: 20, y: 20, width: 160, height: 120 },
-        { type: "pixelate", x: 200, y: 40, width: 120, height: 80 }
-      ],
-      fps: 30,
-      crf: 23
-    });
-    report.maskedPath = exported;
-    report.maskedSize = import_node_fs11.default.existsSync(exported) ? import_node_fs11.default.statSync(exported).size : 0;
-    report.maskedProbe = await probe(exported);
-    report.maskedDurationLine = String(report.maskedProbe).split(/\r?\n/).find((l) => l.includes("Duration:"));
-    const primary = import_electron24.screen.getPrimaryDisplay();
-    const areaRect = {
-      x: primary.bounds.x + 80,
-      y: primary.bounds.y + 80,
-      width: 480,
-      height: 270
-    };
-    const area = await recordClip({
-      source: { type: "area", rect: areaRect, displayId: primary.id, sourceId: screens[0].id },
-      systemAudio: false,
-      fps: 24
-    }, 1100);
-    report.area = {
-      requested: areaRect,
-      path: area.path,
-      size: area.size,
-      worker: area.worker,
-      videoStream: extractStreamLine(area.probe, "Video")
-    };
-    const windows = await import_electron24.desktopCapturer.getSources({ types: ["window"], thumbnailSize: { width: 16, height: 16 } });
-    const winSrc = windows.find((w) => w.name && !/reflecto/i.test(w.name));
-    report.windowCandidates = windows.slice(0, 8).map((w) => ({ id: w.id, name: w.name }));
-    if (winSrc) {
-      try {
-        const winClip = await recordClip({
-          source: { type: "window", sourceId: winSrc.id, title: winSrc.name },
-          systemAudio: false,
-          fps: 24
-        }, 1100);
-        report.window = {
-          sourceId: winSrc.id,
-          title: winSrc.name,
-          path: winClip.path,
-          size: winClip.size,
-          worker: winClip.worker,
-          videoStream: extractStreamLine(winClip.probe, "Video")
-        };
-      } catch (err) {
-        report.window = { sourceId: winSrc.id, title: winSrc.name, error: String(err) };
-      }
-    } else {
-      report.window = { skipped: "no window sources" };
-    }
-    const devices = await refreshMediaDevices();
-    report.devices = devices;
-    const mic = devices.find((d) => d.kind === "audio");
-    const cam = devices.find((d) => d.kind === "video");
-    const { listDshowDevices: listDshowDevices2, even: even2 } = await Promise.resolve().then(() => (init_ffmpeg(), ffmpeg_exports));
-    const dshow = await listDshowDevices2();
-    report.dshowDevices = dshow;
-    const micId = mic?.id || (dshow.some((d) => d.kind === "audio") ? "default" : null);
-    const camId = cam?.id || (dshow.some((d) => d.kind === "video") ? "default" : null);
-    if (micId) {
-      try {
-        const micClip = await recordClip({
-          source: { type: "display", sourceId: screens[0].id },
-          systemAudio: false,
-          microphone: micId,
-          fps: 24
-        }, 1100);
-        report.microphone = {
-          id: micId,
-          label: mic?.label || "default",
-          path: micClip.path,
-          size: micClip.size,
-          worker: micClip.worker,
-          audioStream: extractStreamLine(micClip.probe, "Audio")
-        };
-      } catch (err) {
-        report.microphone = { id: micId, error: String(err) };
-      }
-    } else {
-      report.microphone = { skipped: "no audioinput device enumerated" };
-    }
-    if (camId) {
-      try {
-        const camClip = await recordClip({
-          source: { type: "display", sourceId: screens[0].id },
-          systemAudio: false,
-          camera: camId,
-          fps: 24
-        }, 1200);
-        report.camera = {
-          id: camId,
-          label: cam?.label || "default",
-          path: camClip.path,
-          size: camClip.size,
-          worker: camClip.worker,
-          sidecar: lastCameraSidecar(),
-          videoStream: extractStreamLine(camClip.probe, "Video")
-        };
-      } catch (err) {
-        report.camera = { id: camId, error: String(err), sidecar: lastCameraSidecar() };
-      }
-    } else {
-      report.camera = { skipped: "no videoinput device enumerated" };
-    }
-    const scale = primary.scaleFactor;
-    const expectedW = even2(areaRect.width * scale);
-    const expectedH = even2(areaRect.height * scale);
-    const areaOk = Number(report.area.size) > 1024;
-    const areaWorker = report.area.worker;
-    const areaSizeOk = areaWorker?.width === expectedW && areaWorker?.height === expectedH;
-    report.expectedAreaPixels = { width: expectedW, height: expectedH, scaleFactor: scale };
-    report.ok = Number(report.size) > 1024 && Number(report.maskedSize) > 1024 && areaOk && Boolean(areaSizeOk);
-    report.areaSizeOk = areaSizeOk;
-  } catch (err) {
-    report.ok = false;
-    report.error = err instanceof Error ? err.stack || err.message : String(err);
-  }
-  report.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
-  import_node_fs11.default.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-  console.log("[Reflecto:e2e]", reportPath);
-  console.log("[Reflecto:e2e]", JSON.stringify(report, null, 2));
-  return reportPath;
-}
-var import_electron24, import_node_fs11, import_node_path19, import_node_child_process3;
-var init_e2e = __esm({
-  "electron/recording/e2e.ts"() {
-    "use strict";
-    import_electron24 = require("electron");
-    import_node_fs11 = __toESM(require("node:fs"));
-    import_node_path19 = __toESM(require("node:path"));
-    import_node_child_process3 = require("node:child_process");
-    init_engine();
-    init_exportVideo();
-    init_ffmpeg();
-  }
-});
-
-// electron/main.ts
-var import_electron25 = require("electron");
-var import_node_path20 = __toESM(require("node:path"));
-var import_node_fs12 = __toESM(require("node:fs"));
-init_tray();
-
-// electron/shortcuts.ts
-var import_electron2 = require("electron");
-init_preferences();
-var Action = /* @__PURE__ */ ((Action2) => {
-  Action2[Action2["region"] = 1] = "region";
-  Action2[Action2["fullscreen"] = 2] = "fullscreen";
-  Action2[Action2["window"] = 3] = "window";
-  Action2[Action2["ocr"] = 4] = "ocr";
-  Action2[Action2["colorPicker"] = 5] = "colorPicker";
-  Action2[Action2["recording"] = 6] = "recording";
-  Action2[Action2["recordingOptions"] = 7] = "recordingOptions";
-  Action2[Action2["mediaGallery"] = 10] = "mediaGallery";
-  Action2[Action2["restoreLastCapture"] = 11] = "restoreLastCapture";
-  Action2[Action2["pinLastCapture"] = 12] = "pinLastCapture";
-  Action2[Action2["openImage"] = 13] = "openImage";
-  Action2[Action2["openSettings"] = 14] = "openSettings";
-  Action2[Action2["unpinAll"] = 16] = "unpinAll";
-  Action2[Action2["previousRegion"] = 20] = "previousRegion";
-  Action2[Action2["timedRegion"] = 21] = "timedRegion";
-  Action2[Action2["regionCopy"] = 22] = "regionCopy";
-  Action2[Action2["regionSave"] = 23] = "regionSave";
-  Action2[Action2["regionEdit"] = 24] = "regionEdit";
-  Action2[Action2["regionPin"] = 25] = "regionPin";
-  Action2[Action2["ocrSingleLine"] = 30] = "ocrSingleLine";
-  Action2[Action2["recordArea"] = 40] = "recordArea";
-  Action2[Action2["stopRecording"] = 41] = "stopRecording";
-  Action2[Action2["pauseRecording"] = 42] = "pauseRecording";
-  Action2[Action2["restartRecording"] = 43] = "restartRecording";
-  Action2[Action2["discardRecording"] = 44] = "discardRecording";
-  Action2[Action2["togglePreviews"] = 50] = "togglePreviews";
-  Action2[Action2["savePreviews"] = 51] = "savePreviews";
-  Action2[Action2["closePreviews"] = 52] = "closePreviews";
-  return Action2;
-})(Action || {});
-var VK = {
-  A: 65,
-  C: 67,
-  B: 66,
-  H: 72,
-  L: 76,
-  O: 79,
-  P: 80,
-  R: 82,
-  S: 83,
-  T: 84,
-  V: 86,
-  X: 88,
-  Z: 90,
-  Digit1: 49,
-  Digit2: 50,
-  Digit3: 51,
-  Digit4: 52,
-  Digit5: 53,
-  Digit0: 48,
-  Space: 32,
-  Delete: 46,
-  Esc: 27,
-  Return: 13,
-  Minus: 189,
-  Equal: 187
-};
-var MOD_ALT = 1;
-var MOD_CTRL = 2;
-var MOD_SHIFT = 4;
-var MOD_WIN = 8;
-function toAccelerator(s) {
-  const parts = [];
-  if (s.modifiers & MOD_CTRL) parts.push("Control");
-  if (s.modifiers & MOD_ALT) parts.push("Alt");
-  if (s.modifiers & MOD_SHIFT) parts.push("Shift");
-  if (s.modifiers & MOD_WIN) parts.push("Super");
-  parts.push(vkName(s.keyCode));
-  return parts.join("+");
-}
-function vkName(vk) {
-  if (vk >= 65 && vk <= 90) return String.fromCharCode(vk);
-  if (vk >= 48 && vk <= 57) return String.fromCharCode(vk);
-  const map = {
-    [VK.Space]: "Space",
-    [VK.Delete]: "Delete",
-    [VK.Esc]: "Esc",
-    [VK.Return]: "Return",
-    [VK.Minus]: "-",
-    [VK.Equal]: "="
-  };
-  return map[vk] ?? `Key${vk}`;
-}
-function displayString(s) {
-  const parts = [];
-  if (s.modifiers & MOD_CTRL) parts.push("Ctrl");
-  if (s.modifiers & MOD_ALT) parts.push("Alt");
-  if (s.modifiers & MOD_SHIFT) parts.push("Shift");
-  if (s.modifiers & MOD_WIN) parts.push("Win");
-  parts.push(vkName(s.keyCode));
-  return parts.join("+");
-}
-function defaultShortcut(action) {
-  switch (action) {
-    case 1 /* region */:
-      return { keyCode: VK.Digit4, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
-    case 2 /* fullscreen */:
-      return { keyCode: VK.Digit3, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
-    case 4 /* ocr */:
-      return { keyCode: VK.O, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
-    case 5 /* colorPicker */:
-      return { keyCode: VK.C, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
-    case 6 /* recording */:
-      return { keyCode: VK.Digit2, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
-    case 7 /* recordingOptions */:
-      return { keyCode: VK.Digit5, modifiers: MOD_SHIFT | MOD_CTRL, enabled: true };
-    default:
-      return null;
-  }
-}
-function effectiveShortcut(action) {
-  const stored = getPref("shortcuts")[String(action)];
-  return stored ?? defaultShortcut(action);
-}
-var handlers = /* @__PURE__ */ new Map();
-var registeredAccels = [];
-function onShortcut(action, handler) {
-  handlers.set(action, handler);
-}
-function registerShortcuts() {
-  unregisterShortcuts();
-  for (const [action, handler] of handlers) {
-    const s = effectiveShortcut(action);
-    if (!s || !s.enabled) continue;
-    const accel = toAccelerator(s);
-    try {
-      const ok = import_electron2.globalShortcut.register(accel, handler);
-      if (ok) registeredAccels.push(accel);
-      else console.warn(`[Reflecto] accelerator in use: ${accel} (action ${action})`);
-    } catch (e) {
-      console.warn(`[Reflecto] failed to register ${accel} for action ${action}:`, e);
-    }
-  }
-}
-function unregisterShortcuts() {
-  for (const accel of registeredAccels) {
-    try {
-      import_electron2.globalShortcut.unregister(accel);
-    } catch {
-    }
-  }
-  registeredAccels.length = 0;
-}
-function setShortcutBinding(action, shortcut) {
-  const current = { ...getPref("shortcuts") };
-  current[String(action)] = shortcut;
-  setPref("shortcuts", current);
-  registerShortcuts();
-}
-
-// electron/main.ts
-init_preferences();
-init_regionSelection();
-init_orchestrator();
-
-// electron/updater.ts
-var import_electron18 = require("electron");
-var import_electron_updater = __toESM(require_main2());
-var import_auto_launch = __toESM(require_dist3());
-function initUpdater() {
-  if (import_electron18.app.isPackaged) {
-    import_electron_updater.autoUpdater.autoDownload = false;
-    import_electron_updater.autoUpdater.on("update-available", (info) => {
-      const { emitBus: emitBus2 } = (init_bus(), __toCommonJS(bus_exports));
-      emitBus2("updater:available", { version: info.version });
-    });
-    import_electron_updater.autoUpdater.checkForUpdates().catch((e) => console.warn("[Reflecto] updater:", e));
-  }
-}
-var autoLaunch = process.platform === "win32" ? new import_auto_launch.default({ name: "Reflecto" }) : null;
-function setLaunchAtLogin(enabled) {
-  if (autoLaunch) {
-    if (enabled) void autoLaunch.enable().catch(() => {
-    });
-    else void autoLaunch.disable().catch(() => {
-    });
-  } else {
-    import_electron18.app.setLoginItemSettings({ openAtLogin: enabled });
-  }
-}
-async function getLaunchAtLogin() {
-  if (autoLaunch) {
-    try {
-      return await autoLaunch.isEnabled();
-    } catch {
-      return false;
-    }
-  }
-  return import_electron18.app.getLoginItemSettings().openAtLogin;
-}
-
-// electron/main.ts
-init_deck();
-init_pin();
-init_store();
-init_bus();
-
-// electron/settings/window.ts
-var import_electron19 = require("electron");
-var import_node_path13 = __toESM(require("node:path"));
-init_preferences();
-init_paths();
-var settingsWin = null;
-function openSettingsWindow(section) {
-  if (settingsWin && !settingsWin.isDestroyed()) {
-    settingsWin.focus();
-    if (section) settingsWin.webContents.send("settings:section", section);
-    return;
-  }
-  settingsWin = new import_electron19.BrowserWindow({
-    width: 720,
-    height: 560,
-    minWidth: 640,
-    minHeight: 480,
-    show: false,
-    title: "Reflecto Settings",
-    backgroundColor: "#1e1e1e",
-    webPreferences: {
-      preload: preloadPath(),
-      contextIsolation: true
-    }
-  });
-  settingsWin.setMenuBarVisibility(false);
-  const devURL = process.env.VITE_DEV_SERVER_URL;
-  if (devURL) settingsWin.loadURL(`${devURL}/src/entries/settings.html`);
-  else settingsWin.loadFile(import_node_path13.default.join(__dirname, "../dist/src/entries/settings.html"));
-  settingsWin.once("ready-to-show", () => {
-    settingsWin?.show();
-    if (section) settingsWin?.webContents.send("settings:section", section);
-  });
-  settingsWin.on("closed", () => {
-    settingsWin = null;
-  });
-}
-function registerSettingsIpc() {
-  import_electron19.ipcMain.handle("settings:snapshot", async () => {
-    const prefs = { ...defaultPreferences, ...loadPreferences().store };
-    const shortcuts = {};
-    for (const action of Object.values(Action).filter((v) => typeof v === "number")) {
-      const s = effectiveShortcut(action);
-      shortcuts[String(action)] = s ? { label: displayString(s), enabled: s.enabled } : null;
-    }
-    return {
-      prefs,
-      shortcuts,
-      launchAtLogin: await getLaunchAtLogin(),
-      defaults: Object.fromEntries(
-        Object.values(Action).filter((v) => typeof v === "number").map((a) => {
-          const d = defaultShortcut(a);
-          return [String(a), d ? displayString(d) : null];
-        })
-      )
-    };
-  });
-  import_electron19.ipcMain.handle("settings:setPref", (_e, key, value) => {
-    setPref(key, value);
-    return getPref(key);
-  });
-  import_electron19.ipcMain.handle("settings:setLaunchAtLogin", async (_e, enabled) => {
-    setLaunchAtLogin(enabled);
-    return getLaunchAtLogin();
-  });
-  import_electron19.ipcMain.handle("settings:resetOverlay", () => {
-    setPref("overlayCardSize", "small");
-    setPref("overlayEdgeMargin", 20);
-    setPref("overlayPosition", "bottomRight");
-    setPref("overlayDismissDelay", 5);
-    setPref("overlayToolLayout", "");
-    setPref("overlayAlwaysShowActions", false);
-    return true;
-  });
-  import_electron19.ipcMain.handle("settings:reregisterShortcuts", () => {
-    registerShortcuts();
-    return true;
-  });
-  import_electron19.ipcMain.handle("settings:setShortcut", (_e, action, shortcut) => {
-    setShortcutBinding(action, shortcut);
-    return true;
-  });
-  import_electron19.ipcMain.handle("settings:r2Test", async () => {
-    const { testR2Connection: testR2Connection2 } = await Promise.resolve().then(() => (init_r2(), r2_exports));
-    await testR2Connection2();
-    return true;
-  });
-}
-
-// electron/gallery/window.ts
-var import_electron20 = require("electron");
-var import_node_path14 = __toESM(require("node:path"));
-var import_node_fs8 = __toESM(require("node:fs"));
-init_store();
-init_deck();
-init_videoPresenter();
-init_annotatePresenter();
-init_paths();
-var galleryWin = null;
-function openGalleryWindow() {
-  if (galleryWin && !galleryWin.isDestroyed()) {
-    galleryWin.focus();
-    galleryWin.webContents.send("gallery:refresh");
-    return;
-  }
-  galleryWin = new import_electron20.BrowserWindow({
-    width: 960,
-    height: 640,
-    minWidth: 720,
-    minHeight: 480,
-    show: false,
-    title: "Media Gallery",
-    backgroundColor: "#1e1e1e",
-    webPreferences: {
-      preload: preloadPath(),
-      contextIsolation: true
-    }
-  });
-  galleryWin.setMenuBarVisibility(false);
-  const devURL = process.env.VITE_DEV_SERVER_URL;
-  if (devURL) galleryWin.loadURL(`${devURL}/src/entries/gallery.html`);
-  else galleryWin.loadFile(import_node_path14.default.join(__dirname, "../dist/src/entries/gallery.html"));
-  galleryWin.once("ready-to-show", () => galleryWin?.show());
-  galleryWin.on("closed", () => {
-    galleryWin = null;
-  });
-}
-function registerGalleryIpc() {
-  import_electron20.ipcMain.handle("gallery:list", (_e, filter) => {
-    let records = HistoryStore.shared.records;
-    if (filter?.kind === "screenshot" || filter?.kind === "recording") {
-      records = records.filter((r) => r.kind === filter.kind);
-    }
-    if (filter?.query) {
-      const q = filter.query.toLowerCase();
-      records = records.filter((r) => r.filename.toLowerCase().includes(q));
-    }
-    return records.map((r) => {
-      const filePath = HistoryStore.shared.displayURLForRecord(r);
-      return {
-        id: r.id,
-        filename: r.filename,
-        kind: r.kind,
-        createdAt: r.createdAt,
-        width: r.pixelWidth,
-        height: r.pixelHeight,
-        path: filePath,
-        thumbnail: decodeThumbnail(filePath, 240),
-        shareURL: r.shareURL ?? null,
-        exists: import_node_fs8.default.existsSync(filePath)
-      };
-    });
-  });
-  import_electron20.ipcMain.handle("gallery:open", (_e, filePath) => {
-    if (!import_node_fs8.default.existsSync(filePath)) return;
-    const ext = import_node_path14.default.extname(filePath).toLowerCase();
-    if (ext === ".mp4" || ext === ".mov" || ext === ".webm") openVideoEditor(filePath);
-    else if (/\.(png|jpe?g|webp|gif)$/i.test(ext)) openAnnotateEditor(filePath);
-    else showOnDeck(filePath);
-  });
-  import_electron20.ipcMain.handle("gallery:delete", (_e, id) => {
-    const record = HistoryStore.shared.records.find((r) => r.id === id);
-    if (record) HistoryStore.shared.deleteRecord(record);
-    return true;
-  });
-}
 
 // electron/recording/bar.ts
-var import_electron22 = require("electron");
-var import_node_path17 = __toESM(require("node:path"));
-init_preferences();
-init_paths();
-init_countdown();
-init_regionSelection();
-init_deck();
-init_store();
-init_toast();
-init_videoPresenter();
-init_engine();
-init_orchestrator();
-var barWin = null;
-var ui = "idle";
-var optionsMode = false;
-var tickTimer = null;
 async function showRecordingBar(showOptions = false) {
   optionsMode = showOptions;
   ensureBar();
@@ -36688,7 +36669,7 @@ async function showRecordingBar(showOptions = false) {
 }
 function ensureBar() {
   if (barWin && !barWin.isDestroyed()) return;
-  barWin = new import_electron22.BrowserWindow({
+  barWin = new import_electron21.BrowserWindow({
     width: 760,
     height: 96,
     show: false,
@@ -36713,7 +36694,7 @@ function ensureBar() {
 }
 function positionBar() {
   if (!barWin || barWin.isDestroyed()) return;
-  const { workArea } = import_electron22.screen.getDisplayNearestPoint(import_electron22.screen.getCursorScreenPoint());
+  const { workArea } = import_electron21.screen.getDisplayNearestPoint(import_electron21.screen.getCursorScreenPoint());
   const width = 760;
   const height = ui === "idle" ? 96 : 52;
   const x = Math.round(workArea.x + workArea.width / 2 - width / 2);
@@ -36753,6 +36734,7 @@ async function beginRecording(source) {
       microphone: getPref("recordingMicrophone") || null,
       systemAudio: getPref("recordingSystemAudio"),
       showCursor: getPref("recordingShowCursor"),
+      cursorStyle: getPref("recordingCursorStyle"),
       camera: getPref("recordingCamera") || null,
       fps: getPref("recordingFps")
     });
@@ -36804,45 +36786,45 @@ function stopTicker() {
   tickTimer = null;
 }
 function registerRecordingIpc() {
-  import_electron22.ipcMain.on("recording:start", () => void beginRecording({ type: "display" }));
-  import_electron22.ipcMain.on(
+  import_electron21.ipcMain.on("recording:start", () => void beginRecording({ type: "display" }));
+  import_electron21.ipcMain.on(
     "recording:startDisplay",
     (_e, sourceId, displayId) => void beginRecording({ type: "display", sourceId, displayId })
   );
-  import_electron22.ipcMain.on(
+  import_electron21.ipcMain.on(
     "recording:startWindow",
     (_e, sourceId, title) => void beginRecording({ type: "window", sourceId, title })
   );
-  import_electron22.ipcMain.on("recording:startArea", () => startAreaRecordingFromBar());
-  import_electron22.ipcMain.on("recording:stop", () => void finishRecording(true));
-  import_electron22.ipcMain.on("recording:discard", () => void finishRecording(false));
-  import_electron22.ipcMain.on("recording:pause", () => {
+  import_electron21.ipcMain.on("recording:startArea", () => startAreaRecordingFromBar());
+  import_electron21.ipcMain.on("recording:stop", () => void finishRecording(true));
+  import_electron21.ipcMain.on("recording:discard", () => void finishRecording(false));
+  import_electron21.ipcMain.on("recording:pause", () => {
     void pauseSession().then(() => {
       ui = "paused";
       push();
     });
   });
-  import_electron22.ipcMain.on("recording:resume", () => {
+  import_electron21.ipcMain.on("recording:resume", () => {
     void resumeSession().then(() => {
       ui = "recording";
       push();
     });
   });
-  import_electron22.ipcMain.on("recording:restart", () => {
+  import_electron21.ipcMain.on("recording:restart", () => {
     void finishRecording(false).then(() => beginRecording({ type: "display" }));
   });
-  import_electron22.ipcMain.on("recording:hide", () => barWin?.hide());
-  import_electron22.ipcMain.on("recording:setOptionsMode", (_e, v) => {
+  import_electron21.ipcMain.on("recording:hide", () => barWin?.hide());
+  import_electron21.ipcMain.on("recording:setOptionsMode", (_e, v) => {
     optionsMode = v;
     push();
   });
-  import_electron22.ipcMain.on("recording:worker-event", (_e, kind, payload) => handleWorkerEvent(kind, payload));
-  import_electron22.ipcMain.handle("recording:save-blob", (_e, bytes) => {
+  import_electron21.ipcMain.on("recording:worker-event", (_e, kind, payload) => handleWorkerEvent(kind, payload));
+  import_electron21.ipcMain.handle("recording:save-blob", (_e, bytes) => {
     takeBlob(Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes));
     return true;
   });
-  import_electron22.ipcMain.handle("recording:listScreens", async () => {
-    const sources = await import_electron22.desktopCapturer.getSources({
+  import_electron21.ipcMain.handle("recording:listScreens", async () => {
+    const sources = await import_electron21.desktopCapturer.getSources({
       types: ["screen"],
       thumbnailSize: { width: 320, height: 180 }
     });
@@ -36853,21 +36835,21 @@ function registerRecordingIpc() {
       thumbnail: s.thumbnail.toDataURL()
     }));
   });
-  import_electron22.ipcMain.handle("recording:listWindows", async () => {
-    const sources = await import_electron22.desktopCapturer.getSources({
+  import_electron21.ipcMain.handle("recording:listWindows", async () => {
+    const sources = await import_electron21.desktopCapturer.getSources({
       types: ["window"],
       thumbnailSize: { width: 240, height: 135 },
       fetchWindowIcons: true
     });
     return sources.filter((s) => s.name && !/reflecto/i.test(s.name)).map((s) => ({ id: s.id, name: s.name, thumbnail: s.thumbnail.toDataURL() }));
   });
-  import_electron22.ipcMain.handle("recording:listDevices", async () => {
+  import_electron21.ipcMain.handle("recording:listDevices", async () => {
     const chromium = await refreshMediaDevices();
     if (chromium.length) return chromium;
     const { listDshowDevices: listDshowDevices2 } = await Promise.resolve().then(() => (init_ffmpeg(), ffmpeg_exports));
     return listDshowDevices2();
   });
-  import_electron22.ipcMain.on("capturebar:action", (_e, kind) => {
+  import_electron21.ipcMain.on("capturebar:action", (_e, kind) => {
     barWin?.hide();
     if (kind === "region") void startRegionSelection();
     else void performCapture({ kind });
@@ -36890,30 +36872,808 @@ async function recordingPauseToggle() {
     push();
   }
 }
+var import_electron21, import_node_path17, barWin, ui, optionsMode, tickTimer;
+var init_bar = __esm({
+  "electron/recording/bar.ts"() {
+    "use strict";
+    import_electron21 = require("electron");
+    import_node_path17 = __toESM(require("node:path"));
+    init_preferences();
+    init_paths();
+    init_countdown();
+    init_regionSelection();
+    init_deck();
+    init_store();
+    init_toast();
+    init_videoPresenter();
+    init_engine();
+    init_orchestrator();
+    barWin = null;
+    ui = "idle";
+    optionsMode = false;
+    tickTimer = null;
+  }
+});
+
+// electron/onboarding/window.ts
+function shouldPresentOnboarding() {
+  return getPref("onboardingSeenVersion") === 0;
+}
+function markOnboardingSeen() {
+  setPref("onboardingSeenVersion", CURRENT);
+}
+function openOnboardingWindow() {
+  if (win && !win.isDestroyed()) {
+    win.focus();
+    return;
+  }
+  win = new import_electron22.BrowserWindow({
+    width: 560,
+    height: 620,
+    show: false,
+    title: "Welcome to Reflecto",
+    backgroundColor: "#1e1e1e",
+    webPreferences: { preload: preloadPath(), contextIsolation: true }
+  });
+  win.setMenuBarVisibility(false);
+  const devURL = process.env.VITE_DEV_SERVER_URL;
+  if (devURL) win.loadURL(`${devURL}/src/entries/onboarding.html`);
+  else win.loadFile(import_node_path18.default.join(__dirname, "../dist/src/entries/onboarding.html"));
+  win.once("ready-to-show", () => win?.show());
+  win.on("closed", () => {
+    win = null;
+  });
+}
+function registerOnboardingIpc() {
+  import_electron22.ipcMain.handle("onboarding:complete", (_e, openBar) => {
+    markOnboardingSeen();
+    win?.close();
+    if (openBar) void showRecordingBar(false);
+    return { seenVersion: getPref("onboardingSeenVersion") };
+  });
+  import_electron22.ipcMain.handle("onboarding:status", () => ({
+    seenVersion: getPref("onboardingSeenVersion"),
+    shouldPresent: shouldPresentOnboarding()
+  }));
+}
+var import_electron22, import_node_path18, CURRENT, win;
+var init_window = __esm({
+  "electron/onboarding/window.ts"() {
+    "use strict";
+    import_electron22 = require("electron");
+    import_node_path18 = __toESM(require("node:path"));
+    init_preferences();
+    init_paths();
+    init_bar();
+    CURRENT = 2;
+    win = null;
+  }
+});
+
+// electron/recording/exportVideo.ts
+function clampSpeed(n) {
+  const v = Math.round(n * 100) / 100;
+  return Math.min(8, Math.max(0.25, v));
+}
+function atempoChain(speed) {
+  const parts = [];
+  let s = speed;
+  while (s > 2.0001) {
+    parts.push("atempo=2.0");
+    s /= 2;
+  }
+  while (s < 0.5 - 1e-6) {
+    parts.push("atempo=0.5");
+    s /= 0.5;
+  }
+  parts.push(`atempo=${s.toFixed(4)}`);
+  return parts.join(",");
+}
+async function exportEditedVideo(req) {
+  const dest = req.dest ?? import_node_path21.default.join(import_electron25.app.getPath("videos"), `Reflecto_${Date.now()}.mp4`);
+  const speed = clampSpeed(req.speed ?? 1);
+  const args = ["-y", "-ss", String(req.trimStart), "-to", String(req.trimEnd), "-i", req.src];
+  const filters = [];
+  let last = "0:v";
+  if (req.crop && req.crop.width > 2 && req.crop.height > 2) {
+    filters.push(`[${last}]crop=${even(req.crop.width)}:${even(req.crop.height)}:${Math.round(req.crop.x)}:${Math.round(req.crop.y)}[c]`);
+    last = "c";
+  }
+  req.masks.forEach((mask, i) => {
+    const tag = `m${i}`;
+    if (mask.coverage === "full") {
+      if (mask.type === "blur") {
+        filters.push(`[${last}]boxblur=8:1[${tag}]`);
+      } else {
+        filters.push(`[${last}]scale=iw/16:ih/16,scale=iw*16:ih*16:flags=neighbor[${tag}]`);
+      }
+      last = tag;
+      return;
+    }
+    const x = Math.round(mask.x), y = Math.round(mask.y);
+    const w = even(mask.width), h = even(mask.height);
+    if (mask.type === "blur") {
+      filters.push(`[${last}]split[b${i}s][b${i}k]`);
+      filters.push(`[b${i}s]crop=${w}:${h}:${x}:${y},boxblur=8:1[${tag}b]`);
+      filters.push(`[b${i}k][${tag}b]overlay=${x}:${y}[${tag}]`);
+    } else {
+      filters.push(`[${last}]split[p${i}s][p${i}k]`);
+      filters.push(`[p${i}s]crop=${w}:${h}:${x}:${y},scale=iw/16:ih/16,scale=${w}:${h}:flags=neighbor[${tag}p]`);
+      filters.push(`[p${i}k][${tag}p]overlay=${x}:${y}[${tag}]`);
+    }
+    last = tag;
+  });
+  if (Math.abs(speed - 1) > 1e-3) {
+    filters.push(`[${last}]setpts=PTS/${speed}[sp]`);
+    last = "sp";
+  }
+  if (filters.length) {
+    args.push("-filter_complex", filters.join(";"), "-map", `[${last}]`);
+  } else {
+    args.push("-map", "0:v");
+  }
+  if (Math.abs(speed - 1) > 1e-3) {
+    args.push("-filter:a", atempoChain(speed), "-map", "0:a?");
+  } else {
+    args.push("-map", "0:a?");
+  }
+  args.push("-c:v", "libx264", "-preset", "medium", "-crf", String(req.crf), "-r", String(req.fps), "-c:a", "aac", "-movflags", "+faststart", dest);
+  await runFfmpeg(args);
+  return dest;
+}
+var import_electron25, import_node_path21;
+var init_exportVideo = __esm({
+  "electron/recording/exportVideo.ts"() {
+    "use strict";
+    import_electron25 = require("electron");
+    import_node_path21 = __toESM(require("node:path"));
+    init_ffmpeg();
+  }
+});
+
+// electron/recording/e2e.ts
+var e2e_exports = {};
+__export(e2e_exports, {
+  runRecordingE2E: () => runRecordingE2E
+});
+function sleep2(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+function probe(file) {
+  return new Promise((resolve) => {
+    const proc2 = (0, import_node_child_process5.spawn)(resolveFfmpeg(), ["-i", file], { stdio: ["ignore", "pipe", "pipe"] });
+    let out = "";
+    proc2.stderr.on("data", (d) => {
+      out += String(d);
+    });
+    proc2.on("close", () => resolve(out));
+    proc2.on("error", (err) => resolve(String(err)));
+  });
+}
+function extractStreamLine(probeText, kind) {
+  const line = probeText.split(/\r?\n/).find((l) => l.includes("Stream #") && l.includes(`${kind}:`));
+  return line?.trim() ?? null;
+}
+function extractDuration(probeText) {
+  const m = probeText.match(/Duration:\s*(\d+:\d+:\d+\.\d+)/);
+  return m?.[1] ?? null;
+}
+function extractSize(probeText) {
+  const line = extractStreamLine(probeText, "Video") || "";
+  const m = line.match(/(\d{2,5})x(\d{2,5})/);
+  return m ? { width: Number(m[1]), height: Number(m[2]) } : null;
+}
+async function recordClip(options, ms) {
+  await startSession(options);
+  await sleep2(ms);
+  const out = await stopSession(true);
+  return {
+    path: out,
+    size: out && import_node_fs13.default.existsSync(out) ? import_node_fs13.default.statSync(out).size : 0,
+    worker: lastCaptureWorkerInfo(),
+    gdi: lastGdiInfo(),
+    probe: out ? await probe(out) : ""
+  };
+}
+function fixtureWindow(bounds, title) {
+  const win2 = new import_electron26.BrowserWindow({
+    ...bounds,
+    show: false,
+    frame: true,
+    skipTaskbar: false,
+    backgroundColor: "#cc3344",
+    webPreferences: { contextIsolation: true },
+    title
+  });
+  return win2;
+}
+async function runRecordingE2E() {
+  const reportPath = import_node_path22.default.join(import_electron26.app.getPath("userData"), "recording-e2e.json");
+  const report = { startedAt: (/* @__PURE__ */ new Date()).toISOString() };
+  try {
+    const screens = await import_electron26.desktopCapturer.getSources({ types: ["screen"], thumbnailSize: { width: 16, height: 16 } });
+    report.screens = screens.map((s) => ({ id: s.id, name: s.name, display_id: s.display_id }));
+    if (!screens[0]) throw new Error("desktopCapturer returned no screens");
+    await startSession({
+      source: { type: "display", sourceId: screens[0].id },
+      systemAudio: true,
+      microphone: null,
+      camera: null,
+      fps: 30
+    });
+    report.displayWorker = lastCaptureWorkerInfo();
+    report.started = true;
+    await sleep2(1600);
+    await pauseSession();
+    report.paused = true;
+    await sleep2(400);
+    await resumeSession();
+    report.resumed = true;
+    await sleep2(900);
+    const out = await stopSession(true);
+    report.savedPath = out;
+    if (!out || !import_node_fs13.default.existsSync(out)) throw new Error("stopSession did not write a file");
+    report.size = import_node_fs13.default.statSync(out).size;
+    report.probe = await probe(out);
+    report.videoStream = extractStreamLine(String(report.probe), "Video");
+    report.audioStream = extractStreamLine(String(report.probe), "Audio");
+    const maskedCrop = import_node_path22.default.join(import_electron26.app.getPath("userData"), "recordings", "e2e-masked-crop-2x.mp4");
+    const exportedCrop = await exportEditedVideo({
+      src: out,
+      dest: maskedCrop,
+      trimStart: 0,
+      trimEnd: 1.8,
+      crop: null,
+      masks: [{ type: "blur", x: 20, y: 20, width: 160, height: 120, coverage: "crop" }],
+      fps: 30,
+      crf: 23,
+      speed: 2
+    });
+    report.maskedCrop2x = {
+      path: exportedCrop,
+      size: import_node_fs13.default.existsSync(exportedCrop) ? import_node_fs13.default.statSync(exportedCrop).size : 0,
+      duration: extractDuration(await probe(exportedCrop)),
+      video: extractStreamLine(await probe(exportedCrop), "Video")
+    };
+    const maskedFull = import_node_path22.default.join(import_electron26.app.getPath("userData"), "recordings", "e2e-masked-full-0.5x.mp4");
+    const exportedFull = await exportEditedVideo({
+      src: out,
+      dest: maskedFull,
+      trimStart: 0,
+      trimEnd: 1.8,
+      crop: null,
+      masks: [{ type: "pixelate", x: 0, y: 0, width: 10, height: 10, coverage: "full" }],
+      fps: 30,
+      crf: 23,
+      speed: 0.5
+    });
+    report.maskedFull05x = {
+      path: exportedFull,
+      size: import_node_fs13.default.existsSync(exportedFull) ? import_node_fs13.default.statSync(exportedFull).size : 0,
+      duration: extractDuration(await probe(exportedFull)),
+      video: extractStreamLine(await probe(exportedFull), "Video")
+    };
+    const primary = import_electron26.screen.getPrimaryDisplay();
+    const areaRect = {
+      x: primary.bounds.x + 80,
+      y: primary.bounds.y + 80,
+      width: 480,
+      height: 270
+    };
+    const area = await recordClip({
+      source: { type: "area", rect: areaRect, displayId: primary.id, sourceId: screens[0].id },
+      systemAudio: false,
+      fps: 24
+    }, 1100);
+    report.area = {
+      requested: areaRect,
+      path: area.path,
+      size: area.size,
+      worker: area.worker,
+      videoStream: extractStreamLine(area.probe, "Video")
+    };
+    const cursorOff = await recordClip({
+      source: { type: "display", sourceId: screens[0].id },
+      showCursor: false,
+      cursorStyle: "hidden",
+      fps: 24
+    }, 1400);
+    report.cursorHidden = {
+      path: cursorOff.path,
+      size: cursorOff.size,
+      gdiArgs: cursorOff.gdi?.args,
+      duration: extractDuration(cursorOff.probe),
+      video: extractStreamLine(cursorOff.probe, "Video"),
+      drawMouse: cursorOff.gdi?.args.includes("0") && cursorOff.gdi.args.includes("-draw_mouse")
+    };
+    const cursorOn = await recordClip({
+      source: { type: "display", sourceId: screens[0].id },
+      showCursor: true,
+      cursorStyle: "recorded",
+      fps: 24
+    }, 1200);
+    report.cursorRecorded = {
+      path: cursorOn.path,
+      size: cursorOn.size,
+      duration: extractDuration(cursorOn.probe),
+      engine: cursorOn.gdi ? "gdigrab" : "chromium",
+      video: extractStreamLine(cursorOn.probe, "Video")
+    };
+    try {
+      const normal = fixtureWindow({ x: 120, y: 80, width: 640, height: 400 }, "Reflecto E2E Normal");
+      await normal.loadURL("data:text/html,<body style='background:#c33;margin:0'><h1>normal</h1></body>");
+      normal.show();
+      await sleep2(400);
+      const normalHwnd = nativeHwnd(normal);
+      const normalExpected = getWindowRect(normalHwnd);
+      const normalClip = await recordClip({
+        source: { type: "window", sourceId: `window:${normalHwnd}:0`, title: "Reflecto E2E Normal" },
+        showCursor: false,
+        fps: 24
+      }, 1300);
+      report.windowNormal = {
+        hwnd: normalHwnd,
+        expected: normalExpected,
+        gdiExpected: lastGdiInfo()?.expected,
+        path: normalClip.path,
+        size: normalClip.size,
+        output: extractSize(normalClip.probe),
+        video: extractStreamLine(normalClip.probe, "Video")
+      };
+      const maxWin = fixtureWindow({ x: 80, y: 40, width: 700, height: 500 }, "Reflecto E2E Max");
+      await maxWin.loadURL("data:text/html,<body style='background:#36c;margin:0'><h1>max</h1></body>");
+      maxWin.show();
+      maxWin.maximize();
+      await sleep2(500);
+      const maxHwnd = nativeHwnd(maxWin);
+      const maxExpected = getWindowRect(maxHwnd);
+      const maxClip = await recordClip({
+        source: { type: "window", sourceId: `window:${maxHwnd}:0`, title: "Reflecto E2E Max" },
+        showCursor: false,
+        fps: 24
+      }, 1300);
+      report.windowMaximized = {
+        hwnd: maxHwnd,
+        expected: maxExpected,
+        output: extractSize(maxClip.probe),
+        path: maxClip.path,
+        size: maxClip.size,
+        video: extractStreamLine(maxClip.probe, "Video")
+      };
+      const occ = fixtureWindow({ x: 160, y: 120, width: 520, height: 360 }, "Reflecto E2E Occluded");
+      await occ.loadURL("data:text/html,<body style='background:#3c6;margin:0'><h1>occluded</h1></body>");
+      occ.show();
+      await sleep2(300);
+      const cover = fixtureWindow({ x: 180, y: 140, width: 480, height: 320 }, "Reflecto E2E Cover");
+      await cover.loadURL("data:text/html,<body style='background:#111;margin:0'><h1>cover</h1></body>");
+      cover.setAlwaysOnTop(true);
+      cover.show();
+      await sleep2(300);
+      const occHwnd = nativeHwnd(occ);
+      const occExpected = getWindowRect(occHwnd);
+      const occClip = await recordClip({
+        source: { type: "window", sourceId: `window:${occHwnd}:0`, title: "Reflecto E2E Occluded" },
+        showCursor: false,
+        fps: 24
+      }, 1300);
+      report.windowOccluded = {
+        hwnd: occHwnd,
+        expected: occExpected,
+        output: extractSize(occClip.probe),
+        path: occClip.path,
+        size: occClip.size,
+        video: extractStreamLine(occClip.probe, "Video"),
+        note: "gdigrab desktop-crop records pixels on screen, so an occluder is visible. Windows has no ScreenCaptureKit-style independent occluded framebuffer."
+      };
+      cover.destroy();
+      occ.destroy();
+      maxWin.destroy();
+      normal.destroy();
+    } catch (err) {
+      report.windowError = err instanceof Error ? err.stack || err.message : String(err);
+    }
+    const devices = await refreshMediaDevices();
+    report.devices = devices;
+    const mic = devices.find((d) => d.kind === "audio");
+    const cam = devices.find((d) => d.kind === "video");
+    const { listDshowDevices: listDshowDevices2, even: even2 } = await Promise.resolve().then(() => (init_ffmpeg(), ffmpeg_exports));
+    const dshow = await listDshowDevices2();
+    report.dshowDevices = dshow;
+    const micId = mic?.id || (dshow.some((d) => d.kind === "audio") ? "default" : null);
+    const camId = cam?.id || (dshow.some((d) => d.kind === "video") ? "default" : null);
+    if (micId) {
+      try {
+        const micClip = await recordClip({
+          source: { type: "display", sourceId: screens[0].id },
+          systemAudio: false,
+          microphone: micId,
+          fps: 24
+        }, 1100);
+        report.microphone = {
+          id: micId,
+          label: mic?.label || "default",
+          path: micClip.path,
+          size: micClip.size,
+          worker: micClip.worker,
+          audioStream: extractStreamLine(micClip.probe, "Audio")
+        };
+      } catch (err) {
+        report.microphone = { id: micId, error: String(err) };
+      }
+    } else {
+      report.microphone = { skipped: "no audioinput device enumerated" };
+    }
+    if (camId) {
+      try {
+        const camClip = await recordClip({
+          source: { type: "display", sourceId: screens[0].id },
+          systemAudio: false,
+          camera: camId,
+          fps: 24
+        }, 3200);
+        const side2 = lastCameraSidecar();
+        const sideProbe = side2?.path ? await probe(side2.path) : "";
+        report.camera = {
+          id: camId,
+          label: cam?.label || "default",
+          path: camClip.path,
+          size: camClip.size,
+          worker: camClip.worker,
+          sidecar: side2,
+          sidecarDuration: extractDuration(sideProbe),
+          sidecarVideo: extractStreamLine(sideProbe, "Video"),
+          sidecarProbe: sideProbe
+        };
+      } catch (err) {
+        report.camera = { id: camId, error: String(err), sidecar: lastCameraSidecar() };
+      }
+    } else {
+      report.camera = { skipped: "no videoinput device enumerated" };
+    }
+    const scale = primary.scaleFactor;
+    const expectedW = even2(areaRect.width * scale);
+    const expectedH = even2(areaRect.height * scale);
+    const areaOk = Number(report.area.size) > 1024;
+    const areaWorker = report.area.worker;
+    const areaSizeOk = areaWorker?.width === expectedW && areaWorker?.height === expectedH;
+    const side = report.camera || {};
+    report.expectedAreaPixels = { width: expectedW, height: expectedH, scaleFactor: scale };
+    report.ok = Number(report.size) > 1024 && Number(report.maskedCrop2x.size) > 1024 && Number(report.maskedFull05x.size) > 1024 && areaOk && Boolean(areaSizeOk) && Number(side.sidecar?.size) > 2048 && Boolean(side.sidecarDuration && side.sidecarDuration !== "00:00:00.00");
+    report.areaSizeOk = areaSizeOk;
+  } catch (err) {
+    report.ok = false;
+    report.error = err instanceof Error ? err.stack || err.message : String(err);
+  }
+  report.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
+  import_node_fs13.default.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  console.log("[Reflecto:e2e]", reportPath);
+  console.log("[Reflecto:e2e]", JSON.stringify(report, null, 2));
+  return reportPath;
+}
+var import_electron26, import_node_fs13, import_node_path22, import_node_child_process5;
+var init_e2e = __esm({
+  "electron/recording/e2e.ts"() {
+    "use strict";
+    import_electron26 = require("electron");
+    import_node_fs13 = __toESM(require("node:fs"));
+    import_node_path22 = __toESM(require("node:path"));
+    import_node_child_process5 = require("node:child_process");
+    init_engine();
+    init_exportVideo();
+    init_ffmpeg();
+    init_win32();
+  }
+});
+
+// electron/e2e/appE2E.ts
+var appE2E_exports = {};
+__export(appE2E_exports, {
+  runAppE2E: () => runAppE2E
+});
+async function runAppE2E() {
+  const reportPath = import_node_path23.default.join(import_electron27.app.getPath("userData"), "app-e2e.json");
+  const report = { startedAt: (/* @__PURE__ */ new Date()).toISOString() };
+  const desired = { keyCode: 75, modifiers: 2 | 4, enabled: true };
+  const conflictProbe = defaultShortcut(2 /* fullscreen */);
+  report.shortcutConflict = conflictProbe ? findShortcutConflict(1 /* region */, conflictProbe) : null;
+  const setOk = setShortcutBinding(14 /* openSettings */, desired);
+  report.shortcutSet = setOk;
+  const accel = toAccelerator(desired);
+  report.shortcutRegistered = import_electron27.globalShortcut.isRegistered(accel);
+  report.shortcutStored = effectiveShortcut(14 /* openSettings */);
+  setShortcutBinding(14 /* openSettings */, defaultShortcut(14 /* openSettings */));
+  const tmp = import_node_path23.default.join(import_electron27.app.getPath("userData"), "library", `e2e-gallery-${Date.now()}.png`);
+  import_node_fs14.default.mkdirSync(import_node_path23.default.dirname(tmp), { recursive: true });
+  import_node_fs14.default.writeFileSync(tmp, Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+    "base64"
+  ));
+  const rec = HistoryStore.shared.importCapture(tmp, false, "screenshot");
+  const share = "https://example.invalid/share/e2e-keep";
+  if (rec) HistoryStore.shared.setShareURL(HistoryStore.shared.urlForRecord(rec), share);
+  const fresh = rec ? HistoryStore.shared.records.find((r) => r.id === rec.id) ?? rec : null;
+  const filePath = fresh ? HistoryStore.shared.urlForRecord(fresh) : tmp;
+  report.galleryBefore = { id: fresh?.id, exists: import_node_fs14.default.existsSync(filePath), shareURL: fresh?.shareURL };
+  const del = fresh ? await HistoryStore.shared.deleteRecord(fresh) : { trashed: false, keptShare: null };
+  const after = rec ? HistoryStore.shared.records.find((r) => r.id === rec.id) : null;
+  report.galleryDelete = {
+    ...del,
+    fileExistsAfter: import_node_fs14.default.existsSync(filePath),
+    recordKept: Boolean(after),
+    shareAfter: after?.shareURL ?? null,
+    localDeleted: after?.localDeleted ?? null
+  };
+  const previous = getPref("onboardingSeenVersion");
+  setPref("onboardingSeenVersion", 0);
+  const first = shouldPresentOnboarding();
+  markOnboardingSeen();
+  const second = shouldPresentOnboarding();
+  report.onboarding = { previous, firstLaunch: first, afterMarkSeen: second, seenVersion: getPref("onboardingSeenVersion") };
+  if (previous !== 0) setPref("onboardingSeenVersion", previous);
+  report.ok = Boolean(setOk.ok) && report.shortcutRegistered === true && del.trashed === true && report.galleryDelete && report.galleryDelete.fileExistsAfter === false && report.galleryDelete.shareAfter === share && first === true && second === false;
+  report.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
+  import_node_fs14.default.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  console.log("[Reflecto:app-e2e]", JSON.stringify(report, null, 2));
+  return reportPath;
+}
+var import_node_fs14, import_node_path23, import_electron27;
+var init_appE2E = __esm({
+  "electron/e2e/appE2E.ts"() {
+    "use strict";
+    import_node_fs14 = __toESM(require("node:fs"));
+    import_node_path23 = __toESM(require("node:path"));
+    import_electron27 = require("electron");
+    init_shortcuts();
+    init_store();
+    init_preferences();
+    init_window();
+  }
+});
 
 // electron/main.ts
+var import_electron28 = require("electron");
+var import_node_path24 = __toESM(require("node:path"));
+var import_node_fs15 = __toESM(require("node:fs"));
+init_tray();
+init_shortcuts();
+init_preferences();
+init_regionSelection();
+init_orchestrator();
+
+// electron/updater.ts
+var import_electron18 = require("electron");
+var import_electron_updater = __toESM(require_main2());
+var import_auto_launch = __toESM(require_dist3());
+function initUpdater() {
+  if (import_electron18.app.isPackaged) {
+    import_electron_updater.autoUpdater.autoDownload = false;
+    import_electron_updater.autoUpdater.on("update-available", (info) => {
+      const { emitBus: emitBus2 } = (init_bus(), __toCommonJS(bus_exports));
+      emitBus2("updater:available", { version: info.version });
+    });
+    import_electron_updater.autoUpdater.checkForUpdates().catch((e) => console.warn("[Reflecto] updater:", e));
+  }
+}
+var autoLaunch = process.platform === "win32" ? new import_auto_launch.default({ name: "Reflecto" }) : null;
+function setLaunchAtLogin(enabled) {
+  if (autoLaunch) {
+    if (enabled) void autoLaunch.enable().catch(() => {
+    });
+    else void autoLaunch.disable().catch(() => {
+    });
+  } else {
+    import_electron18.app.setLoginItemSettings({ openAtLogin: enabled });
+  }
+}
+async function getLaunchAtLogin() {
+  if (autoLaunch) {
+    try {
+      return await autoLaunch.isEnabled();
+    } catch {
+      return false;
+    }
+  }
+  return import_electron18.app.getLoginItemSettings().openAtLogin;
+}
+
+// electron/main.ts
+init_deck();
+init_pin();
+init_annotatePresenter();
+init_window();
+init_store();
+init_bus();
+
+// electron/settings/window.ts
+var import_electron23 = require("electron");
+var import_node_path19 = __toESM(require("node:path"));
+init_preferences();
+init_shortcuts();
+init_paths();
+var settingsWin = null;
+function openSettingsWindow(section) {
+  if (settingsWin && !settingsWin.isDestroyed()) {
+    settingsWin.focus();
+    if (section) settingsWin.webContents.send("settings:section", section);
+    return;
+  }
+  settingsWin = new import_electron23.BrowserWindow({
+    width: 720,
+    height: 560,
+    minWidth: 640,
+    minHeight: 480,
+    show: false,
+    title: "Reflecto Settings",
+    backgroundColor: "#1e1e1e",
+    webPreferences: {
+      preload: preloadPath(),
+      contextIsolation: true
+    }
+  });
+  settingsWin.setMenuBarVisibility(false);
+  const devURL = process.env.VITE_DEV_SERVER_URL;
+  if (devURL) settingsWin.loadURL(`${devURL}/src/entries/settings.html`);
+  else settingsWin.loadFile(import_node_path19.default.join(__dirname, "../dist/src/entries/settings.html"));
+  settingsWin.once("ready-to-show", () => {
+    settingsWin?.show();
+    if (section) settingsWin?.webContents.send("settings:section", section);
+  });
+  settingsWin.on("closed", () => {
+    settingsWin = null;
+  });
+}
+function registerSettingsIpc() {
+  import_electron23.ipcMain.handle("settings:snapshot", async () => {
+    const prefs = { ...defaultPreferences, ...loadPreferences().store };
+    const shortcuts = {};
+    for (const action of Object.values(Action).filter((v) => typeof v === "number")) {
+      const s = effectiveShortcut(action);
+      shortcuts[String(action)] = s ? { label: displayString(s), enabled: s.enabled } : null;
+    }
+    return {
+      prefs,
+      shortcuts,
+      launchAtLogin: await getLaunchAtLogin(),
+      defaults: Object.fromEntries(
+        Object.values(Action).filter((v) => typeof v === "number").map((a) => {
+          const d = defaultShortcut(a);
+          return [String(a), d ? displayString(d) : null];
+        })
+      )
+    };
+  });
+  import_electron23.ipcMain.handle("settings:setPref", (_e, key, value) => {
+    setPref(key, value);
+    return getPref(key);
+  });
+  import_electron23.ipcMain.handle("settings:setLaunchAtLogin", async (_e, enabled) => {
+    setLaunchAtLogin(enabled);
+    return getLaunchAtLogin();
+  });
+  import_electron23.ipcMain.handle("settings:resetOverlay", () => {
+    setPref("overlayCardSize", "small");
+    setPref("overlayEdgeMargin", 20);
+    setPref("overlayPosition", "bottomRight");
+    setPref("overlayDismissDelay", 5);
+    setPref("overlayToolLayout", "");
+    setPref("overlayAlwaysShowActions", false);
+    return true;
+  });
+  import_electron23.ipcMain.handle("settings:reregisterShortcuts", () => {
+    registerShortcuts();
+    return true;
+  });
+  import_electron23.ipcMain.handle("settings:setShortcut", (_e, action, shortcut) => {
+    return setShortcutBinding(action, shortcut);
+  });
+  import_electron23.ipcMain.handle("settings:r2Test", async () => {
+    const { testR2Connection: testR2Connection2 } = await Promise.resolve().then(() => (init_r2(), r2_exports));
+    await testR2Connection2();
+    return true;
+  });
+}
+
+// electron/gallery/window.ts
+var import_electron24 = require("electron");
+var import_node_path20 = __toESM(require("node:path"));
+var import_node_fs12 = __toESM(require("node:fs"));
+init_store();
+init_deck();
+init_videoPresenter();
+init_annotatePresenter();
+init_paths();
+var galleryWin = null;
+function openGalleryWindow() {
+  if (galleryWin && !galleryWin.isDestroyed()) {
+    galleryWin.focus();
+    galleryWin.webContents.send("gallery:refresh");
+    return;
+  }
+  galleryWin = new import_electron24.BrowserWindow({
+    width: 960,
+    height: 640,
+    minWidth: 720,
+    minHeight: 480,
+    show: false,
+    title: "Media Gallery",
+    backgroundColor: "#1e1e1e",
+    webPreferences: {
+      preload: preloadPath(),
+      contextIsolation: true
+    }
+  });
+  galleryWin.setMenuBarVisibility(false);
+  const devURL = process.env.VITE_DEV_SERVER_URL;
+  if (devURL) galleryWin.loadURL(`${devURL}/src/entries/gallery.html`);
+  else galleryWin.loadFile(import_node_path20.default.join(__dirname, "../dist/src/entries/gallery.html"));
+  galleryWin.once("ready-to-show", () => galleryWin?.show());
+  galleryWin.on("closed", () => {
+    galleryWin = null;
+  });
+}
+function registerGalleryIpc() {
+  import_electron24.ipcMain.handle("gallery:list", (_e, filter) => {
+    let records = HistoryStore.shared.records;
+    if (filter?.kind === "screenshot" || filter?.kind === "recording") {
+      records = records.filter((r) => r.kind === filter.kind);
+    }
+    if (filter?.query) {
+      const q = filter.query.toLowerCase();
+      records = records.filter((r) => r.filename.toLowerCase().includes(q));
+    }
+    return records.map((r) => {
+      const filePath = HistoryStore.shared.displayURLForRecord(r);
+      return {
+        id: r.id,
+        filename: r.filename,
+        kind: r.kind,
+        createdAt: r.createdAt,
+        width: r.pixelWidth,
+        height: r.pixelHeight,
+        path: filePath,
+        thumbnail: decodeThumbnail(filePath, 240),
+        shareURL: r.shareURL ?? null,
+        exists: import_node_fs12.default.existsSync(filePath)
+      };
+    });
+  });
+  import_electron24.ipcMain.handle("gallery:open", (_e, filePath) => {
+    if (!import_node_fs12.default.existsSync(filePath)) return;
+    const ext = import_node_path20.default.extname(filePath).toLowerCase();
+    if (ext === ".mp4" || ext === ".mov" || ext === ".webm") openVideoEditor(filePath);
+    else if (/\.(png|jpe?g|webp|gif)$/i.test(ext)) openAnnotateEditor(filePath);
+    else showOnDeck(filePath);
+  });
+  import_electron24.ipcMain.handle("gallery:delete", async (_e, id) => {
+    const record = HistoryStore.shared.records.find((r) => r.id === id);
+    if (!record) return { trashed: false, keptShare: null };
+    return HistoryStore.shared.deleteRecord(record);
+  });
+}
+
+// electron/main.ts
+init_bar();
 init_colorPicker();
 init_windowPicker();
 init_fileActions();
-var import_node_crypto7 = require("node:crypto");
+var import_node_crypto8 = require("node:crypto");
 init_exportVideo();
 init_r2();
-init_annotatePresenter();
 var tray2 = null;
-var gotLock = import_electron25.app.requestSingleInstanceLock();
+var gotLock = import_electron28.app.requestSingleInstanceLock();
 if (!gotLock) {
-  import_electron25.app.quit();
+  import_electron28.app.quit();
 } else {
-  import_electron25.app.on("second-instance", (_e, argv) => {
+  import_electron28.app.on("second-instance", (_e, argv) => {
     const url = argv.find((a) => a.startsWith("reflecto://"));
     if (url) handleReflectoUrl(url);
   });
-  import_electron25.app.whenReady().then(async () => {
+  import_electron28.app.whenReady().then(async () => {
     loadPreferences();
     if (process.defaultApp) {
-      if (process.argv.length >= 2) import_electron25.app.setAsDefaultProtocolClient("reflecto", process.execPath, [import_node_path20.default.resolve(process.argv[1])]);
+      if (process.argv.length >= 2) import_electron28.app.setAsDefaultProtocolClient("reflecto", process.execPath, [import_node_path24.default.resolve(process.argv[1])]);
     } else {
-      import_electron25.app.setAsDefaultProtocolClient("reflecto");
+      import_electron28.app.setAsDefaultProtocolClient("reflecto");
     }
     HistoryStore.shared;
     setRegionCompleteHandler((outcome, mode, captureKind) => {
@@ -36926,18 +37686,38 @@ if (!gotLock) {
       }
     });
     registerIpc();
+    registerOnboardingIpc();
     tray2 = createTray();
     wireShortcuts();
     setCaptureHandler((kind) => handleTrayCapture(kind));
     initUpdater();
+    if (HistoryStore.shared.records.length && getPref("onboardingSeenVersion") === 0) {
+      markOnboardingSeen();
+    }
+    const isE2E = process.argv.some((a) => a.includes("e2e"));
+    if (!isE2E && shouldPresentOnboarding()) openOnboardingWindow();
     const launchUrl = process.argv.find((a) => a.startsWith("reflecto://"));
     if (launchUrl) handleReflectoUrl(launchUrl);
     if (process.argv.includes("--record-e2e")) {
       const { runRecordingE2E: runRecordingE2E2 } = await Promise.resolve().then(() => (init_e2e(), e2e_exports));
       const report = await runRecordingE2E2();
       console.log("E2E_REPORT", report);
-      import_electron25.app.exit(0);
+      import_electron28.app.exit(0);
       return;
+    }
+    if (process.argv.includes("--app-e2e")) {
+      const { runAppE2E: runAppE2E2 } = await Promise.resolve().then(() => (init_appE2E(), appE2E_exports));
+      const report = await runAppE2E2();
+      console.log("APP_E2E_REPORT", report);
+      if (!process.argv.includes("--url-e2e")) {
+        import_electron28.app.exit(0);
+        return;
+      }
+    }
+    if (process.argv.includes("--url-e2e")) {
+      const ready2 = import_node_path24.default.join(import_electron28.app.getPath("userData"), "url-e2e-ready.json");
+      import_node_fs15.default.writeFileSync(ready2, JSON.stringify({ pid: process.pid, at: (/* @__PURE__ */ new Date()).toISOString() }));
+      console.log("URL_E2E_READY", ready2);
     }
     onBusEvent((channel, payload) => {
     });
@@ -36981,7 +37761,7 @@ function handleTrayCapture(kind) {
     return;
   }
   if (kind === "quit") {
-    import_electron25.app.quit();
+    import_electron28.app.quit();
     return;
   }
   if (kind === "unpinAll") {
@@ -37037,12 +37817,12 @@ function registerIpc() {
   registerRecordingIpc();
   registerColorPickerIpc();
   registerWindowPickerIpc();
-  import_electron25.ipcMain.handle("capture:perform", (_e, req) => performCapture(req));
-  import_electron25.ipcMain.handle(
+  import_electron28.ipcMain.handle("capture:perform", (_e, req) => performCapture(req));
+  import_electron28.ipcMain.handle(
     "capture:startRegionSelection",
     (_e, allowsWindowSelection) => startRegionSelection(allowsWindowSelection)
   );
-  import_electron25.ipcMain.handle("capture:listWindows", async () => {
+  import_electron28.ipcMain.handle("capture:listWindows", async () => {
     const { desktopCapturer: desktopCapturer6 } = await import("electron");
     const sources = await desktopCapturer6.getSources({
       types: ["window"],
@@ -37056,17 +37836,17 @@ function registerIpc() {
       icon: s.appIcon?.toDataURL() ?? null
     }));
   });
-  import_electron25.ipcMain.handle("capture:windowById", async (_e, id) => {
+  import_electron28.ipcMain.handle("capture:windowById", async (_e, id) => {
     void performCapture({ kind: "window", windowId: id });
     return true;
   });
-  import_electron25.ipcMain.handle("prefs:get", () => ({ ...loadPreferences().store }));
-  import_electron25.ipcMain.handle("prefs:set", (_e, key, value) => {
+  import_electron28.ipcMain.handle("prefs:get", () => ({ ...loadPreferences().store }));
+  import_electron28.ipcMain.handle("prefs:set", (_e, key, value) => {
     setPref(key, value);
     return true;
   });
-  import_electron25.ipcMain.handle("prefs:getSingle", (_e, key) => getPref(key));
-  import_electron25.ipcMain.handle("history:recents", () => {
+  import_electron28.ipcMain.handle("prefs:getSingle", (_e, key) => getPref(key));
+  import_electron28.ipcMain.handle("history:recents", () => {
     const shots = HistoryStore.shared.recent("screenshot", 8).map((r) => ({
       filename: r.filename,
       kind: r.kind,
@@ -37081,125 +37861,157 @@ function registerIpc() {
     }));
     return [...shots, ...recs];
   });
-  import_electron25.ipcMain.handle("history:open", (_e, filePath) => {
-    if (import_node_fs12.default.existsSync(filePath)) showOnDeck(filePath);
+  import_electron28.ipcMain.handle("history:open", (_e, filePath) => {
+    if (import_node_fs15.default.existsSync(filePath)) showOnDeck(filePath);
   });
-  import_electron25.ipcMain.handle("pins:hasAny", () => hasPinnedWindows());
-  import_electron25.ipcMain.handle("pins:unpinAll", () => unpinAll());
-  import_electron25.ipcMain.handle("dialog:pickFolder", async () => {
-    const win = import_electron25.BrowserWindow.getFocusedWindow();
-    const result = await import_electron25.dialog.showOpenDialog(win ?? void 0, {
+  import_electron28.ipcMain.handle("pins:hasAny", () => hasPinnedWindows());
+  import_electron28.ipcMain.handle("pins:unpinAll", () => unpinAll());
+  import_electron28.ipcMain.handle("dialog:pickFolder", async () => {
+    const win2 = import_electron28.BrowserWindow.getFocusedWindow();
+    const result = await import_electron28.dialog.showOpenDialog(win2 ?? void 0, {
       properties: ["openDirectory", "createDirectory"]
     });
     return result.canceled ? null : result.filePaths[0];
   });
-  import_electron25.ipcMain.handle("dialog:pickSaveFile", async (_e, opts) => {
-    const win = import_electron25.BrowserWindow.getFocusedWindow();
-    const result = await import_electron25.dialog.showSaveDialog(win ?? void 0, opts);
+  import_electron28.ipcMain.handle("dialog:pickSaveFile", async (_e, opts) => {
+    const win2 = import_electron28.BrowserWindow.getFocusedWindow();
+    const result = await import_electron28.dialog.showSaveDialog(win2 ?? void 0, opts);
     return result.canceled ? null : result.filePath;
   });
-  import_electron25.ipcMain.handle("files:saveTempPNG", (_e, base64) => {
-    const file = import_node_path20.default.join(import_electron25.app.getPath("temp"), `reflecto-${Date.now()}.png`);
-    import_node_fs12.default.writeFileSync(file, Buffer.from(base64, "base64"));
+  import_electron28.ipcMain.handle("files:saveTempPNG", (_e, base64) => {
+    const file = import_node_path24.default.join(import_electron28.app.getPath("temp"), `reflecto-${Date.now()}.png`);
+    import_node_fs15.default.writeFileSync(file, Buffer.from(base64, "base64"));
     return file;
   });
-  import_electron25.ipcMain.handle("files:copyImage", (_e, dataUrl) => {
-    import_electron25.clipboard.writeImage(import_electron25.nativeImage.createFromDataURL(dataUrl));
+  import_electron28.ipcMain.handle("files:copyImage", (_e, dataUrl) => {
+    import_electron28.clipboard.writeImage(import_electron28.nativeImage.createFromDataURL(dataUrl));
     return true;
   });
-  import_electron25.ipcMain.handle("files:saveDataUrl", (_e, dataUrl) => {
+  import_electron28.ipcMain.handle("files:saveDataUrl", (_e, dataUrl) => {
     const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
-    const temp = import_node_path20.default.join(import_electron25.app.getPath("temp"), `reflecto-edit-${(0, import_node_crypto7.randomUUID)()}.png`);
-    import_node_fs12.default.writeFileSync(temp, Buffer.from(base64, "base64"));
+    const temp = import_node_path24.default.join(import_electron28.app.getPath("temp"), `reflecto-edit-${(0, import_node_crypto8.randomUUID)()}.png`);
+    import_node_fs15.default.writeFileSync(temp, Buffer.from(base64, "base64"));
     const dest = saveToDefaultLocation(temp);
     try {
-      import_node_fs12.default.unlinkSync(temp);
+      import_node_fs15.default.unlinkSync(temp);
     } catch {
     }
     return dest;
   });
-  import_electron25.ipcMain.handle("files:copyDataUrl", (_e, dataUrl) => {
+  import_electron28.ipcMain.handle("files:copyDataUrl", (_e, dataUrl) => {
     const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
-    const temp = import_node_path20.default.join(import_electron25.app.getPath("temp"), `reflecto-clip-${(0, import_node_crypto7.randomUUID)()}.png`);
-    import_node_fs12.default.writeFileSync(temp, Buffer.from(base64, "base64"));
+    const temp = import_node_path24.default.join(import_electron28.app.getPath("temp"), `reflecto-clip-${(0, import_node_crypto8.randomUUID)()}.png`);
+    import_node_fs15.default.writeFileSync(temp, Buffer.from(base64, "base64"));
     copyImageToClipboard(temp);
     return true;
   });
-  import_electron25.ipcMain.handle("files:exportDataUrl", async (_e, dataUrl) => {
-    const dest = await import_electron25.dialog.showSaveDialog({
+  import_electron28.ipcMain.handle("files:exportDataUrl", async (_e, dataUrl) => {
+    const dest = await import_electron28.dialog.showSaveDialog({
       title: "Export image",
-      defaultPath: import_node_path20.default.join(import_electron25.app.getPath("pictures"), `Reflecto_${Date.now()}.png`),
+      defaultPath: import_node_path24.default.join(import_electron28.app.getPath("pictures"), `Reflecto_${Date.now()}.png`),
       filters: [{ name: "PNG", extensions: ["png"] }, { name: "JPEG", extensions: ["jpg"] }]
     });
     if (dest.canceled || !dest.filePath) return null;
     const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
-    import_node_fs12.default.writeFileSync(dest.filePath, Buffer.from(base64, "base64"));
+    import_node_fs15.default.writeFileSync(dest.filePath, Buffer.from(base64, "base64"));
     return dest.filePath;
   });
-  import_electron25.ipcMain.handle("files:shareDataUrl", async (_e, dataUrl) => {
+  import_electron28.ipcMain.handle("files:shareDataUrl", async (_e, dataUrl) => {
     if (!isR2Configured()) {
       openSettingsWindow("sharing");
       return null;
     }
-    const temp = import_node_path20.default.join(import_electron25.app.getPath("temp"), `reflecto-share-${(0, import_node_crypto7.randomUUID)()}.png`);
-    import_node_fs12.default.writeFileSync(temp, Buffer.from(dataUrl.replace(/^data:image\/\w+;base64,/, ""), "base64"));
+    const temp = import_node_path24.default.join(import_electron28.app.getPath("temp"), `reflecto-share-${(0, import_node_crypto8.randomUUID)()}.png`);
+    import_node_fs15.default.writeFileSync(temp, Buffer.from(dataUrl.replace(/^data:image\/\w+;base64,/, ""), "base64"));
     const url = await uploadShare(temp);
-    import_electron25.clipboard.writeText(url);
+    import_electron28.clipboard.writeText(url);
     try {
-      import_node_fs12.default.unlinkSync(temp);
+      import_node_fs15.default.unlinkSync(temp);
     } catch {
     }
     return url;
   });
-  import_electron25.ipcMain.handle("video:export", async (_e, req) => {
-    const dest = await import_electron25.dialog.showSaveDialog({
+  import_electron28.ipcMain.handle("video:export", async (_e, req) => {
+    const dest = await import_electron28.dialog.showSaveDialog({
       title: "Export video",
-      defaultPath: import_node_path20.default.join(import_electron25.app.getPath("videos"), `Reflecto_${Date.now()}.mp4`),
+      defaultPath: import_node_path24.default.join(import_electron28.app.getPath("videos"), `Reflecto_${Date.now()}.mp4`),
       filters: [{ name: "MP4", extensions: ["mp4"] }]
     });
     if (dest.canceled || !dest.filePath) return null;
     return exportEditedVideo({ ...req, dest: dest.filePath });
   });
-  import_electron25.ipcMain.on("files:startDrag", (e, filePath) => {
-    e.sender.startDrag({ file: filePath, icon: import_electron25.nativeImage.createEmpty() });
+  import_electron28.ipcMain.on("files:startDrag", (e, filePath) => {
+    e.sender.startDrag({ file: filePath, icon: import_electron28.nativeImage.createEmpty() });
   });
-  import_electron25.ipcMain.handle("files:reveal", (_e, filePath) => {
-    import_electron25.shell.showItemInFolder(filePath);
+  import_electron28.ipcMain.handle("files:reveal", (_e, filePath) => {
+    import_electron28.shell.showItemInFolder(filePath);
   });
-  import_electron25.ipcMain.handle("loginItem:set", (_e, enabled) => setLaunchAtLogin(enabled));
-  import_electron25.ipcMain.handle("loginItem:get", () => getLaunchAtLogin());
-  import_electron25.ipcMain.handle("app:version", () => import_electron25.app.getVersion());
-  import_electron25.ipcMain.on("app:quit", () => import_electron25.app.quit());
-  import_electron25.ipcMain.on("tray:openSettings", () => {
+  import_electron28.ipcMain.handle("loginItem:set", (_e, enabled) => setLaunchAtLogin(enabled));
+  import_electron28.ipcMain.handle("loginItem:get", () => getLaunchAtLogin());
+  import_electron28.ipcMain.handle("app:version", () => import_electron28.app.getVersion());
+  import_electron28.ipcMain.on("app:quit", () => import_electron28.app.quit());
+  import_electron28.ipcMain.on("tray:openSettings", () => {
     dismissPopover();
     openSettingsWindow();
   });
-  import_electron25.ipcMain.on("tray:openGallery", () => {
+  import_electron28.ipcMain.on("tray:openGallery", () => {
     dismissPopover();
     openGalleryWindow();
   });
 }
-import_electron25.app.on("will-quit", () => {
+import_electron28.app.on("will-quit", () => {
   unregisterShortcuts();
 });
-import_electron25.app.on("window-all-closed", () => {
+import_electron28.app.on("window-all-closed", () => {
 });
+function appendUrlE2E(route, action) {
+  console.log(`[Reflecto:url] route=${route} action=${action}`);
+  if (!process.argv.includes("--url-e2e")) return;
+  const file = import_node_path24.default.join(import_electron28.app.getPath("userData"), "url-e2e.json");
+  let rows = [];
+  try {
+    if (import_node_fs15.default.existsSync(file)) rows = JSON.parse(import_node_fs15.default.readFileSync(file, "utf8"));
+  } catch {
+    rows = [];
+  }
+  rows.push({ at: (/* @__PURE__ */ new Date()).toISOString(), route, action });
+  import_node_fs15.default.writeFileSync(file, JSON.stringify(rows, null, 2));
+}
 function handleReflectoUrl(raw) {
   try {
     const u = new URL(raw);
     const route = `${u.hostname}${u.pathname}`.replace(/\/+$/, "").replace(/^\/+/, "");
-    if (route === "capture/region" || route === "capture/region/") void startRegionSelection();
-    else if (route === "capture/fullscreen") void performCapture({ kind: "fullscreen" });
-    else if (route === "capture/window") void performCapture({ kind: "window" });
-    else if (route === "ocr") void performCapture({ kind: "ocr" });
-    else if (route === "color-picker") void performCapture({ kind: "colorPicker" });
-    else if (route === "record") void showRecordingBar(false);
-    else if (route === "settings") openSettingsWindow();
+    if (route === "capture/region" || route === "capture/region/") {
+      appendUrlE2E(route, "startRegionSelection");
+      void startRegionSelection();
+      if (process.argv.includes("--url-e2e")) setTimeout(() => cancelRegionSelection(), 600);
+    } else if (route === "capture/fullscreen") {
+      appendUrlE2E(route, "performCapture:fullscreen");
+      void performCapture({ kind: "fullscreen" });
+    } else if (route === "capture/window") {
+      appendUrlE2E(route, "performCapture:window");
+      void performCapture({ kind: "window" });
+    } else if (route === "ocr") {
+      appendUrlE2E(route, "performCapture:ocr");
+      void performCapture({ kind: "ocr" });
+    } else if (route === "color-picker") {
+      appendUrlE2E(route, "performCapture:colorPicker");
+      void performCapture({ kind: "colorPicker" });
+    } else if (route === "record") {
+      appendUrlE2E(route, "showRecordingBar");
+      void showRecordingBar(false);
+    } else if (route === "settings") {
+      appendUrlE2E(route, "openSettingsWindow");
+      openSettingsWindow();
+    } else {
+      appendUrlE2E(route, "unhandled");
+    }
   } catch {
+    appendUrlE2E(raw, "malformed");
   }
 }
 async function openImageFromDisk() {
-  const result = await import_electron25.dialog.showOpenDialog({
+  const result = await import_electron28.dialog.showOpenDialog({
     properties: ["openFile"],
     filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "webp", "gif"] }]
   });

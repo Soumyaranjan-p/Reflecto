@@ -79,6 +79,10 @@ function finish(outcome: RegionSelectionOutcome) {
   }
 }
 
+export function cancelRegionSelection() {
+  finish({ kind: "cancelled" });
+}
+
 export function registerRegionOverlayHandlers() {
   ipcMain.handle("regionoverlay:complete", (_e, payload: RegionSelectionOutcome) => {
     if (payload.kind === "region" && payload.rect && payload.displayId != null) {

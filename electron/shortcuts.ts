@@ -172,9 +172,28 @@ export function shortcutLabel(action: Action): string | undefined {
   return s ? displayString(s) : undefined;
 }
 
-export function setShortcutBinding(action: Action, shortcut: Shortcut | null) {
+export function findShortcutConflict(action: Action, shortcut: Shortcut): Action | null {
+  const accel = toAccelerator(shortcut);
+  for (const other of Object.values(Action).filter((v) => typeof v === "number") as Action[]) {
+    if (other === action) continue;
+    const s = effectiveShortcut(other);
+    if (s && s.enabled && toAccelerator(s) === accel) return other;
+  }
+  return null;
+}
+
+export function setShortcutBinding(action: Action, shortcut: Shortcut | null): { ok: boolean; error?: string; conflict?: string } {
+  if (shortcut) {
+    const hasMod = Boolean(shortcut.modifiers & (MOD_CTRL | MOD_ALT | MOD_WIN));
+    if (!hasMod) return { ok: false, error: "Global shortcuts need Ctrl, Alt, or Win" };
+    const conflict = findShortcutConflict(action, shortcut);
+    if (conflict != null) {
+      return { ok: false, error: `Conflicts with ${ACTION_TITLE[conflict] || conflict}`, conflict: ACTION_TITLE[conflict] };
+    }
+  }
   const current = { ...getPref("shortcuts") };
   current[String(action)] = shortcut;
   setPref("shortcuts", current);
   registerShortcuts();
+  return { ok: true };
 }

@@ -4,11 +4,13 @@ import fs from "node:fs";
 import { createTray, setCaptureHandler, registerTrayIpc, dismissPopover } from "./tray";
 import { registerShortcuts, unregisterShortcuts, Action, onShortcut } from "./shortcuts";
 import { loadPreferences, getPref, setPref } from "./preferences";
-import { registerRegionOverlayHandlers, startRegionSelection, setRegionCompleteHandler } from "./overlay/regionSelection";
+import { registerRegionOverlayHandlers, startRegionSelection, setRegionCompleteHandler, cancelRegionSelection } from "./overlay/regionSelection";
 import { performCapture, type CaptureKind } from "./capture/orchestrator";
 import { initUpdater, setLaunchAtLogin, getLaunchAtLogin } from "./updater";
 import { registerDeckIpc, showOnDeck, toggleDeckVisibility, saveAll, clearAll, getLastCaptureUrl, pinItem } from "./preview/deck";
 import { registerPinIpc, unpinAll, hasPinnedWindows } from "./preview/pin";
+import { openAnnotateEditor } from "./editor/annotatePresenter";
+import { openOnboardingWindow, registerOnboardingIpc, shouldPresentOnboarding, markOnboardingSeen } from "./onboarding/window";
 import { HistoryStore } from "./history/store";
 import { onBusEvent } from "./bus";
 import { openSettingsWindow, registerSettingsIpc } from "./settings/window";
@@ -20,7 +22,6 @@ import { copyImageToClipboard, saveToDefaultLocation } from "./preview/fileActio
 import { randomUUID } from "node:crypto";
 import { exportEditedVideo } from "./recording/exportVideo";
 import { isR2Configured, uploadShare } from "./sharing/r2";
-import { openAnnotateEditor } from "./editor/annotatePresenter";
 
 /**
  * Reflecto main process — port of Sources/App/BetterShotApp.swift +
@@ -55,10 +56,16 @@ if (!gotLock) {
       }
     });
     registerIpc();
+    registerOnboardingIpc();
     tray = createTray();
     wireShortcuts();
     setCaptureHandler((kind) => handleTrayCapture(kind));
     initUpdater();
+    if (HistoryStore.shared.records.length && getPref("onboardingSeenVersion") === 0) {
+      markOnboardingSeen();
+    }
+    const isE2E = process.argv.some((a) => a.includes("e2e"));
+    if (!isE2E && shouldPresentOnboarding()) openOnboardingWindow();
     const launchUrl = process.argv.find((a) => a.startsWith("reflecto://"));
     if (launchUrl) handleReflectoUrl(launchUrl);
     if (process.argv.includes("--record-e2e")) {
@@ -67,6 +74,20 @@ if (!gotLock) {
       console.log("E2E_REPORT", report);
       app.exit(0);
       return;
+    }
+    if (process.argv.includes("--app-e2e")) {
+      const { runAppE2E } = await import("./e2e/appE2E");
+      const report = await runAppE2E();
+      console.log("APP_E2E_REPORT", report);
+      if (!process.argv.includes("--url-e2e")) {
+        app.exit(0);
+        return;
+      }
+    }
+    if (process.argv.includes("--url-e2e")) {
+      const ready = path.join(app.getPath("userData"), "url-e2e-ready.json");
+      fs.writeFileSync(ready, JSON.stringify({ pid: process.pid, at: new Date().toISOString() }));
+      console.log("URL_E2E_READY", ready);
     }
     onBusEvent((channel, payload) => {
       void channel;
@@ -316,19 +337,49 @@ app.on("window-all-closed", () => {
   // Tray app: stay alive with no windows.
 });
 
+function appendUrlE2E(route: string, action: string) {
+  console.log(`[Reflecto:url] route=${route} action=${action}`);
+  if (!process.argv.includes("--url-e2e")) return;
+  const file = path.join(app.getPath("userData"), "url-e2e.json");
+  let rows: unknown[] = [];
+  try {
+    if (fs.existsSync(file)) rows = JSON.parse(fs.readFileSync(file, "utf8")) as unknown[];
+  } catch { rows = []; }
+  rows.push({ at: new Date().toISOString(), route, action });
+  fs.writeFileSync(file, JSON.stringify(rows, null, 2));
+}
+
 function handleReflectoUrl(raw: string) {
   try {
     const u = new URL(raw);
     const route = `${u.hostname}${u.pathname}`.replace(/\/+$/, "").replace(/^\/+/, "");
-    if (route === "capture/region" || route === "capture/region/") void startRegionSelection();
-    else if (route === "capture/fullscreen") void performCapture({ kind: "fullscreen" });
-    else if (route === "capture/window") void performCapture({ kind: "window" });
-    else if (route === "ocr") void performCapture({ kind: "ocr" });
-    else if (route === "color-picker") void performCapture({ kind: "colorPicker" });
-    else if (route === "record") void showRecordingBar(false);
-    else if (route === "settings") openSettingsWindow();
+    if (route === "capture/region" || route === "capture/region/") {
+      appendUrlE2E(route, "startRegionSelection");
+      void startRegionSelection();
+      if (process.argv.includes("--url-e2e")) setTimeout(() => cancelRegionSelection(), 600);
+    } else if (route === "capture/fullscreen") {
+      appendUrlE2E(route, "performCapture:fullscreen");
+      void performCapture({ kind: "fullscreen" });
+    } else if (route === "capture/window") {
+      appendUrlE2E(route, "performCapture:window");
+      void performCapture({ kind: "window" });
+    } else if (route === "ocr") {
+      appendUrlE2E(route, "performCapture:ocr");
+      void performCapture({ kind: "ocr" });
+    } else if (route === "color-picker") {
+      appendUrlE2E(route, "performCapture:colorPicker");
+      void performCapture({ kind: "colorPicker" });
+    } else if (route === "record") {
+      appendUrlE2E(route, "showRecordingBar");
+      void showRecordingBar(false);
+    } else if (route === "settings") {
+      appendUrlE2E(route, "openSettingsWindow");
+      openSettingsWindow();
+    } else {
+      appendUrlE2E(route, "unhandled");
+    }
   } catch {
-    /* ignore malformed URLs */
+    appendUrlE2E(raw, "malformed");
   }
 }
 

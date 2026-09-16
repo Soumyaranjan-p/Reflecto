@@ -1,4 +1,4 @@
-import { app, desktopCapturer, screen } from "electron";
+import { app, BrowserWindow, desktopCapturer, screen } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
@@ -10,10 +10,12 @@ import {
   refreshMediaDevices,
   lastCaptureWorkerInfo,
   lastCameraSidecar,
+  lastGdiInfo,
   type RecordingOptions,
 } from "./engine";
 import { exportEditedVideo } from "./exportVideo";
 import { resolveFfmpeg } from "./ffmpeg";
+import { getWindowRect, nativeHwnd } from "../win32";
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -30,8 +32,19 @@ function probe(file: string): Promise<string> {
 }
 
 function extractStreamLine(probeText: string, kind: "Video" | "Audio"): string | null {
-  const line = probeText.split(/\r?\n/).find((l) => l.includes(`Stream #`) && l.includes(`${kind}:`));
+  const line = probeText.split(/\r?\n/).find((l) => l.includes("Stream #") && l.includes(`${kind}:`));
   return line?.trim() ?? null;
+}
+
+function extractDuration(probeText: string): string | null {
+  const m = probeText.match(/Duration:\s*(\d+:\d+:\d+\.\d+)/);
+  return m?.[1] ?? null;
+}
+
+function extractSize(probeText: string): { width: number; height: number } | null {
+  const line = extractStreamLine(probeText, "Video") || "";
+  const m = line.match(/(\d{2,5})x(\d{2,5})/);
+  return m ? { width: Number(m[1]), height: Number(m[2]) } : null;
 }
 
 async function recordClip(options: RecordingOptions, ms: number) {
@@ -42,8 +55,22 @@ async function recordClip(options: RecordingOptions, ms: number) {
     path: out,
     size: out && fs.existsSync(out) ? fs.statSync(out).size : 0,
     worker: lastCaptureWorkerInfo(),
+    gdi: lastGdiInfo(),
     probe: out ? await probe(out) : "",
   };
+}
+
+function fixtureWindow(bounds: Electron.Rectangle, title: string) {
+  const win = new BrowserWindow({
+    ...bounds,
+    show: false,
+    frame: true,
+    skipTaskbar: false,
+    backgroundColor: "#cc3344",
+    webPreferences: { contextIsolation: true },
+    title,
+  });
+  return win;
 }
 
 export async function runRecordingE2E(): Promise<string> {
@@ -78,24 +105,43 @@ export async function runRecordingE2E(): Promise<string> {
     report.videoStream = extractStreamLine(String(report.probe), "Video");
     report.audioStream = extractStreamLine(String(report.probe), "Audio");
 
-    const masked = path.join(app.getPath("userData"), "recordings", "e2e-masked.mp4");
-    const exported = await exportEditedVideo({
+    const maskedCrop = path.join(app.getPath("userData"), "recordings", "e2e-masked-crop-2x.mp4");
+    const exportedCrop = await exportEditedVideo({
       src: out,
-      dest: masked,
+      dest: maskedCrop,
       trimStart: 0,
       trimEnd: 1.8,
       crop: null,
-      masks: [
-        { type: "blur", x: 20, y: 20, width: 160, height: 120 },
-        { type: "pixelate", x: 200, y: 40, width: 120, height: 80 },
-      ],
+      masks: [{ type: "blur", x: 20, y: 20, width: 160, height: 120, coverage: "crop" }],
       fps: 30,
       crf: 23,
+      speed: 2,
     });
-    report.maskedPath = exported;
-    report.maskedSize = fs.existsSync(exported) ? fs.statSync(exported).size : 0;
-    report.maskedProbe = await probe(exported);
-    report.maskedDurationLine = String(report.maskedProbe).split(/\r?\n/).find((l) => l.includes("Duration:"));
+    report.maskedCrop2x = {
+      path: exportedCrop,
+      size: fs.existsSync(exportedCrop) ? fs.statSync(exportedCrop).size : 0,
+      duration: extractDuration(await probe(exportedCrop)),
+      video: extractStreamLine(await probe(exportedCrop), "Video"),
+    };
+
+    const maskedFull = path.join(app.getPath("userData"), "recordings", "e2e-masked-full-0.5x.mp4");
+    const exportedFull = await exportEditedVideo({
+      src: out,
+      dest: maskedFull,
+      trimStart: 0,
+      trimEnd: 1.8,
+      crop: null,
+      masks: [{ type: "pixelate", x: 0, y: 0, width: 10, height: 10, coverage: "full" }],
+      fps: 30,
+      crf: 23,
+      speed: 0.5,
+    });
+    report.maskedFull05x = {
+      path: exportedFull,
+      size: fs.existsSync(exportedFull) ? fs.statSync(exportedFull).size : 0,
+      duration: extractDuration(await probe(exportedFull)),
+      video: extractStreamLine(await probe(exportedFull), "Video"),
+    };
 
     const primary = screen.getPrimaryDisplay();
     const areaRect = {
@@ -117,29 +163,109 @@ export async function runRecordingE2E(): Promise<string> {
       videoStream: extractStreamLine(area.probe, "Video"),
     };
 
-    const windows = await desktopCapturer.getSources({ types: ["window"], thumbnailSize: { width: 16, height: 16 } });
-    const winSrc = windows.find((w) => w.name && !/reflecto/i.test(w.name));
-    report.windowCandidates = windows.slice(0, 8).map((w) => ({ id: w.id, name: w.name }));
-    if (winSrc) {
-      try {
-        const winClip = await recordClip({
-          source: { type: "window", sourceId: winSrc.id, title: winSrc.name },
-          systemAudio: false,
-          fps: 24,
-        }, 1100);
-        report.window = {
-          sourceId: winSrc.id,
-          title: winSrc.name,
-          path: winClip.path,
-          size: winClip.size,
-          worker: winClip.worker,
-          videoStream: extractStreamLine(winClip.probe, "Video"),
-        };
-      } catch (err) {
-        report.window = { sourceId: winSrc.id, title: winSrc.name, error: String(err) };
-      }
-    } else {
-      report.window = { skipped: "no window sources" };
+    const cursorOff = await recordClip({
+      source: { type: "display", sourceId: screens[0].id },
+      showCursor: false,
+      cursorStyle: "hidden",
+      fps: 24,
+    }, 1400);
+    report.cursorHidden = {
+      path: cursorOff.path,
+      size: cursorOff.size,
+      gdiArgs: cursorOff.gdi?.args,
+      duration: extractDuration(cursorOff.probe),
+      video: extractStreamLine(cursorOff.probe, "Video"),
+      drawMouse: cursorOff.gdi?.args.includes("0") && cursorOff.gdi.args.includes("-draw_mouse"),
+    };
+
+    const cursorOn = await recordClip({
+      source: { type: "display", sourceId: screens[0].id },
+      showCursor: true,
+      cursorStyle: "recorded",
+      fps: 24,
+    }, 1200);
+    report.cursorRecorded = {
+      path: cursorOn.path,
+      size: cursorOn.size,
+      duration: extractDuration(cursorOn.probe),
+      engine: cursorOn.gdi ? "gdigrab" : "chromium",
+      video: extractStreamLine(cursorOn.probe, "Video"),
+    };
+
+    try {
+    const normal = fixtureWindow({ x: 120, y: 80, width: 640, height: 400 }, "Reflecto E2E Normal");
+    await normal.loadURL("data:text/html,<body style='background:#c33;margin:0'><h1>normal</h1></body>");
+    normal.show();
+    await sleep(400);
+    const normalHwnd = nativeHwnd(normal);
+    const normalExpected = getWindowRect(normalHwnd);
+    const normalClip = await recordClip({
+      source: { type: "window", sourceId: `window:${normalHwnd}:0`, title: "Reflecto E2E Normal" },
+      showCursor: false,
+      fps: 24,
+    }, 1300);
+    report.windowNormal = {
+      hwnd: normalHwnd,
+      expected: normalExpected,
+      gdiExpected: lastGdiInfo()?.expected,
+      path: normalClip.path,
+      size: normalClip.size,
+      output: extractSize(normalClip.probe),
+      video: extractStreamLine(normalClip.probe, "Video"),
+    };
+
+    const maxWin = fixtureWindow({ x: 80, y: 40, width: 700, height: 500 }, "Reflecto E2E Max");
+    await maxWin.loadURL("data:text/html,<body style='background:#36c;margin:0'><h1>max</h1></body>");
+    maxWin.show();
+    maxWin.maximize();
+    await sleep(500);
+    const maxHwnd = nativeHwnd(maxWin);
+    const maxExpected = getWindowRect(maxHwnd);
+    const maxClip = await recordClip({
+      source: { type: "window", sourceId: `window:${maxHwnd}:0`, title: "Reflecto E2E Max" },
+      showCursor: false,
+      fps: 24,
+    }, 1300);
+    report.windowMaximized = {
+      hwnd: maxHwnd,
+      expected: maxExpected,
+      output: extractSize(maxClip.probe),
+      path: maxClip.path,
+      size: maxClip.size,
+      video: extractStreamLine(maxClip.probe, "Video"),
+    };
+
+    const occ = fixtureWindow({ x: 160, y: 120, width: 520, height: 360 }, "Reflecto E2E Occluded");
+    await occ.loadURL("data:text/html,<body style='background:#3c6;margin:0'><h1>occluded</h1></body>");
+    occ.show();
+    await sleep(300);
+    const cover = fixtureWindow({ x: 180, y: 140, width: 480, height: 320 }, "Reflecto E2E Cover");
+    await cover.loadURL("data:text/html,<body style='background:#111;margin:0'><h1>cover</h1></body>");
+    cover.setAlwaysOnTop(true);
+    cover.show();
+    await sleep(300);
+    const occHwnd = nativeHwnd(occ);
+    const occExpected = getWindowRect(occHwnd);
+    const occClip = await recordClip({
+      source: { type: "window", sourceId: `window:${occHwnd}:0`, title: "Reflecto E2E Occluded" },
+      showCursor: false,
+      fps: 24,
+    }, 1300);
+    report.windowOccluded = {
+      hwnd: occHwnd,
+      expected: occExpected,
+      output: extractSize(occClip.probe),
+      path: occClip.path,
+      size: occClip.size,
+      video: extractStreamLine(occClip.probe, "Video"),
+      note: "gdigrab desktop-crop records pixels on screen, so an occluder is visible. Windows has no ScreenCaptureKit-style independent occluded framebuffer.",
+    };
+    cover.destroy();
+    occ.destroy();
+    maxWin.destroy();
+    normal.destroy();
+    } catch (err) {
+      report.windowError = err instanceof Error ? err.stack || err.message : String(err);
     }
 
     const devices = await refreshMediaDevices();
@@ -180,16 +306,19 @@ export async function runRecordingE2E(): Promise<string> {
           systemAudio: false,
           camera: camId,
           fps: 24,
-        }, 1200);
+        }, 3200);
+        const side = lastCameraSidecar();
+        const sideProbe = side?.path ? await probe(side.path) : "";
         report.camera = {
           id: camId,
           label: cam?.label || "default",
           path: camClip.path,
           size: camClip.size,
           worker: camClip.worker,
-          sidecar: lastCameraSidecar(),
-          sidecarProbe: lastCameraSidecar()?.path ? await probe(lastCameraSidecar()!.path) : null,
-          videoStream: extractStreamLine(camClip.probe, "Video"),
+          sidecar: side,
+          sidecarDuration: extractDuration(sideProbe),
+          sidecarVideo: extractStreamLine(sideProbe, "Video"),
+          sidecarProbe: sideProbe,
         };
       } catch (err) {
         report.camera = { id: camId, error: String(err), sidecar: lastCameraSidecar() };
@@ -204,8 +333,15 @@ export async function runRecordingE2E(): Promise<string> {
     const areaOk = Number((report.area as { size?: number }).size) > 1024;
     const areaWorker = (report.area as { worker?: { width?: number; height?: number } }).worker;
     const areaSizeOk = areaWorker?.width === expectedW && areaWorker?.height === expectedH;
+    const side = (report.camera as { sidecar?: { size?: number }; sidecarDuration?: string | null }) || {};
     report.expectedAreaPixels = { width: expectedW, height: expectedH, scaleFactor: scale };
-    report.ok = Number(report.size) > 1024 && Number(report.maskedSize) > 1024 && areaOk && Boolean(areaSizeOk);
+    report.ok = Number(report.size) > 1024
+      && Number((report.maskedCrop2x as { size?: number }).size) > 1024
+      && Number((report.maskedFull05x as { size?: number }).size) > 1024
+      && areaOk
+      && Boolean(areaSizeOk)
+      && Number(side.sidecar?.size) > 2048
+      && Boolean(side.sidecarDuration && side.sidecarDuration !== "00:00:00.00");
     report.areaSizeOk = areaSizeOk;
   } catch (err) {
     report.ok = false;

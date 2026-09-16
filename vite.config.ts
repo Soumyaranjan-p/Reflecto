@@ -24,6 +24,7 @@ export default defineConfig({
         captureWorker: path.resolve(__dirname, "src/entries/captureWorker.html"),
         windowPicker: path.resolve(__dirname, "src/entries/windowPicker.html"),
         beautifier: path.resolve(__dirname, "src/entries/beautifier.html"),
+        onboarding: path.resolve(__dirname, "src/entries/onboarding.html"),
       },
     },
   },

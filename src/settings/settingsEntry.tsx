@@ -437,7 +437,9 @@ function actionTitle(id: number): string {
 
 async function captureShortcut(action: number, reload: () => Promise<void>) {
   const onKey = async (e: KeyboardEvent) => {
+    if (["Control", "Shift", "Alt", "Meta"].includes(e.key)) return;
     e.preventDefault();
+    e.stopPropagation();
     window.removeEventListener("keydown", onKey, true);
     if (e.key === "Escape") {
       await window.reflecto?.settingsSetShortcut?.(action, null);
@@ -450,8 +452,15 @@ async function captureShortcut(action: number, reload: () => Promise<void>) {
     if (e.shiftKey) modifiers |= 4;
     if (e.metaKey) modifiers |= 8;
     const keyCode = e.keyCode;
-    if (!modifiers) return;
-    await window.reflecto?.settingsSetShortcut?.(action, { keyCode, modifiers, enabled: true });
+    if (!(modifiers & 11)) {
+      alert("Global shortcuts need Ctrl, Alt, or Win.");
+      window.addEventListener("keydown", onKey, true);
+      return;
+    }
+    const result = await window.reflecto?.settingsSetShortcut?.(action, { keyCode, modifiers, enabled: true }) as { ok?: boolean; error?: string } | boolean | undefined;
+    if (result && typeof result === "object" && result.ok === false) {
+      alert(result.error || "Could not set shortcut");
+    }
     await reload();
   };
   window.addEventListener("keydown", onKey, true);

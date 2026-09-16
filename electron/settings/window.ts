@@ -86,8 +86,7 @@ export function registerSettingsIpc() {
     return true;
   });
   ipcMain.handle("settings:setShortcut", (_e, action: number, shortcut: { keyCode: number; modifiers: number; enabled: boolean } | null) => {
-    setShortcutBinding(action, shortcut);
-    return true;
+    return setShortcutBinding(action, shortcut);
   });
   ipcMain.handle("settings:r2Test", async () => {
     const { testR2Connection } = await import("../sharing/r2");

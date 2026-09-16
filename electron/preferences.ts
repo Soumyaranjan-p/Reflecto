@@ -32,6 +32,8 @@ export interface ReflectoPreferences {
   recordingMicrophone: string;
   recordingSystemAudio: boolean;
   recordingShowCursor: boolean;
+  recordingCursorStyle: "recorded" | "hidden" | "dark" | "light" | "dot" | "hand";
+  recordingCursorMotion: "natural" | "smooth";
   recordingCamera: string;
   recordingFps: number;
   /** Default Look — bs_defaultBeautifierConfig */
@@ -42,6 +44,7 @@ export interface ReflectoPreferences {
   r2PublicBaseURL: string;
   r2AccessKeyID: string;
   r2SecretAccessKey: string;
+  onboardingSeenVersion: number;
 }
 
 export const defaultPreferences: ReflectoPreferences = {
@@ -68,6 +71,8 @@ export const defaultPreferences: ReflectoPreferences = {
   recordingMicrophone: "",
   recordingSystemAudio: false,
   recordingShowCursor: true,
+  recordingCursorStyle: "recorded",
+  recordingCursorMotion: "natural",
   recordingCamera: "",
   recordingFps: 30,
   defaultBeautifierConfig: { ...defaultBeautifierConfig },
@@ -76,6 +81,7 @@ export const defaultPreferences: ReflectoPreferences = {
   r2PublicBaseURL: "",
   r2AccessKeyID: "",
   r2SecretAccessKey: "",
+  onboardingSeenVersion: 0,
 };
 
 let store: Store<ReflectoPreferences> | null = null;
