@@ -156,10 +156,7 @@ function PreviewCard({ item, state }: { item: DeckItemState; state: DeckState })
           position: "absolute", inset: 0, display: "grid", placeItems: "center",
           pointerEvents: "none",
         }}>
-          <span style={{
-            fontSize: 28 * scale, color: "rgba(255,255,255,0.9)",
-            textShadow: "0 2px 4px rgba(0,0,0,0.5)",
-          }}>▶</span>
+          <PlayBadge size={28 * scale} />
         </div>
       )}
 
@@ -266,27 +263,90 @@ function ToolButton({
         border: "none",
         borderRadius: "50%",
         background: "transparent",
-        color: "#fff",
-        fontSize: 16 * scale,
-        lineHeight: 1,
         cursor: "default",
         display: "grid",
         placeItems: "center",
-        textShadow: "0 1px 2px rgba(0,0,0,0.5)",
+        padding: 0,
       }}
     >
-      {isCenter && (tool === "copy" || tool === "save") ? TOOL_TITLE[tool] : iconFor(tool)}
+      {isCenter && (tool === "copy" || tool === "save") ? TOOL_TITLE[tool] : (
+        <span style={{ display: "inline-flex", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.5))" }}>
+          {iconFor(tool, 16 * scale)}
+        </span>
+      )}
     </button>
   );
 }
 
-function iconFor(tool: OverlayTool): string {
+/* SF Symbols redrawn as inline SVG (24px grid, ~1.7px stroke, round caps).
+ * Nothing copied from BetterShot — same stroke weight/style, new paths. */
+function Stroke({ children, size }: { children: React.ReactNode; size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      {children}
+    </svg>
+  );
+}
+
+/** play.circle.fill approximation: white disc, dark glyph cutout. */
+function PlayBadge({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }}>
+      <circle cx="12" cy="12" r="10" fill="rgba(255,255,255,0.9)" />
+      <path d="M10 8.5v7l6-3.5z" fill="rgba(0,0,0,0.75)" />
+    </svg>
+  );
+}
+
+function iconFor(tool: OverlayTool, size: number): React.ReactNode {
   switch (tool) {
-    case "pin": return "📌";
-    case "dismiss": return "✕";
-    case "copy": return "⧉";
-    case "save": return "⬇";
-    case "edit": return "✎";
-    case "share": return "☁";
+    // pin.circle.fill
+    case "pin":
+      return (
+        <Stroke size={size}>
+          <circle cx="12" cy="12" r="9" fill="rgba(0,0,0,0.35)" stroke="none" />
+          <path d="M9 4.5h6M12 4.5V11M8.5 11h7l.8 3.5h-8.6zM12 14.5V19" />
+        </Stroke>
+      );
+    // xmark.circle.fill
+    case "dismiss":
+      return (
+        <Stroke size={size}>
+          <circle cx="12" cy="12" r="9" fill="rgba(0,0,0,0.35)" stroke="none" />
+          <path d="M9 9l6 6M15 9l-6 6" />
+        </Stroke>
+      );
+    // doc.on.doc
+    case "copy":
+      return (
+        <Stroke size={size}>
+          <rect x="8" y="8" width="12" height="12" rx="2.5" />
+          <path d="M16 8V6.5A2.5 2.5 0 0 0 13.5 4H6.5A2.5 2.5 0 0 0 4 6.5v7A2.5 2.5 0 0 0 6.5 16H8" />
+        </Stroke>
+      );
+    // square.and.arrow.down
+    case "save":
+      return (
+        <Stroke size={size}>
+          <path d="M12 4v10M7.5 10.5 12 15l4.5-4.5" />
+          <path d="M4 15v4.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V15" />
+        </Stroke>
+      );
+    // pencil.circle.fill
+    case "edit":
+      return (
+        <Stroke size={size}>
+          <circle cx="12" cy="12" r="9" fill="rgba(0,0,0,0.35)" stroke="none" />
+          <path d="M14.5 7.5l2 2L9 17l-2.8.8.8-2.8z" />
+        </Stroke>
+      );
+    // icloud.and.arrow.up
+    case "share":
+      return (
+        <Stroke size={size}>
+          <path d="M7 18a4 4 0 0 1-.6-7.96A5.5 5.5 0 0 1 17 8.5 4.25 4.25 0 0 1 17.5 17" />
+          <path d="M12 21v-8M9 16l3-3 3 3" />
+        </Stroke>
+      );
   }
 }

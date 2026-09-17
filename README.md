@@ -9,11 +9,11 @@ No subscription, no account, and no telemetry. Nothing leaves your PC unless you
 - **Screenshots:** region, fullscreen, window (picker), previous-region repeat, and timed region. Region selector with ghost reuse, guide lines, and eight resize handles. Multi-monitor and DPI aware, with a configurable self-timer.
 - **Private staging:** Copy is clipboard-only. Screenshots stay in private working storage until you choose Save; only explicit Save writes to your export folder.
 - **Capture deck:** up to five floating cards with Copy, Save, Pin, Edit, Dismiss, cloud Share, and drag-out. Configurable card size, corner position, edge margin, and auto-dismiss.
-- **Default Look:** No Background, solid color, or ten soft gradients (Blush, Peach, Mint, Powder Blue, Butter, Lilac, Sage, Coral, Aqua, Mauve), with padding, corners, shadow, and a screenshot border ring.
+- **Default Look:** No Background, solid color (12 presets + custom picker), or ten soft gradients (Blush, Peach, Mint, Powder Blue, Butter, Lilac, Sage, Coral, Aqua, Mauve), with padding, corners, shadow, and a screenshot border ring.
 - **3D camera:** true perspective projection of the screenshot over its background — tilt, rotate, roll, FOV, zoom, and pan.
 - **Progressive blur:** radial or directional background blur with strength, falloff, focus size/position/direction, applied to the screenshot or the whole scene.
 - **Watermark:** diagonal tiled text with text, opacity, size, angle, density, and color.
-- **Image editor:** select, rectangle, filled rectangle, ellipse, line, arrow, freehand, numbered circle, text, spotlight, pixelate, blur, and crop. Rotate handle + rotation slider, undo/redo, zoom, Copy, and Save.
+- **Image editor:** icon toolbar in BetterShot's tool order (select → blur) with filled-accent active state; select, rectangle, filled rectangle, ellipse, line, arrow, freehand, numbered circle, text (size, bold, italic, underline, left/center/right), spotlight, pixelate, blur, and crop. Rotate handle + rotation slider, undo/redo, zoom, Copy, and Save.
 - **Smart Redact:** auto-detects emails, URLs, IPs, phone numbers, credit-card numbers, JWTs, API keys, and `password:=value` secrets via Tesseract OCR and covers them with blur boxes in one undo step.
 - **Non-destructive projects:** Save writes the flat image plus a `<image>.reflecto.json` sidecar and a `<stem>.base.png` pristine source, so reopening the editor restores every shape and effect setting exactly.
 - **Screen recording:** recording bar with Start / Stop / Pause / Restart / Discard (pause writes real segments, stitched on stop). Display, area, and window sources at 30/60 fps, with microphone, system audio, a separate camera file, and cursor styles (recorded, hidden, or composited dot/hand/dark/light).
@@ -21,7 +21,7 @@ No subscription, no account, and no telemetry. Nothing leaves your PC unless you
 - **Pin windows:** keep captures floating above other apps; scroll to zoom; unpin all from the tray.
 - **Media Gallery:** browse screenshots and recordings with search and filters; open or delete from the library (deletes go via the Recycle Bin).
 - **Cloud sharing:** upload to your own Cloudflare R2 bucket (AWS SigV4). Link is copied on success.
-- **Tray-first:** lives in the system tray; left-click opens the capture panel (Region, Screen, Window, Record, OCR, Color, Gallery, Settings).
+- **Tray-first:** lives in the system tray; left-click opens the capture panel (Region, Screen, Window, Record, OCR, Color, Gallery, Settings) — 296px two-column grid with live shortcut hints, matching BetterShot's menu-bar popover metrics.
 - **Onboarding:** first-run walkthrough (welcome, permissions, shortcuts, first capture).
 - **Automation:** `reflecto://` URL scheme (`capture/region`, `capture/fullscreen`, `capture/window`, `ocr`, `color-picker`, `record`, `settings`).
 
@@ -82,8 +82,9 @@ customization lands.
 | **Default Look** | Background (none / solid / gradient), padding, corners, shadow, screenshot border |
 | **Capture Deck** | Card size, position, edge margin, auto-dismiss, always show actions |
 | **Recording** | Show cursor, frame rate |
-| **Shortcuts** | Active accelerator labels |
+| **Shortcuts** | Click-to-rerecord bindings with per-row Reset, live hints in the tray panel |
 | **Sharing** | Cloudflare R2 account ID, bucket, public base URL, access keys, test connection |
+| **About** | Version and app info |
 
 ## Project layout
 
@@ -129,6 +130,8 @@ Windows equivalents:
 | BetterShot (macOS) | Reflecto (Windows) |
 |---|---|
 | SwiftUI / AppKit | Electron + React |
+| SF Symbols icons | redrawn inline SVG set (24px grid, 1.7px stroke, round caps) |
+| SF Pro | Segoe UI Variable |
 | Menu bar popover | System tray + frameless panel |
 | ScreenCaptureKit / `screencapture` | `desktopCapturer` + region overlay |
 | Vision OCR | tesseract.js |
@@ -145,7 +148,7 @@ History lives in `library/history.json`.
 These are planned or partial relative to the macOS app:
 
 - Occlusion-safe window capture (needs a Windows Graphics Capture helper; current window capture reads desktop pixels)
-- Rich multi-style in-place text editing
+- Multi-style text beyond bold/italic/underline/align (no font-family picker yet; no caret-anchored overlay editing)
 - Zoom cues, transcription/subtitles, and teleprompter in the studio
 - In-app trash/restore (deletes currently go through the Recycle Bin)
 - Cloud share list/delete (R2 upload only for now)

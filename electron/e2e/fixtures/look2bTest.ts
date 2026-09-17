@@ -1,4 +1,6 @@
 import { renderBeautifierFromImage } from "../../../src/shared/beautifierRender";
+import { drawAnnotations } from "../../../src/editor/draw";
+import type { Annotation } from "../../../src/editor/types";
 import {
   defaultBeautifierConfig,
   normalizeBeautifierConfig,
@@ -257,6 +259,42 @@ for (let x = 0; x < borderCanvas.width; x++) {
 const ringWidth = ringEnd - ringStart;
 const [br, bg, bb] = px(borderCtx, Math.max(0, ringStart - 5), midY);
 
+// ---- 5. Text styles: underline band pixels + bold advance width.
+const textSrc = mkCanvas(200, 120);
+{
+  const c = textSrc.getContext("2d")!;
+  c.fillStyle = "#ffffff";
+  c.fillRect(0, 0, 200, 120);
+}
+const textBase: Annotation = {
+  id: "tx", tool: "text", x1: 20, y1: 20, x2: 20, y2: 20,
+  color: "#111111", stroke: 4, text: "Hi", fontSize: 28,
+};
+function renderText(ann: Annotation): CanvasRenderingContext2D {
+  const out = mkCanvas(200, 120);
+  drawAnnotations(out.getContext("2d")!, textSrc, 200, 120, [ann]);
+  return out.getContext("2d")!;
+}
+const plainCtx = renderText(textBase);
+const ulCtx = renderText({ ...textBase, underline: true });
+const darkInBand = (ctx: CanvasRenderingContext2D) => {
+  let n = 0;
+  for (let x = 18; x <= 90; x++) {
+    for (let y = 50; y <= 54; y++) {
+      const [R, G, B] = px(ctx, x, y);
+      if (R < 120 && G < 120 && B < 120) n++;
+    }
+  }
+  return n;
+};
+const ulPixels = darkInBand(ulCtx);
+const plainPixels = darkInBand(plainCtx);
+const mc = mkCanvas(4, 4).getContext("2d")!;
+mc.font = `28px "Segoe UI Variable", "Segoe UI", sans-serif`;
+const regW = mc.measureText("Hi").width;
+mc.font = `italic 700 28px "Segoe UI Variable", "Segoe UI", sans-serif`;
+const boldW = mc.measureText("Hi").width;
+
 const res = {
   camera: {
     canvasW: camCanvas.width, canvasH: camCanvas.height,
@@ -285,7 +323,12 @@ const res = {
     bgNear: [br, bg, bb],
     ok: ringWidth >= 4 && ringWidth <= 6 && ringEnd === imgStart && bb > 150 && br < 120,
   },
+  textStyle: {
+    ulPixels, plainPixels,
+    regW: Math.round(regW * 10) / 10, boldW: Math.round(boldW * 10) / 10,
+    ok: ulPixels > 20 && plainPixels === 0 && boldW > regW,
+  },
   pass: false,
 };
-res.pass = res.camera.ok && res.blur.ok && res.watermark.ok && res.border.ok;
+res.pass = res.camera.ok && res.blur.ok && res.watermark.ok && res.border.ok && res.textStyle.ok;
 (window as unknown as { __look2b: typeof res }).__look2b = res;

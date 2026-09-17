@@ -19,10 +19,10 @@ export function openSettingsWindow(section?: string) {
     return;
   }
   settingsWin = new BrowserWindow({
-    width: 720,
-    height: 560,
-    minWidth: 640,
-    minHeight: 480,
+    width: 800,
+    height: 640,
+    minWidth: 780,
+    minHeight: 620,
     show: false,
     title: "Reflecto Settings",
     backgroundColor: "#1e1e1e",

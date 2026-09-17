@@ -182,6 +182,22 @@ export interface GradientPreset {
   highlights: Array<{ x: number; y: number; opacity: number; extent: number }>;
 }
 
+/** BetterShot's 12 solid background presets (BackgroundStyle.swift values). */
+export const SOLID_PRESETS: Array<{ id: string; name: string; rgb: [number, number, number] }> = [
+  { id: "obsidian", name: "Obsidian", rgb: [5, 5, 8] },
+  { id: "chalk", name: "Chalk", rgb: [245, 245, 240] },
+  { id: "slate", name: "Slate", rgb: [43, 46, 56] },
+  { id: "ember", name: "Ember", rgb: [240, 61, 71] },
+  { id: "tangerine", name: "Tangerine", rgb: [247, 135, 41] },
+  { id: "saffron", name: "Saffron", rgb: [245, 189, 59] },
+  { id: "fern", name: "Fern", rgb: [59, 158, 92] },
+  { id: "seafoam", name: "Seafoam", rgb: [168, 230, 189] },
+  { id: "cobalt", name: "Cobalt", rgb: [41, 128, 224] },
+  { id: "iris", name: "Iris", rgb: [122, 69, 232] },
+  { id: "rose", name: "Rose", rgb: [237, 171, 161] },
+  { id: "cloud", name: "Cloud", rgb: [161, 204, 240] },
+];
+
 export const GRADIENT_PRESETS: GradientPreset[] = [
   {
     id: "soft-blush", name: "Blush",

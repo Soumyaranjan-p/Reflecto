@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "../theme/chrome.css";
+import { SOLID_PRESETS } from "../shared/beautifierTypes";
 
-type Tab = "general" | "look" | "overlay" | "recording" | "shortcuts" | "sharing";
+type Tab = "general" | "look" | "overlay" | "recording" | "shortcuts" | "sharing" | "about";
 
 const GRADIENTS = [
   ["soft-blush", "Blush"],
@@ -20,6 +21,7 @@ const GRADIENTS = [
 function SettingsApp() {
   const [tab, setTab] = useState<Tab>("general");
   const [snap, setSnap] = useState<any>(null);
+  const [capturing, setCapturing] = useState<number | null>(null);
 
   const reload = async () => {
     const s = await window.reflecto?.settingsSnapshot();
@@ -42,7 +44,7 @@ function SettingsApp() {
   return (
     <div style={{ display: "flex", height: "100vh", background: "var(--reflecto-workspace)" }}>
       <aside style={{
-        width: 180, padding: 12, borderRight: "1px solid var(--reflecto-separator)",
+        width: "var(--sidebar-width)", padding: 12, borderRight: "1px solid var(--reflecto-separator)",
         display: "flex", flexDirection: "column", gap: 4,
         background: "var(--reflecto-panel)",
       }}>
@@ -54,6 +56,7 @@ function SettingsApp() {
           ["recording", "Recording"],
           ["shortcuts", "Shortcuts"],
           ["sharing", "Sharing"],
+          ["about", "About"],
         ] as const).map(([id, label]) => (
           <button
             key={id}
@@ -173,18 +176,45 @@ function SettingsApp() {
               </select>
             </Row>
             {prefs.defaultBeautifierConfig?.style?.kind === "solid" && (
-              <Row label="Solid color">
-                <input
-                  type="color"
-                  value={rgbToHex(prefs.defaultBeautifierConfig.style.rgb)}
-                  onChange={(e) => {
-                    const cfg = { ...(prefs.defaultBeautifierConfig ?? {}) };
-                    cfg.style = { kind: "solid", rgb: hexToRgb(e.target.value) };
-                    void set("defaultBeautifierConfig", cfg);
-                  }}
-                  title="Solid background color"
-                />
-              </Row>
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 32px)", gap: 8 }}>
+                  {SOLID_PRESETS.map((p) => {
+                    const cur = prefs.defaultBeautifierConfig.style.rgb;
+                    const active = cur[0] === p.rgb[0] && cur[1] === p.rgb[1] && cur[2] === p.rgb[2];
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        title={p.name}
+                        aria-label={`Solid ${p.name}`}
+                        aria-pressed={active}
+                        onClick={() => {
+                          const cfg = { ...(prefs.defaultBeautifierConfig ?? {}) };
+                          cfg.style = { kind: "solid", rgb: [...p.rgb] as [number, number, number] };
+                          void set("defaultBeautifierConfig", cfg);
+                        }}
+                        style={{
+                          width: 32, height: 32, borderRadius: 8, padding: 0, cursor: "default",
+                          border: active ? "2px solid var(--reflecto-accent)" : "1px solid rgba(128,128,128,0.4)",
+                          background: `rgb(${p.rgb[0]},${p.rgb[1]},${p.rgb[2]})`,
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+                <Row label="Custom color">
+                  <input
+                    type="color"
+                    value={rgbToHex(prefs.defaultBeautifierConfig.style.rgb)}
+                    onChange={(e) => {
+                      const cfg = { ...(prefs.defaultBeautifierConfig ?? {}) };
+                      cfg.style = { kind: "solid", rgb: hexToRgb(e.target.value) };
+                      void set("defaultBeautifierConfig", cfg);
+                    }}
+                    title="Solid background color"
+                  />
+                </Row>
+              </>
             )}
             <Row label={`Padding (${Math.round((prefs.defaultBeautifierConfig?.padding ?? 0.08) * 100)}%)`}>
               <input
@@ -339,17 +369,33 @@ function SettingsApp() {
         {tab === "shortcuts" && (
           <Section title="Shortcuts">
             <p style={{ fontSize: 12, color: "var(--reflecto-secondary)", marginTop: 0 }}>
-              Click a binding, then press a key combination. Global shortcuts need Ctrl, Alt, or Win. Esc clears a custom binding back to default.
+              Click a binding, then press a key combination. Global shortcuts need Ctrl, Alt, or Win. Esc or Tab cancels.
             </p>
             {Object.entries(snap.shortcuts as Record<string, { label: string; enabled: boolean } | null>).map(([id, s]) => (
               <Row key={id} label={actionTitle(Number(id))}>
-                <button
-                  type="button"
-                  className="editor-button bordered"
-                  onClick={() => captureShortcut(Number(id), reload)}
-                >
-                  <kbd style={kbdStyle}>{s?.label ?? "Unassigned"}</kbd>
-                </button>
+                <span style={{ display: "flex", gap: 6 }}>
+                  <button
+                    type="button"
+                    className="editor-button bordered"
+                    onClick={() => captureShortcut(Number(id), reload, setCapturing)}
+                  >
+                    <kbd style={kbdStyle}>
+                      {capturing === Number(id) ? "Press keys…" : (s?.label ?? "Unassigned")}
+                    </kbd>
+                  </button>
+                  <button
+                    type="button"
+                    className="editor-button"
+                    title="Restore default"
+                    aria-label={`Restore default for ${actionTitle(Number(id))}`}
+                    onClick={async () => {
+                      await window.reflecto?.settingsSetShortcut?.(Number(id), null);
+                      await reload();
+                    }}
+                  >
+                    Reset
+                  </button>
+                </span>
               </Row>
             ))}
           </Section>
@@ -414,7 +460,32 @@ function SettingsApp() {
             </button>
           </Section>
         )}
+
+        {tab === "about" && (
+          <Section title="About">
+            <AboutPanel />
+          </Section>
+        )}
       </main>
+    </div>
+  );
+}
+
+function AboutPanel() {
+  const [version, setVersion] = React.useState("?");
+  React.useEffect(() => {
+    void Promise.resolve(window.reflecto?.getAppVersion?.()).then((v) => {
+      if (v) setVersion(String(v));
+    });
+  }, []);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
+      <div style={{ fontWeight: 600, fontSize: 15 }}>Reflecto for Windows</div>
+      <div style={{ color: "var(--reflecto-secondary)" }}>Version {version}</div>
+      <p style={{ color: "var(--reflecto-secondary)", fontSize: 12, margin: 0, maxWidth: 460 }}>
+        Screenshots, annotation, screen recording, and capture history. An independent
+        Windows implementation inspired by BetterShot's product behavior.
+      </p>
     </div>
   );
 }
@@ -501,17 +572,27 @@ function actionTitle(id: number): string {
   return map[id] ?? `Action ${id}`;
 }
 
-async function captureShortcut(action: number, reload: () => Promise<void>) {
+async function captureShortcut(
+  action: number,
+  reload: () => Promise<void>,
+  setCapturing: (id: number | null) => void,
+) {
+  // Click field -> "Press keys..." state -> capture -> confirm
+  // (ShortcutService recorder flow). Esc/Tab cancels without changing anything.
+  setCapturing(action);
+  const cancel = () => {
+    window.removeEventListener("keydown", onKey, true);
+    setCapturing(null);
+  };
   const onKey = async (e: KeyboardEvent) => {
     if (["Control", "Shift", "Alt", "Meta"].includes(e.key)) return;
     e.preventDefault();
     e.stopPropagation();
-    window.removeEventListener("keydown", onKey, true);
-    if (e.key === "Escape") {
-      await window.reflecto?.settingsSetShortcut?.(action, null);
-      await reload();
+    if (e.key === "Escape" || e.key === "Tab") {
+      cancel();
       return;
     }
+    window.removeEventListener("keydown", onKey, true);
     let modifiers = 0;
     if (e.altKey) modifiers |= 1;
     if (e.ctrlKey) modifiers |= 2;
@@ -527,6 +608,7 @@ async function captureShortcut(action: number, reload: () => Promise<void>) {
     if (result && typeof result === "object" && result.ok === false) {
       alert(result.error || "Could not set shortcut");
     }
+    setCapturing(null);
     await reload();
   };
   window.addEventListener("keydown", onKey, true);

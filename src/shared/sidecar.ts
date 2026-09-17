@@ -81,6 +81,10 @@ function sanitizeShape(raw: unknown): Annotation | null {
   };
   if (typeof r.text === "string") shape.text = r.text;
   if (r.fontSize !== undefined) shape.fontSize = finite(r.fontSize, 28);
+  if (r.bold !== undefined) shape.bold = r.bold === true;
+  if (r.italic !== undefined) shape.italic = r.italic === true;
+  if (r.underline !== undefined) shape.underline = r.underline === true;
+  if (r.align === "left" || r.align === "center" || r.align === "right") shape.align = r.align;
   if (r.counter !== undefined) shape.counter = Math.round(finite(r.counter, 1));
   if (r.rotation !== undefined) shape.rotation = finite(r.rotation);
   if (r.redactionStrength !== undefined) shape.redactionStrength = finite(r.redactionStrength, 0.7);

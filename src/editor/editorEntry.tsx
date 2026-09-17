@@ -6,6 +6,7 @@ import {
   defaultBeautifierConfig,
   normalizeBeautifierConfig,
   GRADIENT_PRESETS,
+  SOLID_PRESETS,
   type BeautifierConfig,
 } from "../shared/beautifierTypes";
 import { renderBeautifierFromImage } from "../shared/beautifierRender";
@@ -29,6 +30,7 @@ import {
   hitTest,
   type Handle,
 } from "./draw";
+import { TOOL_ICONS, CropIcon, SmartRedactIcon } from "./toolIcons";
 
 function fileUrl(src: string): string {
   if (!src || src.startsWith("file:") || src.startsWith("data:") || src.startsWith("http")) return src;
@@ -55,6 +57,11 @@ function EditorApp() {
   const [color, setColor] = useState(SWATCHES[1].color);
   const [stroke, setStroke] = useState(4);
   const [fontSize, setFontSize] = useState(28);
+  // New-text defaults (AnnotationEditorModel textFontSize/textIsBold/...).
+  const [textBold, setTextBold] = useState(false);
+  const [textItalic, setTextItalic] = useState(false);
+  const [textUnderline, setTextUnderline] = useState(false);
+  const [textAlign, setTextAlign] = useState<"left" | "center" | "right">("left");
   const [redactionStrength, setRedactionStrength] = useState(0.7);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [undoStack, setUndoStack] = useState<Annotation[][]>([]);
@@ -544,9 +551,30 @@ function EditorApp() {
         id: crypto.randomUUID(), tool: "text",
         x1: textDraft.x, y1: textDraft.y, x2: textDraft.x, y2: textDraft.y,
         color, stroke, text: textDraft.value, fontSize,
+        bold: textBold, italic: textItalic, underline: textUnderline, align: textAlign,
       }]);
     }
     setTextDraft(null);
+  };
+
+  // Text style controls edit the selected text shape when one is selected,
+  // else the defaults for new text (AnnotationEditorModel setters).
+  const selectedText = annotations.find((a) => a.id === selectedId && a.tool === "text") ?? null;
+  const effBold = selectedText ? !!selectedText.bold : textBold;
+  const effItalic = selectedText ? !!selectedText.italic : textItalic;
+  const effUnderline = selectedText ? !!selectedText.underline : textUnderline;
+  const effAlign = selectedText?.align ?? textAlign;
+  const effFontSize = selectedText?.fontSize ?? fontSize;
+  const setTextStyle = (patch: { bold?: boolean; italic?: boolean; underline?: boolean; align?: "left" | "center" | "right"; fontSize?: number }) => {
+    if (selectedText) {
+      pushHistory(annotations.map((a) => (a.id === selectedText.id ? { ...a, ...patch } : a)));
+      return;
+    }
+    if (patch.bold !== undefined) setTextBold(patch.bold);
+    if (patch.italic !== undefined) setTextItalic(patch.italic);
+    if (patch.underline !== undefined) setTextUnderline(patch.underline);
+    if (patch.align !== undefined) setTextAlign(patch.align);
+    if (patch.fontSize !== undefined) setFontSize(patch.fontSize);
   };
 
   const canvasStyle: React.CSSProperties = {
@@ -581,23 +609,28 @@ function EditorApp() {
           onClick={() => selectTool("crop")}
           title="Crop — click again to cancel"
           aria-label="Crop"
+          style={{ minWidth: 32, padding: "0 6px" }}
         >
-          Crop
+          <CropIcon />
         </button>
         <div className="divider-v" style={{ height: 24, margin: "0 6px" }} />
-        {TOOLS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className={`editor-button${tool === t.id ? " selected" : ""}`}
-            onClick={() => selectTool(t.id)}
-            title={`${t.help}${t.key ? ` (${t.key})` : ""}`}
-            aria-label={t.help}
-            style={{ minWidth: 32, padding: "0 7px" }}
-          >
-            {t.label}
-          </button>
-        ))}
+        {TOOLS.map((t) => {
+          const ToolIcon = TOOL_ICONS[t.id];
+          return (
+            <button
+              key={t.id}
+              type="button"
+              className={`editor-button${tool === t.id ? " selected" : ""}`}
+              onClick={() => selectTool(t.id)}
+              title={`${t.help}${t.key ? ` (${t.key})` : ""}`}
+              aria-label={t.help}
+              aria-pressed={tool === t.id}
+              style={{ minWidth: 32, padding: "0 6px" }}
+            >
+              {ToolIcon ? <ToolIcon /> : t.label}
+            </button>
+          );
+        })}
         <div className="divider-v" style={{ height: 24, margin: "0 6px" }} />
         {supportsColor(tool === "crop" ? "select" : tool) && (
           <>
@@ -623,11 +656,57 @@ function EditorApp() {
             <input type="range" min={1} max={24} value={stroke} onChange={(e) => setStroke(Number(e.target.value))} style={{ width: 90 }} />
           </label>
         )}
-        {tool === "text" && (
-          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--reflecto-secondary)" }}>
-            {fontSize}pt
-            <input type="range" min={10} max={96} value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} style={{ width: 90 }} />
-          </label>
+        {(tool === "text" || selectedText) && (
+          <>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--reflecto-secondary)" }}>
+              {effFontSize}pt
+              <input type="range" min={10} max={96} value={effFontSize} onChange={(e) => setTextStyle({ fontSize: Number(e.target.value) })} style={{ width: 90 }} />
+            </label>
+            <button
+              type="button"
+              className={`editor-button${effBold ? " selected" : ""}`}
+              onClick={() => setTextStyle({ bold: !effBold })}
+              title="Bold"
+              aria-label="Bold"
+              aria-pressed={effBold}
+              style={{ minWidth: 32, padding: "0 6px", fontWeight: 700 }}
+            >
+              B
+            </button>
+            <button
+              type="button"
+              className={`editor-button${effItalic ? " selected" : ""}`}
+              onClick={() => setTextStyle({ italic: !effItalic })}
+              title="Italic"
+              aria-label="Italic"
+              aria-pressed={effItalic}
+              style={{ minWidth: 32, padding: "0 6px", fontStyle: "italic" }}
+            >
+              I
+            </button>
+            <button
+              type="button"
+              className={`editor-button${effUnderline ? " selected" : ""}`}
+              onClick={() => setTextStyle({ underline: !effUnderline })}
+              title="Underline"
+              aria-label="Underline"
+              aria-pressed={effUnderline}
+              style={{ minWidth: 32, padding: "0 6px", textDecoration: "underline" }}
+            >
+              U
+            </button>
+            <select
+              value={effAlign}
+              onChange={(e) => setTextStyle({ align: e.target.value as "left" | "center" | "right" })}
+              style={selectStyle}
+              title="Text alignment"
+              aria-label="Text alignment"
+            >
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </>
         )}
         {isRedaction(tool === "crop" ? "select" : tool as AnnotationTool) && (
           <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--reflecto-secondary)" }}>
@@ -641,10 +720,11 @@ function EditorApp() {
           className="editor-button"
           onClick={() => void smartRedact()}
           disabled={smartBusy || !imgSize.w}
-          title="Smart Redact — auto-detect emails, cards, tokens and blur them"
+          title={smartBusy ? "Scanning for sensitive text…" : "Smart Redact — auto-detect emails, cards, tokens and blur them"}
           aria-label="Smart Redact"
+          style={{ minWidth: 32, padding: "0 6px", opacity: smartBusy ? 0.6 : 1 }}
         >
-          {smartBusy ? "Scanning…" : "Smart Redact"}
+          <SmartRedactIcon />
         </button>
         {smartMsg && (
           <span style={{ fontSize: 11, color: "var(--reflecto-secondary)", whiteSpace: "nowrap" }}>{smartMsg}</span>
@@ -699,20 +779,72 @@ function EditorApp() {
               </select>
             </label>
             {look.style.kind === "solid" && (
-              <label style={rowStyle}>
-                Color
-                <input
-                  type="color"
-                  value={`#${look.style.rgb.map((n) => n.toString(16).padStart(2, "0")).join("")}`}
-                  onChange={(e) => {
-                    const hex = e.target.value.replace("#", "");
-                    setLook({
-                      ...look,
-                      style: { kind: "solid", rgb: [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)] },
-                    });
-                  }}
-                />
-              </label>
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6, marginBottom: 10 }}>
+                  {SOLID_PRESETS.map((p) => {
+                    const active = look.style.kind === "solid" &&
+                      look.style.rgb[0] === p.rgb[0] && look.style.rgb[1] === p.rgb[1] && look.style.rgb[2] === p.rgb[2];
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        title={p.name}
+                        aria-label={`Solid ${p.name}`}
+                        aria-pressed={active}
+                        onClick={() => setLook({ ...look, style: { kind: "solid", rgb: [...p.rgb] as [number, number, number] } })}
+                        style={{
+                          aspectRatio: "1",
+                          borderRadius: 6,
+                          border: active ? "2px solid var(--reflecto-accent)" : "1px solid rgba(128,128,128,0.4)",
+                          background: `rgb(${p.rgb[0]},${p.rgb[1]},${p.rgb[2]})`,
+                          padding: 0,
+                          cursor: "default",
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+                <label style={rowStyle}>
+                  Custom
+                  <input
+                    type="color"
+                    value={`#${look.style.rgb.map((n) => n.toString(16).padStart(2, "0")).join("")}`}
+                    onChange={(e) => {
+                      const hex = e.target.value.replace("#", "");
+                      setLook({
+                        ...look,
+                        style: { kind: "solid", rgb: [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)] },
+                      });
+                    }}
+                  />
+                </label>
+              </>
+            )}
+            {look.style.kind === "gradient" && (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 6, marginBottom: 10 }}>
+                {GRADIENT_PRESETS.map((g) => {
+                  const active = look.style.kind === "gradient" && look.style.id === g.id;
+                  const stops = g.stops.map((s) => `${s.color} ${Math.round(s.at * 100)}%`).join(", ");
+                  return (
+                    <button
+                      key={g.id}
+                      type="button"
+                      title={g.name}
+                      aria-label={`Gradient ${g.name}`}
+                      aria-pressed={active}
+                      onClick={() => setLook({ ...look, style: { kind: "gradient", id: g.id } })}
+                      style={{
+                        aspectRatio: "16 / 10",
+                        borderRadius: 6,
+                        border: active ? "2px solid var(--reflecto-accent)" : "1px solid rgba(128,128,128,0.4)",
+                        background: `linear-gradient(to bottom, ${stops})`,
+                        padding: 0,
+                        cursor: "default",
+                      }}
+                    />
+                  );
+                })}
+              </div>
             )}
             <Slider
               label="Padding"
@@ -945,7 +1077,7 @@ function EditorApp() {
                 position: "absolute",
                 left: canvasRef.current.getBoundingClientRect().left - (viewRef.current?.getBoundingClientRect().left ?? 0) + textDraft.x * zoom,
                 top: canvasRef.current.getBoundingClientRect().top - (viewRef.current?.getBoundingClientRect().top ?? 0) + textDraft.y * zoom,
-                font: `${fontSize * zoom}px Segoe UI`,
+                font: `${textItalic ? "italic " : ""}${textBold ? "700 " : ""}${fontSize * zoom}px "Segoe UI Variable", "Segoe UI", sans-serif`,
                 color,
                 background: "rgba(0,0,0,0.35)",
                 border: "1px solid #007aff",

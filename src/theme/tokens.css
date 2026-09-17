@@ -12,6 +12,7 @@
 :root {
   /* Colors — EditorChrome.swift */
   --reflecto-accent: #007aff;            /* NSColor.systemBlue */
+  --reflecto-selection: #3182ed;         /* AnnoTheme.selectionStroke (NOT the accent) */
   --reflecto-destructive: #ff3b30;       /* NSColor.systemRed */
   --reflecto-destructive-light: #d92c26; /* systemRed blended 25% black (light surfaces) */
 
@@ -43,11 +44,12 @@
   --toolbar-height: 48px;
   --footer-height: 52px;
   --inspector-width: 300px;
+  --sidebar-width: 196px;   /* PreferencesView ideal 196 (min 184, max 240) */
   --studio-inspector-width: 360px;
   --popover-width: 340px;
 
   /* Type */
-  --font-system: "Segoe UI", "Segoe UI Variable", system-ui, sans-serif;
+  --font-system: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
   --font-mono: "Cascadia Mono", Consolas, monospace;
   --size-caption: 10px;
   --size-control: 12px;

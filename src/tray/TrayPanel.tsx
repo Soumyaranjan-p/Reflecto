@@ -21,6 +21,8 @@ export interface TrayPanelProps {
   updateAvailable?: string;
   recents: RecentRecord[];
   hasPinnedWindows: boolean;
+  /** Live shortcut labels keyed by shortcut Action id ("1".."7"); null hides the hint. */
+  hints?: Record<string, string | null>;
   onCapture: (kind: "region" | "fullscreen" | "window" | "ocr" | "colorPicker") => void;
   onRecordingOptions: () => void;
   onOpenGallery: () => void;
@@ -29,6 +31,9 @@ export interface TrayPanelProps {
   onOpenSettings: () => void;
   onQuit: () => void;
 }
+
+const hint = (hints: TrayPanelProps["hints"], id: string): string | undefined =>
+  (hints?.[id] ?? null) || undefined;
 
 export function TrayPanel(props: TrayPanelProps) {
   const [visible, setVisible] = useState(false);
@@ -69,17 +74,17 @@ export function TrayPanel(props: TrayPanelProps) {
         <div style={{ width: "var(--tray-panel-width)", padding: "12px 12px 10px", display: "flex", flexDirection: "column", gap: 10 }}>
           {/* capture grid — 2 columns, gap 6 */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--tray-grid-gap)" }}>
-            <TrayGridButton title="Region" icon={<RegionIcon />} shortcut="Ctrl+Shift+4" onClick={() => props.onCapture("region")} />
-            <TrayGridButton title="Screen" icon={<ScreenIcon />} shortcut="Ctrl+Shift+3" onClick={() => props.onCapture("fullscreen")} />
-            <TrayGridButton title="Window" icon={<WindowIcon />} onClick={() => props.onCapture("window")} />
-            <TrayGridButton title="Record" icon={<RecordIcon />} onClick={props.onRecordingOptions} />
+            <TrayGridButton title="Region" icon={<RegionIcon />} shortcut={hint(props.hints, "1")} onClick={() => props.onCapture("region")} />
+            <TrayGridButton title="Screen" icon={<ScreenIcon />} shortcut={hint(props.hints, "2")} onClick={() => props.onCapture("fullscreen")} />
+            <TrayGridButton title="Window" icon={<WindowIcon />} shortcut={hint(props.hints, "3")} onClick={() => props.onCapture("window")} />
+            <TrayGridButton title="Record" icon={<RecordIcon />} shortcut={hint(props.hints, "7")} onClick={props.onRecordingOptions} />
           </div>
 
           {/* utility stack */}
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--tray-grid-gap)" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--tray-grid-gap)" }}>
-              <TrayGridButton title="OCR" icon={<OCRIcon />} onClick={() => props.onCapture("ocr")} />
-              <TrayGridButton title="Pick Color" icon={<EyedropperIcon />} onClick={() => props.onCapture("colorPicker")} />
+              <TrayGridButton title="OCR" icon={<OCRIcon />} shortcut={hint(props.hints, "4")} onClick={() => props.onCapture("ocr")} />
+              <TrayGridButton title="Pick Color" icon={<EyedropperIcon />} shortcut={hint(props.hints, "5")} onClick={() => props.onCapture("colorPicker")} />
             </div>
 
             {/* TrayGridMenu — Recent Captures dropdown */}
@@ -201,7 +206,7 @@ function MenuSection({
 /* ---- icons: SF Symbols mapped to inline SVGs (stroke 1.5, 12px) ---- */
 function Icon({ children }: { children: React.ReactNode }) {
   return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       {children}
     </svg>
   );

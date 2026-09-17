@@ -38881,6 +38881,10 @@ function sanitizeShape(raw) {
   };
   if (typeof r.text === "string") shape.text = r.text;
   if (r.fontSize !== void 0) shape.fontSize = finite(r.fontSize, 28);
+  if (r.bold !== void 0) shape.bold = r.bold === true;
+  if (r.italic !== void 0) shape.italic = r.italic === true;
+  if (r.underline !== void 0) shape.underline = r.underline === true;
+  if (r.align === "left" || r.align === "center" || r.align === "right") shape.align = r.align;
   if (r.counter !== void 0) shape.counter = Math.round(finite(r.counter, 1));
   if (r.rotation !== void 0) shape.rotation = finite(r.rotation);
   if (r.redactionStrength !== void 0) shape.redactionStrength = finite(r.redactionStrength, 0.7);
@@ -39086,10 +39090,10 @@ function openSettingsWindow(section) {
     return;
   }
   settingsWin = new import_electron23.BrowserWindow({
-    width: 720,
-    height: 560,
-    minWidth: 640,
-    minHeight: 480,
+    width: 800,
+    height: 640,
+    minWidth: 780,
+    minHeight: 620,
     show: false,
     title: "Reflecto Settings",
     backgroundColor: "#1e1e1e",

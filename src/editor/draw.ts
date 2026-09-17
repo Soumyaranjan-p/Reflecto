@@ -106,9 +106,17 @@ function drawShape(ctx: CanvasRenderingContext2D, a: Annotation) {
     for (const p of a.points) ctx.lineTo(p.x, p.y);
     ctx.stroke();
   } else if (a.tool === "text" && a.text) {
-    ctx.font = `${a.fontSize ?? Math.max(16, a.stroke * 5)}px Segoe UI`;
+    const size = a.fontSize ?? Math.max(16, a.stroke * 5);
+    ctx.font = `${a.italic ? "italic " : ""}${a.bold ? "700 " : ""}${size}px "Segoe UI Variable", "Segoe UI", sans-serif`;
     ctx.textBaseline = "top";
+    ctx.textAlign = a.align ?? "left";
     ctx.fillText(a.text, a.x1, a.y1);
+    if (a.underline) {
+      const tw = ctx.measureText(a.text).width;
+      const ux = a.align === "center" ? a.x1 - tw / 2 : a.align === "right" ? a.x1 - tw : a.x1;
+      ctx.fillRect(ux, a.y1 + size + 2, tw, Math.max(2, size / 14));
+    }
+    ctx.textAlign = "left";
   } else if (a.tool === "numberedCircle") {
     const r = Math.max(12, a.stroke * 3);
     ctx.beginPath();
@@ -118,7 +126,7 @@ function drawShape(ctx: CanvasRenderingContext2D, a: Annotation) {
     ctx.strokeStyle = isLightColor(a.color) ? "rgba(0,0,0,0.22)" : "rgba(255,255,255,0.42)";
     ctx.stroke();
     ctx.fillStyle = isLightColor(a.color) ? "#111" : "#fff";
-    ctx.font = `bold ${r}px Segoe UI`;
+    ctx.font = `700 ${r}px "Segoe UI Variable", "Segoe UI", sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(String(a.counter ?? 1), a.x1, a.y1);
@@ -235,7 +243,7 @@ export function applyHandle(
 export function drawSelection(ctx: CanvasRenderingContext2D, a: Annotation, scale: number) {
   const b = annotationBounds(a);
   ctx.save();
-  ctx.strokeStyle = "#007aff";
+  ctx.strokeStyle = "#3182ed";
   ctx.lineWidth = 1 / scale;
   ctx.setLineDash([4 / scale, 3 / scale]);
   ctx.strokeRect(b.x, b.y, b.w, b.h);

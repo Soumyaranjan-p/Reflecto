@@ -32,6 +32,10 @@ export interface Annotation {
   stroke: number;
   text?: string;
   fontSize?: number;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  align?: "left" | "center" | "right";
   counter?: number;
   points?: Point[];
   rotation?: number;
