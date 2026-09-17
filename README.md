@@ -13,7 +13,7 @@ No subscription, no account, and no telemetry. Nothing leaves your PC unless you
 - **3D camera:** true perspective projection of the screenshot over its background — tilt, rotate, roll, FOV, zoom, and pan.
 - **Progressive blur:** radial or directional background blur with strength, falloff, focus size/position/direction, applied to the screenshot or the whole scene.
 - **Watermark:** diagonal tiled text with text, opacity, size, angle, density, and color.
-- **Image editor:** icon toolbar in BetterShot's tool order (select → blur) with filled-accent active state; select, rectangle, filled rectangle, ellipse, line, arrow, freehand, numbered circle, text (size, bold, italic, underline, left/center/right), spotlight, pixelate, blur, and crop. Rotate handle + rotation slider, undo/redo, zoom, Copy, and Save.
+- **Image editor:** icon toolbar in BetterShot's tool order (select → blur) with filled-accent active state; select, rectangle, filled rectangle, ellipse, line, arrow, freehand, numbered circle, text (5 curated fonts, size, bold, italic, underline, left/center/right, click-to-re-edit with native caret), spotlight, pixelate, blur, and crop. Rotate handle + rotation slider, undo/redo, zoom, Copy, and Save.
 - **Smart Redact:** auto-detects emails, URLs, IPs, phone numbers, credit-card numbers, JWTs, API keys, and `password:=value` secrets via Tesseract OCR and covers them with blur boxes in one undo step.
 - **Non-destructive projects:** Save writes the flat image plus a `<image>.reflecto.json` sidecar and a `<stem>.base.png` pristine source, so reopening the editor restores every shape and effect setting exactly.
 - **Screen recording:** recording bar with Start / Stop / Pause / Restart / Discard (pause writes real segments, stitched on stop). Display, area, and window sources at 30/60 fps, with microphone, system audio, a separate camera file, and cursor styles (recorded, hidden, or composited dot/hand/dark/light).
@@ -148,7 +148,7 @@ History lives in `library/history.json`.
 These are planned or partial relative to the macOS app:
 
 - Occlusion-safe window capture (needs a Windows Graphics Capture helper; current window capture reads desktop pixels)
-- Multi-style text beyond bold/italic/underline/align (no font-family picker yet; no caret-anchored overlay editing)
+- Text: single-line commit (Enter), no multi-line wrap; no optical-size pinning across zoom levels
 - Zoom cues, transcription/subtitles, and teleprompter in the studio
 - In-app trash/restore (deletes currently go through the Recycle Bin)
 - Cloud share list/delete (R2 upload only for now)

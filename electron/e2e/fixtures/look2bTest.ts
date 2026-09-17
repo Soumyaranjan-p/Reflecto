@@ -1,5 +1,6 @@
 import { renderBeautifierFromImage } from "../../../src/shared/beautifierRender";
 import { drawAnnotations } from "../../../src/editor/draw";
+import { fontStackFor } from "../../../src/editor/fonts";
 import type { Annotation } from "../../../src/editor/types";
 import {
   defaultBeautifierConfig,
@@ -294,6 +295,15 @@ mc.font = `28px "Segoe UI Variable", "Segoe UI", sans-serif`;
 const regW = mc.measureText("Hi").width;
 mc.font = `italic 700 28px "Segoe UI Variable", "Segoe UI", sans-serif`;
 const boldW = mc.measureText("Hi").width;
+// Family rendering: same string, different curated stacks, deterministic widths.
+mc.font = `28px ${fontStackFor("arial")}`;
+const arialW = mc.measureText("Hello World").width;
+mc.font = `28px ${fontStackFor("consolas")}`;
+const consolasW = mc.measureText("Hello World").width;
+mc.font = `28px ${fontStackFor("no-such-family")}`;
+const fallbackW = mc.measureText("Hello World").width;
+mc.font = `28px ${fontStackFor("segoe")}`;
+const segoeW = mc.measureText("Hello World").width;
 
 const res = {
   camera: {
@@ -326,7 +336,9 @@ const res = {
   textStyle: {
     ulPixels, plainPixels,
     regW: Math.round(regW * 10) / 10, boldW: Math.round(boldW * 10) / 10,
-    ok: ulPixels > 20 && plainPixels === 0 && boldW > regW,
+    arialW: Math.round(arialW * 10) / 10, consolasW: Math.round(consolasW * 10) / 10,
+    ok: ulPixels > 20 && plainPixels === 0 && boldW > regW &&
+      arialW > 0 && consolasW > arialW && fallbackW === segoeW,
   },
   pass: false,
 };

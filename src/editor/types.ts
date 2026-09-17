@@ -32,6 +32,9 @@ export interface Annotation {
   stroke: number;
   text?: string;
   fontSize?: number;
+  /** Font-source id (see editor/fonts.ts). Plain string, NOT a closed enum,
+   * so a future native-enumeration source needs no model change. */
+  fontFamily?: string;
   bold?: boolean;
   italic?: boolean;
   underline?: boolean;

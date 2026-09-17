@@ -1,4 +1,5 @@
 import { isLightColor, type Annotation, type Point } from "./types";
+import { fontStackFor } from "./fonts";
 
 export function drawAnnotations(
   ctx: CanvasRenderingContext2D,
@@ -107,7 +108,8 @@ function drawShape(ctx: CanvasRenderingContext2D, a: Annotation) {
     ctx.stroke();
   } else if (a.tool === "text" && a.text) {
     const size = a.fontSize ?? Math.max(16, a.stroke * 5);
-    ctx.font = `${a.italic ? "italic " : ""}${a.bold ? "700 " : ""}${size}px "Segoe UI Variable", "Segoe UI", sans-serif`;
+    const stack = fontStackFor(a.fontFamily);
+    ctx.font = `${a.italic ? "italic " : ""}${a.bold ? "700 " : ""}${size}px ${stack}`;
     ctx.textBaseline = "top";
     ctx.textAlign = a.align ?? "left";
     ctx.fillText(a.text, a.x1, a.y1);

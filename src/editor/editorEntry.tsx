@@ -31,6 +31,7 @@ import {
   type Handle,
 } from "./draw";
 import { TOOL_ICONS, CropIcon, SmartRedactIcon } from "./toolIcons";
+import { DEFAULT_FONT_ID, fontSources, fontStackFor } from "./fonts";
 
 function fileUrl(src: string): string {
   if (!src || src.startsWith("file:") || src.startsWith("data:") || src.startsWith("http")) return src;
@@ -62,6 +63,7 @@ function EditorApp() {
   const [textItalic, setTextItalic] = useState(false);
   const [textUnderline, setTextUnderline] = useState(false);
   const [textAlign, setTextAlign] = useState<"left" | "center" | "right">("left");
+  const [textFontFamily, setTextFontFamily] = useState<string>(DEFAULT_FONT_ID);
   const [redactionStrength, setRedactionStrength] = useState(0.7);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [undoStack, setUndoStack] = useState<Annotation[][]>([]);
@@ -73,7 +75,9 @@ function EditorApp() {
   const [fitZoom, setFitZoom] = useState(1);
   const [inspector, setInspector] = useState(true);
   const [look, setLook] = useState<BeautifierConfig>(() => normalizeBeautifierConfig(defaultBeautifierConfig));
-  const [textDraft, setTextDraft] = useState<{ x: number; y: number; value: string } | null>(null);
+  const [textDraft, setTextDraft] = useState<{ annotationId: string | null; x: number; y: number; value: string } | null>(null);
+  // Undo base for an in-progress re-edit (live keystrokes bypass history).
+  const editSnapshotRef = useRef<Annotation[] | null>(null);
   const [busy, setBusy] = useState<"copy" | "save" | "export" | null>(null);
   const [smartBusy, setSmartBusy] = useState(false);
   const [smartMsg, setSmartMsg] = useState<string | null>(null);
@@ -180,8 +184,10 @@ function EditorApp() {
   }, [src]);
 
   const visible = useMemo(
-    () => [...annotations, ...(draft ? [draft] : [])],
-    [annotations, draft],
+    // The shape under an open caret is hidden while editing (it renders live
+    // in the overlay instead), mirroring AnnoTextEditorOverlay.
+    () => [...annotations.filter((a) => a.id !== textDraft?.annotationId), ...(draft ? [draft] : [])],
+    [annotations, draft, textDraft],
   );
 
   const paint = useCallback(() => {
@@ -275,8 +281,17 @@ function EditorApp() {
   };
 
   const onDown = (e: React.MouseEvent) => {
-    if (textDraft) return;
     const p = toCanvas(e);
+    // A press anywhere commits whatever is being typed, unless it lands on
+    // that same shape (AnnoEditor.pointerDown).
+    if (textDraft) {
+      const landed = [...annotations].reverse().find((a) => hitTest(a, p));
+      if (!textDraft.annotationId || landed?.id !== textDraft.annotationId) {
+        commitText();
+      } else {
+        return;
+      }
+    }
     if (tool === "crop") {
       cropRef.current = { start: p, current: p };
       setCropRect({ x: p.x, y: p.y, w: 0, h: 0 });
@@ -309,7 +324,19 @@ function EditorApp() {
       return;
     }
     if (tool === "text") {
-      setTextDraft({ x: p.x, y: p.y, value: "" });
+      // Clicking existing text edits it; clicking empty canvas starts new text.
+      // preventDefault: without it the browser moves focus to the document
+      // body on mouse-up, instantly blurring the autofocused textarea and
+      // committing (clearing) the just-created empty draft.
+      e.preventDefault();
+      const hit = [...annotations].reverse().find((a) => a.tool === "text" && hitTest(a, p));
+      if (hit) {
+        editSnapshotRef.current = annotations;
+        setSelectedId(hit.id);
+        setTextDraft({ annotationId: hit.id, x: hit.x1, y: hit.y1, value: hit.text ?? "" });
+      } else {
+        setTextDraft({ annotationId: null, x: p.x, y: p.y, value: "" });
+      }
       return;
     }
     setDraft({
@@ -506,7 +533,9 @@ function EditorApp() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (textDraft) {
-        if (e.key === "Escape") setTextDraft(null);
+        // Esc commits the typed text (cancelOperation -> stopEditingText);
+        // an empty shape is discarded, never kept blank.
+        if (e.key === "Escape") commitText();
         return;
       }
       const meta = e.ctrlKey || e.metaKey;
@@ -545,18 +574,37 @@ function EditorApp() {
   });
 
   const commitText = () => {
-    if (!textDraft) return;
-    if (textDraft.value.trim()) {
+    const draft = textDraft;
+    if (!draft) return;
+    setTextDraft(null);
+    if (draft.annotationId) {
+      // Re-edit: keystrokes already updated the shape live; commit as ONE
+      // undo step from the pre-edit snapshot (empty text deletes the shape,
+      // mirroring stopEditingText).
+      const base = editSnapshotRef.current ?? annotations;
+      editSnapshotRef.current = null;
+      const text = draft.value;
+      if (!text.trim()) {
+        setUndoStack((s) => [...s, base]);
+        setRedoStack([]);
+        setAnnotations(base.filter((a) => a.id !== draft.annotationId));
+        if (selectedId === draft.annotationId) setSelectedId(null);
+        return;
+      }
+      setUndoStack((s) => [...s, base]);
+      setRedoStack([]);
+      setAnnotations((list) => list.map((a) => (a.id === draft.annotationId ? { ...a, text } : a)));
+      return;
+    }
+    if (draft.value.trim()) {
       pushHistory([...annotations, {
         id: crypto.randomUUID(), tool: "text",
-        x1: textDraft.x, y1: textDraft.y, x2: textDraft.x, y2: textDraft.y,
-        color, stroke, text: textDraft.value, fontSize,
+        x1: draft.x, y1: draft.y, x2: draft.x, y2: draft.y,
+        color, stroke, text: draft.value, fontSize, fontFamily: textFontFamily,
         bold: textBold, italic: textItalic, underline: textUnderline, align: textAlign,
       }]);
     }
-    setTextDraft(null);
   };
-
   // Text style controls edit the selected text shape when one is selected,
   // else the defaults for new text (AnnotationEditorModel setters).
   const selectedText = annotations.find((a) => a.id === selectedId && a.tool === "text") ?? null;
@@ -565,7 +613,8 @@ function EditorApp() {
   const effUnderline = selectedText ? !!selectedText.underline : textUnderline;
   const effAlign = selectedText?.align ?? textAlign;
   const effFontSize = selectedText?.fontSize ?? fontSize;
-  const setTextStyle = (patch: { bold?: boolean; italic?: boolean; underline?: boolean; align?: "left" | "center" | "right"; fontSize?: number }) => {
+  const effFontFamily = selectedText?.fontFamily ?? textFontFamily;
+  const setTextStyle = (patch: { bold?: boolean; italic?: boolean; underline?: boolean; align?: "left" | "center" | "right"; fontSize?: number; fontFamily?: string }) => {
     if (selectedText) {
       pushHistory(annotations.map((a) => (a.id === selectedText.id ? { ...a, ...patch } : a)));
       return;
@@ -575,6 +624,7 @@ function EditorApp() {
     if (patch.underline !== undefined) setTextUnderline(patch.underline);
     if (patch.align !== undefined) setTextAlign(patch.align);
     if (patch.fontSize !== undefined) setFontSize(patch.fontSize);
+    if (patch.fontFamily !== undefined) setTextFontFamily(patch.fontFamily);
   };
 
   const canvasStyle: React.CSSProperties = {
@@ -658,6 +708,17 @@ function EditorApp() {
         )}
         {(tool === "text" || selectedText) && (
           <>
+            <select
+              value={effFontFamily}
+              onChange={(e) => setTextStyle({ fontFamily: e.target.value })}
+              style={{ ...selectStyle, maxWidth: 130 }}
+              title="Font family"
+              aria-label="Font family"
+            >
+              {fontSources().map((f) => (
+                <option key={f.id} value={f.id}>{f.title}</option>
+              ))}
+            </select>
             <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--reflecto-secondary)" }}>
               {effFontSize}pt
               <input type="range" min={10} max={96} value={effFontSize} onChange={(e) => setTextStyle({ fontSize: Number(e.target.value) })} style={{ width: 90 }} />
@@ -1063,29 +1124,57 @@ function EditorApp() {
             onMouseUp={onUp}
             onMouseLeave={onUp}
           />
-          {textDraft && canvasRef.current && (
-            <textarea
-              autoFocus
-              value={textDraft.value}
-              onChange={(e) => setTextDraft({ ...textDraft, value: e.target.value })}
-              onBlur={commitText}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); commitText(); }
-                if (e.key === "Escape") setTextDraft(null);
-              }}
-              style={{
-                position: "absolute",
-                left: canvasRef.current.getBoundingClientRect().left - (viewRef.current?.getBoundingClientRect().left ?? 0) + textDraft.x * zoom,
-                top: canvasRef.current.getBoundingClientRect().top - (viewRef.current?.getBoundingClientRect().top ?? 0) + textDraft.y * zoom,
-                font: `${textItalic ? "italic " : ""}${textBold ? "700 " : ""}${fontSize * zoom}px "Segoe UI Variable", "Segoe UI", sans-serif`,
-                color,
-                background: "rgba(0,0,0,0.35)",
-                border: "1px solid #007aff",
-                minWidth: 120,
-                minHeight: 32,
-              }}
-            />
-          )}
+          {textDraft && canvasRef.current && (() => {
+            // Native textarea = native caret, drag-select, word select, arrows,
+            // IME (AnnoTextEditorOverlay rationale). Live-updates the shape
+            // without history; commit collapses to one undo step.
+            const editingAnn = textDraft.annotationId
+              ? annotations.find((a) => a.id === textDraft.annotationId) ?? null
+              : null;
+            const tColor = editingAnn?.color ?? color;
+            const tSize = (editingAnn?.fontSize ?? fontSize) * zoom;
+            const tStack = fontStackFor(editingAnn?.fontFamily ?? textFontFamily);
+            const tBold = editingAnn ? !!editingAnn.bold : textBold;
+            const tItalic = editingAnn ? !!editingAnn.italic : textItalic;
+            const tAlign = editingAnn?.align ?? "left";
+            const rot = editingAnn?.rotation ?? 0;
+            return (
+              <textarea
+                autoFocus
+                value={textDraft.value}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setTextDraft({ ...textDraft, value });
+                  if (textDraft.annotationId) {
+                    const id = textDraft.annotationId;
+                    setAnnotations((list) => list.map((a) => (a.id === id ? { ...a, text: value } : a)));
+                  }
+                }}
+                onBlur={commitText}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); commitText(); }
+                  // Stop here so the window-level key handler (stale draft
+                  // closure) can't commit a second copy of the same text.
+                  if (e.key === "Escape") { e.stopPropagation(); commitText(); }
+                }}
+                style={{
+                  position: "absolute",
+                  left: canvasRef.current.getBoundingClientRect().left - (viewRef.current?.getBoundingClientRect().left ?? 0) + textDraft.x * zoom,
+                  top: canvasRef.current.getBoundingClientRect().top - (viewRef.current?.getBoundingClientRect().top ?? 0) + textDraft.y * zoom,
+                  font: `${tItalic ? "italic " : ""}${tBold ? "700 " : ""}${tSize}px ${tStack}`,
+                  textAlign: tAlign,
+                  color: tColor,
+                  caretColor: tColor,
+                  background: "rgba(0,0,0,0.35)",
+                  border: "1px solid #007aff",
+                  minWidth: 120,
+                  minHeight: 32,
+                  transform: rot ? `rotate(${rot}rad)` : undefined,
+                  transformOrigin: "top left",
+                }}
+              />
+            );
+          })()}
         </div>
       </div>
 

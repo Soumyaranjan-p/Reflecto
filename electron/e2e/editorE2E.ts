@@ -269,6 +269,134 @@ export async function runEditorE2E(): Promise<string> {
     report.editorUI = { error: err instanceof Error ? err.stack || err.message : String(err) };
   }
 
+  // J. Text tool edit flow in the real editor: new text via Enter, re-edit
+  // existing text via click (textarea prefilled), append + click-away
+  // commit, family picker options, Esc commits instead of discarding.
+  try {
+    const shot2 = path.join(TMP, "ui-rect-src.png");
+    openAnnotateEditor(shot2);
+    const js2 = async (code: string, retries = 60): Promise<unknown> => {
+      for (let i = 0; i < retries; i++) {
+        const win = BrowserWindow.getAllWindows().find((w) => w.getTitle() === "Reflecto Editor");
+        if (win) {
+          try {
+            return await win.webContents.executeJavaScript(code, true);
+          } catch (e) {
+            (global as { __lastJsError?: string }).__lastJsError =
+              `crashed=${win.webContents.isCrashed()} err=${String(e).slice(0, 120)}`;
+          }
+        }
+        await sleep(200);
+      }
+      const extra = (global as { __lastJsError?: string }).__lastJsError ?? "";
+      throw new Error(`editor window not ready [${extra}]`);
+    };
+    await js2("document.readyState");
+    await js2(`[...document.querySelectorAll('canvas')].length > 0 && document.querySelector('canvas').width > 0 ? 'ready' : Promise.reject('nocanvas')`);
+    const ed2 = BrowserWindow.getAllWindows().find((w) => w.getTitle() === "Reflecto Editor")!;
+    ed2.focus();
+    await sleep(400);
+    const chash = async () => {
+      const url = (await js2("document.querySelector('canvas').toDataURL('image/png')")) as string;
+      return createHash("sha256").update(url).digest("hex").slice(0, 16);
+    };
+    const key2 = async (k: string) => {
+      ed2.webContents.sendInputEvent({ type: "keyDown", keyCode: k } as never);
+      ed2.webContents.sendInputEvent({ type: "keyUp", keyCode: k } as never);
+      await sleep(300);
+    };
+    const rect2 = (await js2(
+      "JSON.stringify(document.querySelector('canvas').getBoundingClientRect())",
+    )) as string;
+    const rr = JSON.parse(rect2) as { left: number; top: number; width: number };
+    const cw2 = (await js2("document.querySelector('canvas').width")) as number;
+    const kk = cw2 / rr.width;
+    const click2 = async (cx: number, cy: number) => {
+      const x = Math.round(rr.left + cx / kk);
+      const y = Math.round(rr.top + cy / kk);
+      ed2.webContents.sendInputEvent({ type: "mouseMove", x, y });
+      await sleep(60);
+      ed2.webContents.sendInputEvent({ type: "mouseDown", x, y, button: "left", clickCount: 1 });
+      await sleep(60);
+      ed2.webContents.sendInputEvent({ type: "mouseUp", x, y, button: "left", clickCount: 1 });
+      await sleep(350);
+    };
+    const typeIntoTextarea = async (value: string) => {
+      await js2(`(() => {
+        const ta = document.querySelector('textarea');
+        if (!ta) throw new Error('no textarea');
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+        setter.call(ta, ${JSON.stringify(value)});
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+        return 'typed';
+      })()`);
+      await sleep(350);
+    };
+    const textareaValue = async (retries = 25) => {
+      // State flush can lag under a throttled window; poll instead of
+      // single-shot reading (a null here once cost a false negative).
+      for (let i = 0; i < retries; i++) {
+        const v = (await js2(`(() => { const ta = document.querySelector('textarea'); return ta ? ta.value : null; })()`)) as string | null;
+        if (v !== null || i === retries - 1) return v;
+        await sleep(200);
+      }
+      return null;
+    };
+    const textareaGone = async (retries = 25) => {
+      for (let i = 0; i < retries; i++) {
+        const gone = (await js2(`!document.querySelector('textarea')`)) as boolean;
+        if (gone) return true;
+        await sleep(200);
+      }
+      return false;
+    };
+    const preHash = await chash();
+    await key2("t"); // text tool
+    const activeTool = await js2(
+      `(() => [...document.querySelectorAll('.editor-button')].filter(b => b.classList.contains('selected')).map(b => b.getAttribute('aria-label')))()`,
+    );
+    console.log("[Reflecto:editor-e2e] textJ tool after t:", JSON.stringify(activeTool));
+    const familyOptions = (await js2(
+      `(() => { const s = document.querySelector('select[aria-label="Font family"]'); return s ? s.options.length : -1; })()`,
+    )) as number;
+    await click2(100, 100); // new text draft
+    const draftEmpty = await textareaValue();
+    await typeIntoTextarea("Hi");
+    await key2("Enter"); // commit via real key path
+    const noDraft = (await textareaGone()) ? null : "STILL_OPEN";
+    const textHash1 = await chash();
+    await click2(110, 115); // click the text itself -> re-edit, prefilled
+    const editValue = await textareaValue();
+    await typeIntoTextarea("Hi!");
+    await click2(280, 170); // click away -> commit
+    const textHash2 = await chash();
+    await click2(220, 150); // fresh draft elsewhere
+    await typeIntoTextarea("AB");
+    await key2("Escape"); // Esc commits (not discards)
+    const escGone = await textareaGone();
+    const escHash = await chash();
+    ed2.destroy();
+    report.textEditFlow = {
+      familyOptions,
+      draftEmpty,
+      noDraftAfterEnter: noDraft,
+      textHash1Differs: textHash1 !== preHash,
+      editValue,
+      textHash2Differs: textHash2 !== textHash1,
+      escDraftGone: escGone,
+      escHashDiffers: escHash !== textHash2,
+      ok: false,
+    };
+    const j = report.textEditFlow as Record<string, unknown>;
+    j.ok = Boolean(
+      familyOptions === 5 && draftEmpty === "" && noDraft === null &&
+      j.textHash1Differs && editValue === "Hi" && j.textHash2Differs &&
+      escGone && j.escHashDiffers,
+    );
+  } catch (err) {
+    report.textEditFlow = { error: err instanceof Error ? err.stack || err.message : String(err) };
+  }
+
   // G. Sidecar round-trip through the real preload IPC boundary:
   // saveDocument -> files on disk -> editorLoadSidecar -> exact properties.
   try {
@@ -502,7 +630,8 @@ export async function runEditorE2E(): Promise<string> {
   const l = report.look2b as { pass?: boolean };
   const d = report.sidecarRoundTrip as { ok?: boolean };
   const st2 = report.studioMatrix as { ok?: boolean };
-  report.ok = Boolean(s?.solidOk && s?.distinctFromGradient && r?.ok && m?.ok && u?.ok && l?.pass && d?.ok && st2?.ok);
+  const j2 = report.textEditFlow as { ok?: boolean };
+  report.ok = Boolean(s?.solidOk && s?.distinctFromGradient && r?.ok && m?.ok && u?.ok && l?.pass && d?.ok && st2?.ok && j2?.ok);
   report.finishedAt = new Date().toISOString();
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   console.log("[Reflecto:editor-e2e]", reportPath);

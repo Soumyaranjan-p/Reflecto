@@ -38512,6 +38512,125 @@ async function runEditorE2E() {
     report.editorUI = { error: err instanceof Error ? err.stack || err.message : String(err) };
   }
   try {
+    const shot2 = import_node_path24.default.join(TMP, "ui-rect-src.png");
+    openAnnotateEditor(shot2);
+    const js2 = async (code, retries = 60) => {
+      for (let i = 0; i < retries; i++) {
+        const win2 = import_electron27.BrowserWindow.getAllWindows().find((w) => w.getTitle() === "Reflecto Editor");
+        if (win2) {
+          try {
+            return await win2.webContents.executeJavaScript(code, true);
+          } catch (e) {
+            global.__lastJsError = `crashed=${win2.webContents.isCrashed()} err=${String(e).slice(0, 120)}`;
+          }
+        }
+        await sleep3(200);
+      }
+      const extra = global.__lastJsError ?? "";
+      throw new Error(`editor window not ready [${extra}]`);
+    };
+    await js2("document.readyState");
+    await js2(`[...document.querySelectorAll('canvas')].length > 0 && document.querySelector('canvas').width > 0 ? 'ready' : Promise.reject('nocanvas')`);
+    const ed2 = import_electron27.BrowserWindow.getAllWindows().find((w) => w.getTitle() === "Reflecto Editor");
+    ed2.focus();
+    await sleep3(400);
+    const chash = async () => {
+      const url = await js2("document.querySelector('canvas').toDataURL('image/png')");
+      return (0, import_node_crypto8.createHash)("sha256").update(url).digest("hex").slice(0, 16);
+    };
+    const key2 = async (k) => {
+      ed2.webContents.sendInputEvent({ type: "keyDown", keyCode: k });
+      ed2.webContents.sendInputEvent({ type: "keyUp", keyCode: k });
+      await sleep3(300);
+    };
+    const rect2 = await js2(
+      "JSON.stringify(document.querySelector('canvas').getBoundingClientRect())"
+    );
+    const rr = JSON.parse(rect2);
+    const cw2 = await js2("document.querySelector('canvas').width");
+    const kk = cw2 / rr.width;
+    const click2 = async (cx, cy) => {
+      const x = Math.round(rr.left + cx / kk);
+      const y = Math.round(rr.top + cy / kk);
+      ed2.webContents.sendInputEvent({ type: "mouseMove", x, y });
+      await sleep3(60);
+      ed2.webContents.sendInputEvent({ type: "mouseDown", x, y, button: "left", clickCount: 1 });
+      await sleep3(60);
+      ed2.webContents.sendInputEvent({ type: "mouseUp", x, y, button: "left", clickCount: 1 });
+      await sleep3(350);
+    };
+    const typeIntoTextarea = async (value) => {
+      await js2(`(() => {
+        const ta = document.querySelector('textarea');
+        if (!ta) throw new Error('no textarea');
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
+        setter.call(ta, ${JSON.stringify(value)});
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+        return 'typed';
+      })()`);
+      await sleep3(350);
+    };
+    const textareaValue = async (retries = 25) => {
+      for (let i = 0; i < retries; i++) {
+        const v = await js2(`(() => { const ta = document.querySelector('textarea'); return ta ? ta.value : null; })()`);
+        if (v !== null || i === retries - 1) return v;
+        await sleep3(200);
+      }
+      return null;
+    };
+    const textareaGone = async (retries = 25) => {
+      for (let i = 0; i < retries; i++) {
+        const gone = await js2(`!document.querySelector('textarea')`);
+        if (gone) return true;
+        await sleep3(200);
+      }
+      return false;
+    };
+    const preHash = await chash();
+    await key2("t");
+    const activeTool = await js2(
+      `(() => [...document.querySelectorAll('.editor-button')].filter(b => b.classList.contains('selected')).map(b => b.getAttribute('aria-label')))()`
+    );
+    console.log("[Reflecto:editor-e2e] textJ tool after t:", JSON.stringify(activeTool));
+    const familyOptions = await js2(
+      `(() => { const s = document.querySelector('select[aria-label="Font family"]'); return s ? s.options.length : -1; })()`
+    );
+    await click2(100, 100);
+    const draftEmpty = await textareaValue();
+    await typeIntoTextarea("Hi");
+    await key2("Enter");
+    const noDraft = await textareaGone() ? null : "STILL_OPEN";
+    const textHash1 = await chash();
+    await click2(110, 115);
+    const editValue = await textareaValue();
+    await typeIntoTextarea("Hi!");
+    await click2(280, 170);
+    const textHash2 = await chash();
+    await click2(220, 150);
+    await typeIntoTextarea("AB");
+    await key2("Escape");
+    const escGone = await textareaGone();
+    const escHash = await chash();
+    ed2.destroy();
+    report.textEditFlow = {
+      familyOptions,
+      draftEmpty,
+      noDraftAfterEnter: noDraft,
+      textHash1Differs: textHash1 !== preHash,
+      editValue,
+      textHash2Differs: textHash2 !== textHash1,
+      escDraftGone: escGone,
+      escHashDiffers: escHash !== textHash2,
+      ok: false
+    };
+    const j = report.textEditFlow;
+    j.ok = Boolean(
+      familyOptions === 5 && draftEmpty === "" && noDraft === null && j.textHash1Differs && editValue === "Hi" && j.textHash2Differs && escGone && j.escHashDiffers
+    );
+  } catch (err) {
+    report.textEditFlow = { error: err instanceof Error ? err.stack || err.message : String(err) };
+  }
+  try {
     const ipc = new import_electron27.BrowserWindow({
       show: false,
       webPreferences: { preload: preloadPath(), contextIsolation: true }
@@ -38761,7 +38880,8 @@ async function runEditorE2E() {
   const l = report.look2b;
   const d = report.sidecarRoundTrip;
   const st2 = report.studioMatrix;
-  report.ok = Boolean(s?.solidOk && s?.distinctFromGradient && r?.ok && m?.ok && u?.ok && l?.pass && d?.ok && st2?.ok);
+  const j2 = report.textEditFlow;
+  report.ok = Boolean(s?.solidOk && s?.distinctFromGradient && r?.ok && m?.ok && u?.ok && l?.pass && d?.ok && st2?.ok && j2?.ok);
   report.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
   import_node_fs15.default.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   console.log("[Reflecto:editor-e2e]", reportPath);
@@ -38881,6 +39001,7 @@ function sanitizeShape(raw) {
   };
   if (typeof r.text === "string") shape.text = r.text;
   if (r.fontSize !== void 0) shape.fontSize = finite(r.fontSize, 28);
+  if (typeof r.fontFamily === "string" && r.fontFamily) shape.fontFamily = r.fontFamily;
   if (r.bold !== void 0) shape.bold = r.bold === true;
   if (r.italic !== void 0) shape.italic = r.italic === true;
   if (r.underline !== void 0) shape.underline = r.underline === true;
