@@ -25,6 +25,14 @@ No subscription, no account, and no telemetry. Nothing leaves your PC unless you
 - **Onboarding:** first-run walkthrough (welcome, permissions, shortcuts, first capture).
 - **Automation:** `reflecto://` URL scheme (`capture/region`, `capture/fullscreen`, `capture/window`, `ocr`, `color-picker`, `record`, `settings`).
 
+## Screenshots
+
+Captured from the current build on Windows:
+
+![Tray popover — capture panel with live shortcut hints](docs/screenshots/tray-popover.png)
+![Capture deck — floating cards with hover actions](docs/screenshots/capture-deck.png)
+![Editor — text tool with inline style controls and font picker](docs/screenshots/editor-text.png)
+
 ## Requirements
 
 - Windows 10 or 11
