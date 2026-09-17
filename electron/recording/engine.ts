@@ -10,6 +10,9 @@ import {
   needsGdiGrab,
   startGdiGrab,
   stopGdiGrab,
+  pauseGdiGrab,
+  resumeGdiGrab,
+  gdiSegmentCount,
   lastGdiInfo,
   resetGdiInfo,
   type CursorStyle,
@@ -20,7 +23,9 @@ import { getWindowRect, parseCapturerHwnd } from "../win32";
  * Windows equivalent of ScreenRecordingManager:
  * Chromium desktopCapturer + MediaRecorder pause/resume (BetterShot writer.pause).
  * System audio = desktop chromeMediaSource audio loopback.
- * Camera overlay composited in the capture worker (BetterShot camera bubble).
+ * Camera = separate DirectShow sidecar file (BetterShot camera.mov equivalent),
+ * surfaced as its own gallery item — never baked as PiP.
+ * gdigrab pause/resume = true segment pause + ffmpeg concat on stop.
  */
 
 export type RecordSource =
@@ -234,7 +239,8 @@ export async function pauseSession(): Promise<void> {
   if (!session || session.state !== "recording") return;
   session.elapsedBeforePause = currentElapsed();
   if (gdiMode) {
-    log("gdigrab pause keeps capturing (Windows ffmpeg cannot pause gdigrab mid-stream); elapsed timer paused");
+    await pauseGdiGrab();
+    log(`gdigrab paused (true segment pause) segments=${gdiSegmentCount()}`);
   } else {
     worker?.webContents.send("recording:worker-pause");
     log("paused (MediaRecorder.pause)");
@@ -248,7 +254,8 @@ export async function resumeSession(): Promise<void> {
     worker?.webContents.send("recording:worker-resume");
     log("resumed (MediaRecorder.resume)");
   } else {
-    log("gdigrab resume (timer only)");
+    await resumeGdiGrab();
+    log(`gdigrab resumed segments=${gdiSegmentCount()}`);
   }
   session.state = "recording";
   session.startedAt = Date.now();
@@ -261,9 +268,16 @@ export async function stopSession(save: boolean): Promise<string | null> {
   await stopCameraSidecar();
   if (gdiMode) {
     const notes = session.log;
+    const cursorStyle = (session.options.cursorStyle || (session.options.showCursor === false ? "hidden" : "recorded")) as CursorStyle;
+    // getCursorScreenPoint() reports DIP; gdigrab crops physical pixels.
+    // Map per-sample via the display under the sample (mixed-DPI safe).
+    const samples = pointerSamples.map((s) => {
+      const scale = screen.getDisplayNearestPoint({ x: Math.round(s.x), y: Math.round(s.y) }).scaleFactor || 1;
+      return { t: s.t, x: s.x * scale, y: s.y * scale };
+    });
     session = null;
     gdiMode = false;
-    const dest = await stopGdiGrab(save);
+    const dest = await stopGdiGrab(save, { style: cursorStyle, samples });
     logLine(notes, dest ? `gdigrab saved ${dest}` : "gdigrab discarded");
     return dest;
   }

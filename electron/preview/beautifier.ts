@@ -2,7 +2,9 @@ import { BrowserWindow, nativeImage } from "electron";
 import path from "node:path";
 import { preloadPath } from "../paths";
 import {
+  beautifierNeedsCanvas,
   defaultBeautifierConfig,
+  normalizeBeautifierConfig,
   type BeautifierConfig,
 } from "../../src/shared/beautifierTypes";
 
@@ -41,7 +43,7 @@ export async function beautifyPNG(
   png: Buffer,
   config: BeautifierConfig = defaultBeautifierConfig,
 ): Promise<Buffer> {
-  if (config.style.kind === "none" && !config.border?.enabled) return png;
+  if (!beautifierNeedsCanvas(normalizeBeautifierConfig(config))) return png;
   const win = await ensureWorker();
   const dataUrl = nativeImage.createFromBuffer(png).toDataURL();
   const result = await win.webContents.executeJavaScript(

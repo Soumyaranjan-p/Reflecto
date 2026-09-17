@@ -15,6 +15,54 @@ export interface BeautifierBorder {
   opacity: number;
 }
 
+export interface CameraSettings {
+  /** Translation as a fraction of the final canvas dimensions. */
+  panX: number;
+  panY: number;
+  /** Camera orbit around the card center, degrees. */
+  tiltXDegrees: number;
+  tiltYDegrees: number;
+  /** Local card rotation around its own axes, degrees. */
+  rotationXDegrees: number;
+  rotationYDegrees: number;
+  /** Rotation around the viewing axis, degrees. */
+  rollDegrees: number;
+  /** Lens angle 18..80 controlling perspective strength. */
+  fieldOfViewDegrees: number;
+  /** Explicit final scale 0.4..2.5. */
+  zoom: number;
+}
+
+export type ProgressiveBlurMode = "radial" | "directional";
+export type ProgressiveBlurEdgeMode = "clipped" | "bleed";
+
+export interface ProgressiveBlurSettings {
+  isEnabled: boolean;
+  /** "clipped" blurs the screenshot layer only; "bleed" blurs the whole scene. */
+  edgeMode: ProgressiveBlurEdgeMode;
+  mode: ProgressiveBlurMode;
+  /** Max blur radius, px at 1000px shortest edge (BetterShot: strength*S/1000). */
+  strength: number;
+  /** Sharp-to-blur transition width, 0..1. */
+  falloff: number;
+  /** Sharp focal area, 0..1. */
+  focusSize: number;
+  /** Normalized focal point (top-left origin). */
+  focusPosition: { x: number; y: number };
+  /** Direction of the in-focus band, degrees. 0 = horizontal band. */
+  directionDegrees: number;
+}
+
+export interface WatermarkSettings {
+  text: string;
+  /** Rows of tiles (density). */
+  density: number;
+  fontSize: number;
+  rotationDegrees: number;
+  opacity: number;
+  color: string;
+}
+
 export interface BeautifierConfig {
   style: BackgroundStyle;
   padding: number;
@@ -22,7 +70,42 @@ export interface BeautifierConfig {
   shadowStrength: number;
   aspectRatio: "auto" | "1:1" | "4:3" | "3:2" | "16:9" | "9:16";
   border: BeautifierBorder;
+  camera: CameraSettings;
+  progressiveBlur: ProgressiveBlurSettings;
+  watermark: WatermarkSettings;
 }
+
+export const defaultCameraSettings: CameraSettings = {
+  panX: 0,
+  panY: 0,
+  tiltXDegrees: 0,
+  tiltYDegrees: 0,
+  rotationXDegrees: 0,
+  rotationYDegrees: 0,
+  rollDegrees: 0,
+  fieldOfViewDegrees: 24,
+  zoom: 1,
+};
+
+export const defaultProgressiveBlurSettings: ProgressiveBlurSettings = {
+  isEnabled: false,
+  edgeMode: "bleed",
+  mode: "radial",
+  strength: 18,
+  falloff: 0.55,
+  focusSize: 0.45,
+  focusPosition: { x: 0.5, y: 0.5 },
+  directionDegrees: 0,
+};
+
+export const defaultWatermarkSettings: WatermarkSettings = {
+  text: "",
+  density: 4,
+  fontSize: 72,
+  rotationDegrees: 45,
+  opacity: 0.18,
+  color: "#e6e6e6",
+};
 
 export const defaultBeautifierConfig: BeautifierConfig = {
   style: { kind: "none" },
@@ -31,10 +114,65 @@ export const defaultBeautifierConfig: BeautifierConfig = {
   shadowStrength: 0.36,
   aspectRatio: "auto",
   border: { enabled: false, color: "#ffffff", thickness: 0.012, opacity: 1 },
+  camera: { ...defaultCameraSettings },
+  progressiveBlur: { ...defaultProgressiveBlurSettings },
+  watermark: { ...defaultWatermarkSettings },
 };
 
+const approxZero = (v: unknown) => Math.abs(Number(v) || 0) <= 0.0001;
+
+export function cameraHasEffect(c?: CameraSettings): boolean {
+  if (!c) return false;
+  return (
+    !approxZero(c.panX) ||
+    !approxZero(c.panY) ||
+    !approxZero(c.tiltXDegrees) ||
+    !approxZero(c.tiltYDegrees) ||
+    !approxZero(c.rotationXDegrees) ||
+    !approxZero(c.rotationYDegrees) ||
+    !approxZero(c.rollDegrees) ||
+    Math.abs((c.zoom ?? 1) - 1) > 0.0001
+  );
+}
+
+export function progressiveBlurIsActive(b?: ProgressiveBlurSettings): boolean {
+  return Boolean(b?.isEnabled && (b?.strength ?? 0) > 0.01);
+}
+
+export function watermarkIsVisible(w?: WatermarkSettings): boolean {
+  return Boolean(w?.text?.trim() && (w?.opacity ?? 0) > 0);
+}
+
+/** Deep-fill stored/partial configs so old prefs never drop new sections. */
+export function normalizeBeautifierConfig(raw: unknown): BeautifierConfig {
+  const c = (raw ?? {}) as Partial<BeautifierConfig>;
+  return {
+    ...defaultBeautifierConfig,
+    ...c,
+    style: c.style ?? defaultBeautifierConfig.style,
+    border: { ...defaultBeautifierConfig.border, ...(c.border ?? {}) },
+    camera: { ...defaultCameraSettings, ...(c.camera ?? {}) },
+    progressiveBlur: {
+      ...defaultProgressiveBlurSettings,
+      ...(c.progressiveBlur ?? {}),
+      focusPosition: {
+        ...defaultProgressiveBlurSettings.focusPosition,
+        ...((c.progressiveBlur as ProgressiveBlurSettings | undefined)?.focusPosition ?? {}),
+      },
+    },
+    watermark: { ...defaultWatermarkSettings, ...(c.watermark ?? {}) },
+  };
+}
+
 export function beautifierNeedsCanvas(config: BeautifierConfig): boolean {
-  return config.style.kind !== "none" || Boolean(config.border?.enabled);
+  const c = normalizeBeautifierConfig(config);
+  return (
+    c.style.kind !== "none" ||
+    Boolean(c.border?.enabled) ||
+    cameraHasEffect(c.camera) ||
+    progressiveBlurIsActive(c.progressiveBlur) ||
+    watermarkIsVisible(c.watermark)
+  );
 }
 
 export interface GradientPreset {

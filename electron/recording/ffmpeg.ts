@@ -63,3 +63,47 @@ export function even(n: number): number {
   const i = Math.max(2, Math.round(n));
   return i % 2 === 0 ? i : i - 1;
 }
+
+export interface MediaProbe {
+  width: number;
+  height: number;
+  hasAudio: boolean;
+  duration: number;
+}
+
+/** Probe dimensions + audio presence + duration via `ffmpeg -i` stderr. */
+export async function probeMedia(src: string): Promise<MediaProbe> {
+  return new Promise((resolve) => {
+    const proc = spawn(resolveFfmpeg(), ["-i", src], { stdio: ["ignore", "pipe", "pipe"] });
+    let err = "";
+    proc.stderr.on("data", (d) => { err += String(d); });
+    proc.on("close", () => {
+      const vline = err.split(/\r?\n/).find((l) => l.includes("Stream #") && l.includes("Video:"));
+      const m = vline?.match(/(\d{2,5})x(\d{2,5})/);
+      const hasAudio = err.split(/\r?\n/).some((l) => l.includes("Stream #") && l.includes("Audio:"));
+      const dm = err.match(/Duration:\s*(\d+):(\d+):([\d.]+)/);
+      resolve({
+        width: m ? Number(m[1]) : 0,
+        height: m ? Number(m[2]) : 0,
+        hasAudio,
+        duration: dm ? Number(dm[1]) * 3600 + Number(dm[2]) * 60 + Number(dm[3]) : 0,
+      });
+    });
+    proc.on("error", () => resolve({ width: 0, height: 0, hasAudio: false, duration: 0 }));
+  });
+}
+
+/** Probe source dimensions via `ffmpeg -i` stderr (no ffprobe in essentials build). */
+export async function probeVideoSize(src: string): Promise<{ width: number; height: number } | null> {
+  return new Promise((resolve) => {
+    const proc = spawn(resolveFfmpeg(), ["-i", src], { stdio: ["ignore", "pipe", "pipe"] });
+    let err = "";
+    proc.stderr.on("data", (d) => { err += String(d); });
+    proc.on("close", () => {
+      const line = err.split(/\r?\n/).find((l) => l.includes("Stream #") && l.includes("Video:"));
+      const m = line?.match(/(\d{2,5})x(\d{2,5})/);
+      resolve(m ? { width: Number(m[1]), height: Number(m[2]) } : null);
+    });
+    proc.on("error", () => resolve(null));
+  });
+}

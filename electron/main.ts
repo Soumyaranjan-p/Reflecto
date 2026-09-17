@@ -75,6 +75,13 @@ if (!gotLock) {
       app.exit(0);
       return;
     }
+    if (process.argv.includes("--editor-e2e")) {
+      const { runEditorE2E } = await import("./e2e/editorE2E");
+      const report = await runEditorE2E();
+      console.log("EDITOR_E2E_REPORT", report);
+      app.exit(0);
+      return;
+    }
     if (process.argv.includes("--app-e2e")) {
       const { runAppE2E } = await import("./e2e/appE2E");
       const report = await runAppE2E();
@@ -268,6 +275,30 @@ function registerIpc() {
     try { fs.unlinkSync(temp); } catch { /* ignore */ }
     return dest;
   });
+  ipcMain.handle("files:saveDocument", async (_e, payload: { dataUrl: string; baseDataUrl: string; doc: unknown }) => {
+    const { buildSidecar } = await import("../src/shared/sidecar");
+    const { writeSidecarFiles } = await import("./editor/sidecar");
+    const composite = Buffer.from(payload.dataUrl.replace(/^data:image\/\w+;base64,/, ""), "base64");
+    const base = Buffer.from(payload.baseDataUrl.replace(/^data:image\/\w+;base64,/, ""), "base64");
+    if (!composite.length || !base.length) throw new Error("Save needs image bytes");
+    const temp = path.join(app.getPath("temp"), `reflecto-edit-${randomUUID()}.png`);
+    fs.writeFileSync(temp, composite);
+    const dest = saveToDefaultLocation(temp);
+    try { fs.unlinkSync(temp); } catch { /* ignore */ }
+    type Sidecar = import("../src/shared/sidecar").ReflectoSidecar;
+    const d = (payload.doc ?? {}) as {
+      shapes?: Sidecar["shapes"];
+      background?: unknown;
+      canvas?: { w: number; h: number };
+      crop?: Sidecar["crop"];
+    };
+    const doc = buildSidecar(d.shapes ?? [], d.background, d.canvas ?? { w: 0, h: 0 }, d.crop ?? null);
+    return writeSidecarFiles(dest, composite, base, doc);
+  });
+  ipcMain.handle("editor:loadSidecar", async (_e, imagePath: string) => {
+    const { loadSidecarFor } = await import("./editor/sidecar");
+    return loadSidecarFor(imagePath);
+  });
   ipcMain.handle("files:copyDataUrl", (_e, dataUrl: string) => {
     const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
     const temp = path.join(app.getPath("temp"), `reflecto-clip-${randomUUID()}.png`);
@@ -299,19 +330,56 @@ function registerIpc() {
     return url;
   });
   ipcMain.handle("video:export", async (_e, req) => {
-    const dest = await dialog.showSaveDialog({
-      title: "Export video",
-      defaultPath: path.join(app.getPath("videos"), `Reflecto_${Date.now()}.mp4`),
-      filters: [{ name: "MP4", extensions: ["mp4"] }],
-    });
+    const audioOnly = (req as { audioOnly?: string }).audioOnly;
+    const container = (req as { container?: string }).container;
+    const opts: Electron.SaveDialogOptions = audioOnly === "wav"
+      ? {
+        title: "Export audio",
+        defaultPath: path.join(app.getPath("videos"), `Reflecto_${Date.now()}.wav`),
+        filters: [{ name: "WAV", extensions: ["wav"] }],
+      }
+      : audioOnly === "m4a"
+        ? {
+          title: "Export audio",
+          defaultPath: path.join(app.getPath("videos"), `Reflecto_${Date.now()}.m4a`),
+          filters: [{ name: "M4A", extensions: ["m4a"] }],
+        }
+        : container === "mov"
+          ? {
+            title: "Export video",
+            defaultPath: path.join(app.getPath("videos"), `Reflecto_${Date.now()}.mov`),
+            filters: [{ name: "MOV", extensions: ["mov"] }],
+          }
+          : {
+            title: "Export video",
+            defaultPath: path.join(app.getPath("videos"), `Reflecto_${Date.now()}.mp4`),
+            filters: [{ name: "MP4", extensions: ["mp4"] }],
+          };
+    const dest = await dialog.showSaveDialog(opts);
     if (dest.canceled || !dest.filePath) return null;
     return exportEditedVideo({ ...req, dest: dest.filePath });
+  });
+  ipcMain.handle("video:pickAudio", async () => {
+    const picked = await dialog.showOpenDialog({
+      title: "Choose replacement audio",
+      properties: ["openFile"],
+      filters: [{ name: "Audio", extensions: ["m4a", "mp3", "wav", "aac", "aiff", "ogg", "flac"] }],
+    });
+    if (picked.canceled || !picked.filePaths[0]) return null;
+    return picked.filePaths[0];
   });
   ipcMain.on("files:startDrag", (e, filePath: string) => {
     e.sender.startDrag({ file: filePath, icon: nativeImage.createEmpty() });
   });
   ipcMain.handle("files:reveal", (_e, filePath: string) => {
     shell.showItemInFolder(filePath);
+  });
+  ipcMain.handle("editor:smartRedact", async (_e, payload: { dataUrl: string; width: number; height: number }) => {
+    const { smartRedactBoxes } = await import("./ocr/tesseract");
+    const base64 = payload.dataUrl.replace(/^data:image\/\w+;base64,/, "");
+    const buf = Buffer.from(base64, "base64");
+    if (!buf.length) throw new Error("Smart Redact needs an image");
+    return smartRedactBoxes(buf, Math.round(payload.width) || 0, Math.round(payload.height) || 0);
   });
 
   ipcMain.handle("loginItem:set", (_e, enabled: boolean) => setLaunchAtLogin(enabled));

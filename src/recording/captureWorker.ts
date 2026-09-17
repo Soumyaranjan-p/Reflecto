@@ -2,7 +2,11 @@
  * Chromium desktop capture worker — Windows equivalent of ScreenCaptureKit.
  * Pause/resume uses MediaRecorder.pause (real, not a UI timer).
  * System audio uses desktop chromeMediaSource audio (Windows loopback).
- * Camera is composited bottom-right like BetterShot's bubble overlay.
+ * Camera is NOT composited here in production: engine.ts always sends
+ * cameraId:null and records camera via a separate DirectShow sidecar
+ * (BetterShot camera.mov equivalent). The bubble draw path below only runs
+ * when a real cameraId is passed (currently never) — kept for a future
+ * true-PiP option, not as implied behavior.
  */
 
 export interface WorkerStartConfig {

@@ -173,8 +173,8 @@ var require_dot_prop = __commonJS({
       "constructor"
     ]);
     var isValidPath = (pathSegments) => !pathSegments.some((segment) => disallowedKeys.has(segment));
-    function getPathSegments(path25) {
-      const pathArray = path25.split(".");
+    function getPathSegments(path27) {
+      const pathArray = path27.split(".");
       const parts = [];
       for (let i = 0; i < pathArray.length; i++) {
         let p = pathArray[i];
@@ -190,11 +190,11 @@ var require_dot_prop = __commonJS({
       return parts;
     }
     module2.exports = {
-      get(object, path25, value) {
-        if (!isObj(object) || typeof path25 !== "string") {
+      get(object, path27, value) {
+        if (!isObj(object) || typeof path27 !== "string") {
           return value === void 0 ? object : value;
         }
-        const pathArray = getPathSegments(path25);
+        const pathArray = getPathSegments(path27);
         if (pathArray.length === 0) {
           return;
         }
@@ -209,12 +209,12 @@ var require_dot_prop = __commonJS({
         }
         return object === void 0 ? value : object;
       },
-      set(object, path25, value) {
-        if (!isObj(object) || typeof path25 !== "string") {
+      set(object, path27, value) {
+        if (!isObj(object) || typeof path27 !== "string") {
           return object;
         }
         const root = object;
-        const pathArray = getPathSegments(path25);
+        const pathArray = getPathSegments(path27);
         for (let i = 0; i < pathArray.length; i++) {
           const p = pathArray[i];
           if (!isObj(object[p])) {
@@ -227,11 +227,11 @@ var require_dot_prop = __commonJS({
         }
         return root;
       },
-      delete(object, path25) {
-        if (!isObj(object) || typeof path25 !== "string") {
+      delete(object, path27) {
+        if (!isObj(object) || typeof path27 !== "string") {
           return false;
         }
-        const pathArray = getPathSegments(path25);
+        const pathArray = getPathSegments(path27);
         for (let i = 0; i < pathArray.length; i++) {
           const p = pathArray[i];
           if (i === pathArray.length - 1) {
@@ -244,11 +244,11 @@ var require_dot_prop = __commonJS({
           }
         }
       },
-      has(object, path25) {
-        if (!isObj(object) || typeof path25 !== "string") {
+      has(object, path27) {
+        if (!isObj(object) || typeof path27 !== "string") {
           return false;
         }
-        const pathArray = getPathSegments(path25);
+        const pathArray = getPathSegments(path27);
         if (pathArray.length === 0) {
           return false;
         }
@@ -272,15 +272,15 @@ var require_dot_prop = __commonJS({
 var require_path_exists = __commonJS({
   "node_modules/path-exists/index.js"(exports2, module2) {
     "use strict";
-    var fs16 = require("fs");
+    var fs19 = require("fs");
     module2.exports = (fp) => new Promise((resolve) => {
-      fs16.access(fp, (err) => {
+      fs19.access(fp, (err) => {
         resolve(!err);
       });
     });
     module2.exports.sync = (fp) => {
       try {
-        fs16.accessSync(fp);
+        fs19.accessSync(fp);
         return true;
       } catch (err) {
         return false;
@@ -383,21 +383,21 @@ var require_p_locate = __commonJS({
 var require_locate_path = __commonJS({
   "node_modules/locate-path/index.js"(exports2, module2) {
     "use strict";
-    var path25 = require("path");
+    var path27 = require("path");
     var pathExists = require_path_exists();
     var pLocate = require_p_locate();
     module2.exports = (iterable, options) => {
       options = Object.assign({
         cwd: process.cwd()
       }, options);
-      return pLocate(iterable, (el) => pathExists(path25.resolve(options.cwd, el)), options);
+      return pLocate(iterable, (el) => pathExists(path27.resolve(options.cwd, el)), options);
     };
     module2.exports.sync = (iterable, options) => {
       options = Object.assign({
         cwd: process.cwd()
       }, options);
       for (const el of iterable) {
-        if (pathExists.sync(path25.resolve(options.cwd, el))) {
+        if (pathExists.sync(path27.resolve(options.cwd, el))) {
           return el;
         }
       }
@@ -409,39 +409,39 @@ var require_locate_path = __commonJS({
 var require_find_up = __commonJS({
   "node_modules/find-up/index.js"(exports2, module2) {
     "use strict";
-    var path25 = require("path");
+    var path27 = require("path");
     var locatePath = require_locate_path();
     module2.exports = (filename, opts = {}) => {
-      const startDir = path25.resolve(opts.cwd || "");
-      const { root } = path25.parse(startDir);
+      const startDir = path27.resolve(opts.cwd || "");
+      const { root } = path27.parse(startDir);
       const filenames = [].concat(filename);
       return new Promise((resolve) => {
         (function find(dir) {
           locatePath(filenames, { cwd: dir }).then((file) => {
             if (file) {
-              resolve(path25.join(dir, file));
+              resolve(path27.join(dir, file));
             } else if (dir === root) {
               resolve(null);
             } else {
-              find(path25.dirname(dir));
+              find(path27.dirname(dir));
             }
           });
         })(startDir);
       });
     };
     module2.exports.sync = (filename, opts = {}) => {
-      let dir = path25.resolve(opts.cwd || "");
-      const { root } = path25.parse(dir);
+      let dir = path27.resolve(opts.cwd || "");
+      const { root } = path27.parse(dir);
       const filenames = [].concat(filename);
       while (true) {
         const file = locatePath.sync(filenames, { cwd: dir });
         if (file) {
-          return path25.join(dir, file);
+          return path27.join(dir, file);
         }
         if (dir === root) {
           return null;
         }
-        dir = path25.dirname(dir);
+        dir = path27.dirname(dir);
       }
     };
   }
@@ -461,42 +461,42 @@ var require_pkg_up = __commonJS({
 var require_env_paths = __commonJS({
   "node_modules/env-paths/index.js"(exports2, module2) {
     "use strict";
-    var path25 = require("path");
-    var os2 = require("os");
-    var homedir = os2.homedir();
-    var tmpdir = os2.tmpdir();
+    var path27 = require("path");
+    var os3 = require("os");
+    var homedir = os3.homedir();
+    var tmpdir = os3.tmpdir();
     var { env } = process;
     var macos = (name) => {
-      const library = path25.join(homedir, "Library");
+      const library = path27.join(homedir, "Library");
       return {
-        data: path25.join(library, "Application Support", name),
-        config: path25.join(library, "Preferences", name),
-        cache: path25.join(library, "Caches", name),
-        log: path25.join(library, "Logs", name),
-        temp: path25.join(tmpdir, name)
+        data: path27.join(library, "Application Support", name),
+        config: path27.join(library, "Preferences", name),
+        cache: path27.join(library, "Caches", name),
+        log: path27.join(library, "Logs", name),
+        temp: path27.join(tmpdir, name)
       };
     };
     var windows = (name) => {
-      const appData = env.APPDATA || path25.join(homedir, "AppData", "Roaming");
-      const localAppData = env.LOCALAPPDATA || path25.join(homedir, "AppData", "Local");
+      const appData = env.APPDATA || path27.join(homedir, "AppData", "Roaming");
+      const localAppData = env.LOCALAPPDATA || path27.join(homedir, "AppData", "Local");
       return {
         // Data/config/cache/log are invented by me as Windows isn't opinionated about this
-        data: path25.join(localAppData, name, "Data"),
-        config: path25.join(appData, name, "Config"),
-        cache: path25.join(localAppData, name, "Cache"),
-        log: path25.join(localAppData, name, "Log"),
-        temp: path25.join(tmpdir, name)
+        data: path27.join(localAppData, name, "Data"),
+        config: path27.join(appData, name, "Config"),
+        cache: path27.join(localAppData, name, "Cache"),
+        log: path27.join(localAppData, name, "Log"),
+        temp: path27.join(tmpdir, name)
       };
     };
     var linux = (name) => {
-      const username = path25.basename(homedir);
+      const username = path27.basename(homedir);
       return {
-        data: path25.join(env.XDG_DATA_HOME || path25.join(homedir, ".local", "share"), name),
-        config: path25.join(env.XDG_CONFIG_HOME || path25.join(homedir, ".config"), name),
-        cache: path25.join(env.XDG_CACHE_HOME || path25.join(homedir, ".cache"), name),
+        data: path27.join(env.XDG_DATA_HOME || path27.join(homedir, ".local", "share"), name),
+        config: path27.join(env.XDG_CONFIG_HOME || path27.join(homedir, ".config"), name),
+        cache: path27.join(env.XDG_CACHE_HOME || path27.join(homedir, ".cache"), name),
         // https://wiki.debian.org/XDGBaseDirectorySpecification#state
-        log: path25.join(env.XDG_STATE_HOME || path25.join(homedir, ".local", "state"), name),
-        temp: path25.join(tmpdir, username, name)
+        log: path27.join(env.XDG_STATE_HOME || path27.join(homedir, ".local", "state"), name),
+        temp: path27.join(tmpdir, username, name)
       };
     };
     var envPaths = (name, options) => {
@@ -724,41 +724,41 @@ var require_fs = __commonJS({
   "node_modules/atomically/dist/utils/fs.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    var fs16 = require("fs");
+    var fs19 = require("fs");
     var util_1 = require("util");
     var attemptify_1 = require_attemptify();
     var fs_handlers_1 = require_fs_handlers();
     var retryify_1 = require_retryify();
     var FS = {
-      chmodAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.chmod), fs_handlers_1.default.onChangeError),
-      chownAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.chown), fs_handlers_1.default.onChangeError),
-      closeAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.close)),
-      fsyncAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.fsync)),
-      mkdirAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.mkdir)),
-      realpathAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.realpath)),
-      statAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.stat)),
-      unlinkAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs16.unlink)),
-      closeRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.close), fs_handlers_1.default.isRetriableError),
-      fsyncRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.fsync), fs_handlers_1.default.isRetriableError),
-      openRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.open), fs_handlers_1.default.isRetriableError),
-      readFileRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.readFile), fs_handlers_1.default.isRetriableError),
-      renameRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.rename), fs_handlers_1.default.isRetriableError),
-      statRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.stat), fs_handlers_1.default.isRetriableError),
-      writeRetry: retryify_1.retryifyAsync(util_1.promisify(fs16.write), fs_handlers_1.default.isRetriableError),
-      chmodSyncAttempt: attemptify_1.attemptifySync(fs16.chmodSync, fs_handlers_1.default.onChangeError),
-      chownSyncAttempt: attemptify_1.attemptifySync(fs16.chownSync, fs_handlers_1.default.onChangeError),
-      closeSyncAttempt: attemptify_1.attemptifySync(fs16.closeSync),
-      mkdirSyncAttempt: attemptify_1.attemptifySync(fs16.mkdirSync),
-      realpathSyncAttempt: attemptify_1.attemptifySync(fs16.realpathSync),
-      statSyncAttempt: attemptify_1.attemptifySync(fs16.statSync),
-      unlinkSyncAttempt: attemptify_1.attemptifySync(fs16.unlinkSync),
-      closeSyncRetry: retryify_1.retryifySync(fs16.closeSync, fs_handlers_1.default.isRetriableError),
-      fsyncSyncRetry: retryify_1.retryifySync(fs16.fsyncSync, fs_handlers_1.default.isRetriableError),
-      openSyncRetry: retryify_1.retryifySync(fs16.openSync, fs_handlers_1.default.isRetriableError),
-      readFileSyncRetry: retryify_1.retryifySync(fs16.readFileSync, fs_handlers_1.default.isRetriableError),
-      renameSyncRetry: retryify_1.retryifySync(fs16.renameSync, fs_handlers_1.default.isRetriableError),
-      statSyncRetry: retryify_1.retryifySync(fs16.statSync, fs_handlers_1.default.isRetriableError),
-      writeSyncRetry: retryify_1.retryifySync(fs16.writeSync, fs_handlers_1.default.isRetriableError)
+      chmodAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs19.chmod), fs_handlers_1.default.onChangeError),
+      chownAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs19.chown), fs_handlers_1.default.onChangeError),
+      closeAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs19.close)),
+      fsyncAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs19.fsync)),
+      mkdirAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs19.mkdir)),
+      realpathAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs19.realpath)),
+      statAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs19.stat)),
+      unlinkAttempt: attemptify_1.attemptifyAsync(util_1.promisify(fs19.unlink)),
+      closeRetry: retryify_1.retryifyAsync(util_1.promisify(fs19.close), fs_handlers_1.default.isRetriableError),
+      fsyncRetry: retryify_1.retryifyAsync(util_1.promisify(fs19.fsync), fs_handlers_1.default.isRetriableError),
+      openRetry: retryify_1.retryifyAsync(util_1.promisify(fs19.open), fs_handlers_1.default.isRetriableError),
+      readFileRetry: retryify_1.retryifyAsync(util_1.promisify(fs19.readFile), fs_handlers_1.default.isRetriableError),
+      renameRetry: retryify_1.retryifyAsync(util_1.promisify(fs19.rename), fs_handlers_1.default.isRetriableError),
+      statRetry: retryify_1.retryifyAsync(util_1.promisify(fs19.stat), fs_handlers_1.default.isRetriableError),
+      writeRetry: retryify_1.retryifyAsync(util_1.promisify(fs19.write), fs_handlers_1.default.isRetriableError),
+      chmodSyncAttempt: attemptify_1.attemptifySync(fs19.chmodSync, fs_handlers_1.default.onChangeError),
+      chownSyncAttempt: attemptify_1.attemptifySync(fs19.chownSync, fs_handlers_1.default.onChangeError),
+      closeSyncAttempt: attemptify_1.attemptifySync(fs19.closeSync),
+      mkdirSyncAttempt: attemptify_1.attemptifySync(fs19.mkdirSync),
+      realpathSyncAttempt: attemptify_1.attemptifySync(fs19.realpathSync),
+      statSyncAttempt: attemptify_1.attemptifySync(fs19.statSync),
+      unlinkSyncAttempt: attemptify_1.attemptifySync(fs19.unlinkSync),
+      closeSyncRetry: retryify_1.retryifySync(fs19.closeSync, fs_handlers_1.default.isRetriableError),
+      fsyncSyncRetry: retryify_1.retryifySync(fs19.fsyncSync, fs_handlers_1.default.isRetriableError),
+      openSyncRetry: retryify_1.retryifySync(fs19.openSync, fs_handlers_1.default.isRetriableError),
+      readFileSyncRetry: retryify_1.retryifySync(fs19.readFileSync, fs_handlers_1.default.isRetriableError),
+      renameSyncRetry: retryify_1.retryifySync(fs19.renameSync, fs_handlers_1.default.isRetriableError),
+      statSyncRetry: retryify_1.retryifySync(fs19.statSync, fs_handlers_1.default.isRetriableError),
+      writeSyncRetry: retryify_1.retryifySync(fs19.writeSync, fs_handlers_1.default.isRetriableError)
     };
     exports2.default = FS;
   }
@@ -824,7 +824,7 @@ var require_temp = __commonJS({
   "node_modules/atomically/dist/utils/temp.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    var path25 = require("path");
+    var path27 = require("path");
     var consts_1 = require_consts();
     var fs_1 = require_fs();
     var Temp = {
@@ -859,7 +859,7 @@ var require_temp = __commonJS({
         }
       },
       truncate: (filePath) => {
-        const basename = path25.basename(filePath);
+        const basename = path27.basename(filePath);
         if (basename.length <= consts_1.LIMIT_BASENAME_LENGTH)
           return filePath;
         const truncable = /^(\.?)(.*?)((?:\.[^.]+)?(?:\.tmp-\d{10}[a-f0-9]{6})?)$/.exec(basename);
@@ -880,7 +880,7 @@ var require_dist = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.writeFileSync = exports2.writeFile = exports2.readFileSync = exports2.readFile = void 0;
-    var path25 = require("path");
+    var path27 = require("path");
     var consts_1 = require_consts();
     var fs_1 = require_fs();
     var lang_1 = require_lang();
@@ -934,7 +934,7 @@ var require_dist = __commonJS({
               options.mode = stat.mode;
           }
         }
-        const parentPath = path25.dirname(filePath);
+        const parentPath = path27.dirname(filePath);
         await fs_1.default.mkdirAttempt(parentPath, {
           mode: consts_1.DEFAULT_FOLDER_MODE,
           recursive: true
@@ -1000,7 +1000,7 @@ var require_dist = __commonJS({
               options.mode = stat.mode;
           }
         }
-        const parentPath = path25.dirname(filePath);
+        const parentPath = path27.dirname(filePath);
         fs_1.default.mkdirSyncAttempt(parentPath, {
           mode: consts_1.DEFAULT_FOLDER_MODE,
           recursive: true
@@ -3824,8 +3824,8 @@ var require_validate = __commonJS({
           return data;
       }
       let expr = data;
-      const segments = jsonPointer.split("/");
-      for (const segment of segments) {
+      const segments2 = jsonPointer.split("/");
+      for (const segment of segments2) {
         if (segment) {
           data = (0, codegen_1._)`${data}${(0, codegen_1.getProperty)((0, util_1.unescapeJsonPointer)(segment))}`;
           expr = (0, codegen_1._)`${expr} && ${data}`;
@@ -4275,8 +4275,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path25) {
-      let input = path25;
+    function removeDotSegments(path27) {
+      let input = path27;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -4685,8 +4685,8 @@ var require_schemes = __commonJS({
       }
       if (wsComponent.resourceName) {
         const queryIndex = wsComponent.resourceName.indexOf("?");
-        const path25 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
-        wsComponent.path = path25 && path25 !== "/" ? path25 : void 0;
+        const path27 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
+        wsComponent.path = path27 && path27 !== "/" ? path27 : void 0;
         wsComponent.query = queryIndex === -1 ? void 0 : wsComponent.resourceName.slice(queryIndex + 1);
         wsComponent.resourceName = void 0;
       }
@@ -5643,9 +5643,9 @@ var require_core = __commonJS({
         const rules = this.RULES.all;
         metaSchema = JSON.parse(JSON.stringify(metaSchema));
         for (const jsonPointer of keywordsJsonPointers) {
-          const segments = jsonPointer.split("/").slice(1);
+          const segments2 = jsonPointer.split("/").slice(1);
           let keywords = metaSchema;
-          for (const seg of segments)
+          for (const seg of segments2)
             keywords = keywords[seg];
           for (const key in rules) {
             const rule = rules[key];
@@ -10804,8 +10804,8 @@ var require_validate2 = __commonJS({
           return data;
       }
       let expr = data;
-      const segments = jsonPointer.split("/");
-      for (const segment of segments) {
+      const segments2 = jsonPointer.split("/");
+      for (const segment of segments2) {
         if (segment) {
           data = (0, codegen_1._)`${data}${(0, codegen_1.getProperty)((0, util_1.unescapeJsonPointer)(segment))}`;
           expr = (0, codegen_1._)`${expr} && ${data}`;
@@ -11505,9 +11505,9 @@ var require_core3 = __commonJS({
         const rules = this.RULES.all;
         metaSchema = JSON.parse(JSON.stringify(metaSchema));
         for (const jsonPointer of keywordsJsonPointers) {
-          const segments = jsonPointer.split("/").slice(1);
+          const segments2 = jsonPointer.split("/").slice(1);
           let keywords = metaSchema;
-          for (const seg of segments)
+          for (const seg of segments2)
             keywords = keywords[seg];
           for (const key in rules) {
             const rule = rules[key];
@@ -13857,12 +13857,12 @@ var require_dist2 = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs16, exportName) {
+    function addFormats(ajv, list, fs19, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = codegen_1._`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs16[f]);
+        ajv.addFormat(f, fs19[f]);
     }
     module2.exports = exports2 = formatsPlugin;
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -16038,8 +16038,8 @@ var require_source = __commonJS({
     var _Conf_defaultValues;
     Object.defineProperty(exports2, "__esModule", { value: true });
     var util_1 = require("util");
-    var fs16 = require("fs");
-    var path25 = require("path");
+    var fs19 = require("fs");
+    var path27 = require("path");
     var crypto2 = require("crypto");
     var assert = require("assert");
     var events_1 = require("events");
@@ -16062,7 +16062,7 @@ var require_source = __commonJS({
     var parentDir = "";
     try {
       delete require.cache[__filename];
-      parentDir = path25.dirname((_b = (_a = module2.parent) === null || _a === void 0 ? void 0 : _a.filename) !== null && _b !== void 0 ? _b : ".");
+      parentDir = path27.dirname((_b = (_a = module2.parent) === null || _a === void 0 ? void 0 : _a.filename) !== null && _b !== void 0 ? _b : ".");
     } catch (_c) {
     }
     var checkValueType = (key, value) => {
@@ -16098,7 +16098,7 @@ var require_source = __commonJS({
         };
         const getPackageData = onetime(() => {
           const packagePath = pkgUp.sync({ cwd: parentDir });
-          const packageData = packagePath && JSON.parse(fs16.readFileSync(packagePath, "utf8"));
+          const packageData = packagePath && JSON.parse(fs19.readFileSync(packagePath, "utf8"));
           return packageData !== null && packageData !== void 0 ? packageData : {};
         });
         if (!options.cwd) {
@@ -16146,7 +16146,7 @@ var require_source = __commonJS({
         this.events = new events_1.EventEmitter();
         __classPrivateFieldSet(this, _Conf_encryptionKey, options.encryptionKey, "f");
         const fileExtension = options.fileExtension ? `.${options.fileExtension}` : "";
-        this.path = path25.resolve(options.cwd, `${(_a2 = options.configName) !== null && _a2 !== void 0 ? _a2 : "config"}${fileExtension}`);
+        this.path = path27.resolve(options.cwd, `${(_a2 = options.configName) !== null && _a2 !== void 0 ? _a2 : "config"}${fileExtension}`);
         const fileStore = this.store;
         const store2 = Object.assign(createPlainObject(), options.defaults, fileStore);
         this._validate(store2);
@@ -16287,7 +16287,7 @@ var require_source = __commonJS({
       }
       get store() {
         try {
-          const data = fs16.readFileSync(this.path, __classPrivateFieldGet(this, _Conf_encryptionKey, "f") ? null : "utf8");
+          const data = fs19.readFileSync(this.path, __classPrivateFieldGet(this, _Conf_encryptionKey, "f") ? null : "utf8");
           const dataString = this._encryptData(data);
           const deserializedData = this._deserialize(dataString);
           this._validate(deserializedData);
@@ -16363,7 +16363,7 @@ var require_source = __commonJS({
         throw new Error("Config schema violation: " + errors.join("; "));
       }
       _ensureDirectory() {
-        fs16.mkdirSync(path25.dirname(this.path), { recursive: true });
+        fs19.mkdirSync(path27.dirname(this.path), { recursive: true });
       }
       _write(value) {
         let data = this._serialize(value);
@@ -16374,13 +16374,13 @@ var require_source = __commonJS({
           data = Buffer.concat([initializationVector, Buffer.from(":"), cipher.update(Buffer.from(data)), cipher.final()]);
         }
         if (process.env.SNAP) {
-          fs16.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
+          fs19.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
         } else {
           try {
             atomically.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
           } catch (error) {
             if ((error === null || error === void 0 ? void 0 : error.code) === "EXDEV") {
-              fs16.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
+              fs19.writeFileSync(this.path, data, { mode: __classPrivateFieldGet(this, _Conf_options, "f").configFileMode });
               return;
             }
             throw error;
@@ -16389,15 +16389,15 @@ var require_source = __commonJS({
       }
       _watch() {
         this._ensureDirectory();
-        if (!fs16.existsSync(this.path)) {
+        if (!fs19.existsSync(this.path)) {
           this._write(createPlainObject());
         }
         if (process.platform === "win32") {
-          fs16.watch(this.path, { persistent: false }, debounceFn(() => {
+          fs19.watch(this.path, { persistent: false }, debounceFn(() => {
             this.events.emit("change");
           }, { wait: 100 }));
         } else {
-          fs16.watchFile(this.path, { persistent: false }, debounceFn(() => {
+          fs19.watchFile(this.path, { persistent: false }, debounceFn(() => {
             this.events.emit("change");
           }, { wait: 5e3 }));
         }
@@ -16485,17 +16485,17 @@ var require_source = __commonJS({
 var require_electron_store = __commonJS({
   "node_modules/electron-store/index.js"(exports2, module2) {
     "use strict";
-    var path25 = require("path");
-    var { app: app12, ipcMain: ipcMain12, ipcRenderer, shell: shell3 } = require("electron");
+    var path27 = require("path");
+    var { app: app13, ipcMain: ipcMain12, ipcRenderer, shell: shell3 } = require("electron");
     var Conf = require_source();
     var isInitialized = false;
     var initDataListener = () => {
-      if (!ipcMain12 || !app12) {
+      if (!ipcMain12 || !app13) {
         throw new Error("Electron Store: You need to call `.initRenderer()` from the main process.");
       }
       const appData = {
-        defaultCwd: app12.getPath("userData"),
-        appVersion: app12.getVersion()
+        defaultCwd: app13.getPath("userData"),
+        appVersion: app13.getVersion()
       };
       if (isInitialized) {
         return appData;
@@ -16516,7 +16516,7 @@ var require_electron_store = __commonJS({
             throw new Error("Electron Store: You need to call `.initRenderer()` from the main process.");
           }
           ({ defaultCwd, appVersion } = appData);
-        } else if (ipcMain12 && app12) {
+        } else if (ipcMain12 && app13) {
           ({ defaultCwd, appVersion } = initDataListener());
         }
         options = {
@@ -16527,7 +16527,7 @@ var require_electron_store = __commonJS({
           options.projectVersion = appVersion;
         }
         if (options.cwd) {
-          options.cwd = path25.isAbsolute(options.cwd) ? options.cwd : path25.join(defaultCwd, options.cwd);
+          options.cwd = path27.isAbsolute(options.cwd) ? options.cwd : path27.join(defaultCwd, options.cwd);
         } else {
           options.cwd = defaultCwd;
         }
@@ -16550,18 +16550,84 @@ var require_electron_store = __commonJS({
 });
 
 // src/shared/beautifierTypes.ts
-var defaultBeautifierConfig;
+function cameraHasEffect(c) {
+  if (!c) return false;
+  return !approxZero(c.panX) || !approxZero(c.panY) || !approxZero(c.tiltXDegrees) || !approxZero(c.tiltYDegrees) || !approxZero(c.rotationXDegrees) || !approxZero(c.rotationYDegrees) || !approxZero(c.rollDegrees) || Math.abs((c.zoom ?? 1) - 1) > 1e-4;
+}
+function progressiveBlurIsActive(b) {
+  return Boolean(b?.isEnabled && (b?.strength ?? 0) > 0.01);
+}
+function watermarkIsVisible(w) {
+  return Boolean(w?.text?.trim() && (w?.opacity ?? 0) > 0);
+}
+function normalizeBeautifierConfig(raw) {
+  const c = raw ?? {};
+  return {
+    ...defaultBeautifierConfig,
+    ...c,
+    style: c.style ?? defaultBeautifierConfig.style,
+    border: { ...defaultBeautifierConfig.border, ...c.border ?? {} },
+    camera: { ...defaultCameraSettings, ...c.camera ?? {} },
+    progressiveBlur: {
+      ...defaultProgressiveBlurSettings,
+      ...c.progressiveBlur ?? {},
+      focusPosition: {
+        ...defaultProgressiveBlurSettings.focusPosition,
+        ...c.progressiveBlur?.focusPosition ?? {}
+      }
+    },
+    watermark: { ...defaultWatermarkSettings, ...c.watermark ?? {} }
+  };
+}
+function beautifierNeedsCanvas(config) {
+  const c = normalizeBeautifierConfig(config);
+  return c.style.kind !== "none" || Boolean(c.border?.enabled) || cameraHasEffect(c.camera) || progressiveBlurIsActive(c.progressiveBlur) || watermarkIsVisible(c.watermark);
+}
+var defaultCameraSettings, defaultProgressiveBlurSettings, defaultWatermarkSettings, defaultBeautifierConfig, approxZero;
 var init_beautifierTypes = __esm({
   "src/shared/beautifierTypes.ts"() {
     "use strict";
+    defaultCameraSettings = {
+      panX: 0,
+      panY: 0,
+      tiltXDegrees: 0,
+      tiltYDegrees: 0,
+      rotationXDegrees: 0,
+      rotationYDegrees: 0,
+      rollDegrees: 0,
+      fieldOfViewDegrees: 24,
+      zoom: 1
+    };
+    defaultProgressiveBlurSettings = {
+      isEnabled: false,
+      edgeMode: "bleed",
+      mode: "radial",
+      strength: 18,
+      falloff: 0.55,
+      focusSize: 0.45,
+      focusPosition: { x: 0.5, y: 0.5 },
+      directionDegrees: 0
+    };
+    defaultWatermarkSettings = {
+      text: "",
+      density: 4,
+      fontSize: 72,
+      rotationDegrees: 45,
+      opacity: 0.18,
+      color: "#e6e6e6"
+    };
     defaultBeautifierConfig = {
       style: { kind: "none" },
       padding: 0.08,
       cornerRadius: 0.018,
       shadowStrength: 0.36,
       aspectRatio: "auto",
-      border: { enabled: false, color: "#ffffff", thickness: 0.012, opacity: 1 }
+      border: { enabled: false, color: "#ffffff", thickness: 0.012, opacity: 1 },
+      camera: { ...defaultCameraSettings },
+      progressiveBlur: { ...defaultProgressiveBlurSettings },
+      watermark: { ...defaultWatermarkSettings }
     };
+    approxZero = (v) => Math.abs(Number(v) || 0) <= 1e-4;
   }
 });
 
@@ -17002,7 +17068,161 @@ var init_regionSelection = __esm({
   }
 });
 
+// src/shared/smartRedact.ts
+function stripEdges(s) {
+  return s.replace(/^['"“”‘’(\[{<]+|['"“”‘’)\]}>.,;:!?]+$/g, "");
+}
+function isLikelyIPv4(s) {
+  if (!IPV4_RE.test(s)) return false;
+  return s.split(".").every((o) => {
+    if (o.length > 1 && o.startsWith("0")) return false;
+    const n = Number(o);
+    return Number.isInteger(n) && n >= 0 && n <= 255;
+  });
+}
+function luhnCheck(digits) {
+  if (!/^\d{13,19}$/.test(digits)) return false;
+  let sum = 0;
+  let dbl = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let d = Number(digits[i]);
+    if (dbl) {
+      d *= 2;
+      if (d > 9) d -= 9;
+    }
+    sum += d;
+    dbl = !dbl;
+  }
+  return sum % 10 === 0;
+}
+function digitsOnly(s) {
+  return s.replace(/\D/g, "");
+}
+function classifyWord(raw) {
+  const s = stripEdges(raw);
+  if (!s) return null;
+  if (EMAIL_RE.test(s)) return "email";
+  if (URL_RE.test(s)) return "url";
+  if (isLikelyIPv4(s)) return "ipv4";
+  if (JWT_RE.test(s) && s.length >= 20) return "jwt";
+  if (APIKEY_RE.test(s)) return "apikey";
+  const digits = digitsOnly(s);
+  if (digits.length >= 13 && digits.length <= 19 && /^[\d\s-]+$/.test(s) && luhnCheck(digits)) return "card";
+  if (digits.length >= 8 && digits.length <= 15 && /^[+()\-\s.\d]+$/.test(s) && /\d/.test(s)) {
+    if (digits.length >= 8) return "phone";
+  }
+  if (TOKEN_RE.test(s) && /[A-Za-z]/.test(s) && /\d/.test(s)) return "token";
+  return null;
+}
+function union(a, b) {
+  const x = Math.min(a.x, b.x);
+  const y = Math.min(a.y, b.y);
+  const r = Math.max(a.x + a.w, b.x + b.w);
+  const bt = Math.max(a.y + a.h, b.y + b.h);
+  return { kind: a.kind, x, y, w: r - x, h: bt - y };
+}
+function overlap(a, b) {
+  const x = Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x));
+  const y = Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+  const area = Math.min(a.w * a.h, b.w * b.h);
+  return area > 0 ? x * y / area : 0;
+}
+function findSensitiveBoxes(words, imgW, imgH) {
+  const boxes = [];
+  const clamp = (b) => {
+    const x = Math.max(0, Math.min(b.x, imgW - 1));
+    const y = Math.max(0, Math.min(b.y, imgH - 1));
+    const w = Math.max(1, Math.min(b.w, imgW - x));
+    const h = Math.max(1, Math.min(b.h, imgH - y));
+    return w >= 4 && h >= 4 ? { ...b, x, y, w, h } : null;
+  };
+  const push2 = (kind, w) => {
+    const b = clamp({
+      kind,
+      x: w.bbox.x0,
+      y: w.bbox.y0,
+      w: w.bbox.x1 - w.bbox.x0,
+      h: w.bbox.y1 - w.bbox.y0
+    });
+    if (b) boxes.push(b);
+  };
+  const runs = [];
+  let run = [];
+  const flushRun = () => {
+    if (run.length >= 2) runs.push(run);
+    run = [];
+  };
+  for (const w of words) {
+    const s = stripEdges(w.text);
+    if (DIGIT_GROUP_RE.test(s)) {
+      const prev = run[run.length - 1];
+      const sameLine = !prev || Math.abs(prev.bbox.y0 - w.bbox.y0) < (w.bbox.y1 - w.bbox.y0) * 0.8;
+      if (sameLine) run.push(w);
+      else {
+        flushRun();
+        run.push(w);
+      }
+    } else flushRun();
+  }
+  flushRun();
+  const runMembers = /* @__PURE__ */ new Set();
+  for (const r of runs) {
+    const digits = r.map((w) => stripEdges(w.text)).join("");
+    if (digits.length >= 13 && digits.length <= 19 && luhnCheck(digits)) {
+      const first = r[0].bbox;
+      const last = r[r.length - 1].bbox;
+      const b = clamp({
+        kind: "card",
+        x: first.x0,
+        y: Math.min(first.y0, last.y0),
+        w: last.x1 - first.x0,
+        h: Math.max(first.y1, last.y1) - Math.min(first.y0, last.y0)
+      });
+      if (b) boxes.push(b);
+      r.forEach((w) => runMembers.add(w));
+    }
+  }
+  words.forEach((w, i) => {
+    if (runMembers.has(w)) return;
+    const s = stripEdges(w.text);
+    if (SECRET_KEY_RE.test(s)) {
+      const target = words[i + 1] && !runMembers.has(words[i + 1]) ? words[i + 1] : w;
+      push2("secret", target);
+      return;
+    }
+    const kind = classifyWord(w.text);
+    if (kind) push2(kind, w);
+  });
+  const merged = [];
+  for (const b of boxes) {
+    const hit = merged.find((m) => overlap(m, b) > 0.5);
+    if (hit) Object.assign(hit, union(hit, b));
+    else merged.push({ ...b });
+  }
+  return merged;
+}
+var EMAIL_RE, URL_RE, IPV4_RE, JWT_RE, APIKEY_RE, TOKEN_RE, SECRET_KEY_RE, DIGIT_GROUP_RE;
+var init_smartRedact = __esm({
+  "src/shared/smartRedact.ts"() {
+    "use strict";
+    EMAIL_RE = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    URL_RE = /^(https?:\/\/|www\.)\S+\.\S+/i;
+    IPV4_RE = /^\d{1,3}(\.\d{1,3}){3}$/;
+    JWT_RE = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+    APIKEY_RE = /^(sk-(live|test)-[A-Za-z0-9]{8,}|sk_[A-Za-z0-9]{8,}|pk_(live|test)_[A-Za-z0-9]{8,}|rk_[A-Za-z0-9]{8,}|ghp_[A-Za-z0-9]{8,}|gho_[A-Za-z0-9]{8,}|AKIA[0-9A-Z]{16}|xox[bpas]-[A-Za-z0-9-]{8,})$/;
+    TOKEN_RE = /^[A-Za-z0-9\-_~.+=/]{24,}$/;
+    SECRET_KEY_RE = /^(password|passwd|secret|api[_-]?key|bearer|token)\s*[:=]/i;
+    DIGIT_GROUP_RE = /^\d{3,4}$/;
+  }
+});
+
 // electron/ocr/tesseract.ts
+var tesseract_exports = {};
+__export(tesseract_exports, {
+  recognizeWords: () => recognizeWords,
+  runOCR: () => runOCR,
+  smartRedactBoxes: () => smartRedactBoxes
+});
 async function runOCR(pngBuffer, singleLine) {
   const worker3 = await import_tesseract.default.createWorker("eng");
   try {
@@ -17013,11 +17233,30 @@ async function runOCR(pngBuffer, singleLine) {
     await worker3.terminate();
   }
 }
+async function recognizeWords(pngBuffer) {
+  const worker3 = await import_tesseract.default.createWorker("eng");
+  try {
+    const { data } = await worker3.recognize(pngBuffer);
+    const words = data.words ?? [];
+    return words.filter((w) => w.text && w.text.trim() && w.bbox).map((w) => ({
+      text: w.text,
+      bbox: w.bbox,
+      confidence: typeof w.confidence === "number" ? w.confidence : -1
+    }));
+  } finally {
+    await worker3.terminate();
+  }
+}
+async function smartRedactBoxes(pngBuffer, imgW, imgH) {
+  const words = await recognizeWords(pngBuffer);
+  return { boxes: findSensitiveBoxes(words, imgW, imgH), wordCount: words.length };
+}
 var import_tesseract;
 var init_tesseract = __esm({
   "electron/ocr/tesseract.ts"() {
     "use strict";
     import_tesseract = __toESM(require("tesseract.js"));
+    init_smartRedact();
   }
 });
 
@@ -18560,7 +18799,7 @@ function ensureWorker() {
   return ready.then(() => worker);
 }
 async function beautifyPNG(png, config = defaultBeautifierConfig) {
-  if (config.style.kind === "none" && !config.border?.enabled) return png;
+  if (!beautifierNeedsCanvas(normalizeBeautifierConfig(config))) return png;
   const win2 = await ensureWorker();
   const dataUrl = import_electron15.nativeImage.createFromBuffer(png).toDataURL();
   const result = await win2.webContents.executeJavaScript(
@@ -18887,54 +19126,54 @@ var require_polyfills = __commonJS({
     }
     var chdir;
     module2.exports = patch;
-    function patch(fs16) {
+    function patch(fs19) {
       if (constants.hasOwnProperty("O_SYMLINK") && process.version.match(/^v0\.6\.[0-2]|^v0\.5\./)) {
-        patchLchmod(fs16);
+        patchLchmod(fs19);
       }
-      if (!fs16.lutimes) {
-        patchLutimes(fs16);
+      if (!fs19.lutimes) {
+        patchLutimes(fs19);
       }
-      fs16.chown = chownFix(fs16.chown);
-      fs16.fchown = chownFix(fs16.fchown);
-      fs16.lchown = chownFix(fs16.lchown);
-      fs16.chmod = chmodFix(fs16.chmod);
-      fs16.fchmod = chmodFix(fs16.fchmod);
-      fs16.lchmod = chmodFix(fs16.lchmod);
-      fs16.chownSync = chownFixSync(fs16.chownSync);
-      fs16.fchownSync = chownFixSync(fs16.fchownSync);
-      fs16.lchownSync = chownFixSync(fs16.lchownSync);
-      fs16.chmodSync = chmodFixSync(fs16.chmodSync);
-      fs16.fchmodSync = chmodFixSync(fs16.fchmodSync);
-      fs16.lchmodSync = chmodFixSync(fs16.lchmodSync);
-      fs16.stat = statFix(fs16.stat);
-      fs16.fstat = statFix(fs16.fstat);
-      fs16.lstat = statFix(fs16.lstat);
-      fs16.statSync = statFixSync(fs16.statSync);
-      fs16.fstatSync = statFixSync(fs16.fstatSync);
-      fs16.lstatSync = statFixSync(fs16.lstatSync);
-      if (fs16.chmod && !fs16.lchmod) {
-        fs16.lchmod = function(path25, mode, cb) {
+      fs19.chown = chownFix(fs19.chown);
+      fs19.fchown = chownFix(fs19.fchown);
+      fs19.lchown = chownFix(fs19.lchown);
+      fs19.chmod = chmodFix(fs19.chmod);
+      fs19.fchmod = chmodFix(fs19.fchmod);
+      fs19.lchmod = chmodFix(fs19.lchmod);
+      fs19.chownSync = chownFixSync(fs19.chownSync);
+      fs19.fchownSync = chownFixSync(fs19.fchownSync);
+      fs19.lchownSync = chownFixSync(fs19.lchownSync);
+      fs19.chmodSync = chmodFixSync(fs19.chmodSync);
+      fs19.fchmodSync = chmodFixSync(fs19.fchmodSync);
+      fs19.lchmodSync = chmodFixSync(fs19.lchmodSync);
+      fs19.stat = statFix(fs19.stat);
+      fs19.fstat = statFix(fs19.fstat);
+      fs19.lstat = statFix(fs19.lstat);
+      fs19.statSync = statFixSync(fs19.statSync);
+      fs19.fstatSync = statFixSync(fs19.fstatSync);
+      fs19.lstatSync = statFixSync(fs19.lstatSync);
+      if (fs19.chmod && !fs19.lchmod) {
+        fs19.lchmod = function(path27, mode, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs16.lchmodSync = function() {
+        fs19.lchmodSync = function() {
         };
       }
-      if (fs16.chown && !fs16.lchown) {
-        fs16.lchown = function(path25, uid, gid, cb) {
+      if (fs19.chown && !fs19.lchown) {
+        fs19.lchown = function(path27, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
-        fs16.lchownSync = function() {
+        fs19.lchownSync = function() {
         };
       }
       if (platform === "win32") {
-        fs16.rename = typeof fs16.rename !== "function" ? fs16.rename : function(fs$rename) {
+        fs19.rename = typeof fs19.rename !== "function" ? fs19.rename : function(fs$rename) {
           function rename(from, to, cb) {
             var start = Date.now();
             var backoff = 0;
             fs$rename(from, to, function CB(er) {
               if (er && (er.code === "EACCES" || er.code === "EPERM" || er.code === "EBUSY") && Date.now() - start < 6e4) {
                 setTimeout(function() {
-                  fs16.stat(to, function(stater, st) {
+                  fs19.stat(to, function(stater, st) {
                     if (stater && stater.code === "ENOENT")
                       fs$rename(from, to, CB);
                     else
@@ -18950,9 +19189,9 @@ var require_polyfills = __commonJS({
           }
           if (Object.setPrototypeOf) Object.setPrototypeOf(rename, fs$rename);
           return rename;
-        }(fs16.rename);
+        }(fs19.rename);
       }
-      fs16.read = typeof fs16.read !== "function" ? fs16.read : function(fs$read) {
+      fs19.read = typeof fs19.read !== "function" ? fs19.read : function(fs$read) {
         function read(fd, buffer, offset, length, position, callback_) {
           var callback;
           if (callback_ && typeof callback_ === "function") {
@@ -18960,22 +19199,22 @@ var require_polyfills = __commonJS({
             callback = function(er, _, __) {
               if (er && er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
-                return fs$read.call(fs16, fd, buffer, offset, length, position, callback);
+                return fs$read.call(fs19, fd, buffer, offset, length, position, callback);
               }
               callback_.apply(this, arguments);
             };
           }
-          return fs$read.call(fs16, fd, buffer, offset, length, position, callback);
+          return fs$read.call(fs19, fd, buffer, offset, length, position, callback);
         }
         if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read);
         return read;
-      }(fs16.read);
-      fs16.readSync = typeof fs16.readSync !== "function" ? fs16.readSync : /* @__PURE__ */ function(fs$readSync) {
+      }(fs19.read);
+      fs19.readSync = typeof fs19.readSync !== "function" ? fs19.readSync : /* @__PURE__ */ function(fs$readSync) {
         return function(fd, buffer, offset, length, position) {
           var eagCounter = 0;
           while (true) {
             try {
-              return fs$readSync.call(fs16, fd, buffer, offset, length, position);
+              return fs$readSync.call(fs19, fd, buffer, offset, length, position);
             } catch (er) {
               if (er.code === "EAGAIN" && eagCounter < 10) {
                 eagCounter++;
@@ -18985,11 +19224,11 @@ var require_polyfills = __commonJS({
             }
           }
         };
-      }(fs16.readSync);
-      function patchLchmod(fs17) {
-        fs17.lchmod = function(path25, mode, callback) {
-          fs17.open(
-            path25,
+      }(fs19.readSync);
+      function patchLchmod(fs20) {
+        fs20.lchmod = function(path27, mode, callback) {
+          fs20.open(
+            path27,
             constants.O_WRONLY | constants.O_SYMLINK,
             mode,
             function(err, fd) {
@@ -18997,80 +19236,80 @@ var require_polyfills = __commonJS({
                 if (callback) callback(err);
                 return;
               }
-              fs17.fchmod(fd, mode, function(err2) {
-                fs17.close(fd, function(err22) {
+              fs20.fchmod(fd, mode, function(err2) {
+                fs20.close(fd, function(err22) {
                   if (callback) callback(err2 || err22);
                 });
               });
             }
           );
         };
-        fs17.lchmodSync = function(path25, mode) {
-          var fd = fs17.openSync(path25, constants.O_WRONLY | constants.O_SYMLINK, mode);
+        fs20.lchmodSync = function(path27, mode) {
+          var fd = fs20.openSync(path27, constants.O_WRONLY | constants.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
-            ret = fs17.fchmodSync(fd, mode);
+            ret = fs20.fchmodSync(fd, mode);
             threw = false;
           } finally {
             if (threw) {
               try {
-                fs17.closeSync(fd);
+                fs20.closeSync(fd);
               } catch (er) {
               }
             } else {
-              fs17.closeSync(fd);
+              fs20.closeSync(fd);
             }
           }
           return ret;
         };
       }
-      function patchLutimes(fs17) {
-        if (constants.hasOwnProperty("O_SYMLINK") && fs17.futimes) {
-          fs17.lutimes = function(path25, at, mt, cb) {
-            fs17.open(path25, constants.O_SYMLINK, function(er, fd) {
+      function patchLutimes(fs20) {
+        if (constants.hasOwnProperty("O_SYMLINK") && fs20.futimes) {
+          fs20.lutimes = function(path27, at, mt, cb) {
+            fs20.open(path27, constants.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
               }
-              fs17.futimes(fd, at, mt, function(er2) {
-                fs17.close(fd, function(er22) {
+              fs20.futimes(fd, at, mt, function(er2) {
+                fs20.close(fd, function(er22) {
                   if (cb) cb(er2 || er22);
                 });
               });
             });
           };
-          fs17.lutimesSync = function(path25, at, mt) {
-            var fd = fs17.openSync(path25, constants.O_SYMLINK);
+          fs20.lutimesSync = function(path27, at, mt) {
+            var fd = fs20.openSync(path27, constants.O_SYMLINK);
             var ret;
             var threw = true;
             try {
-              ret = fs17.futimesSync(fd, at, mt);
+              ret = fs20.futimesSync(fd, at, mt);
               threw = false;
             } finally {
               if (threw) {
                 try {
-                  fs17.closeSync(fd);
+                  fs20.closeSync(fd);
                 } catch (er) {
                 }
               } else {
-                fs17.closeSync(fd);
+                fs20.closeSync(fd);
               }
             }
             return ret;
           };
-        } else if (fs17.futimes) {
-          fs17.lutimes = function(_a, _b, _c, cb) {
+        } else if (fs20.futimes) {
+          fs20.lutimes = function(_a, _b, _c, cb) {
             if (cb) process.nextTick(cb);
           };
-          fs17.lutimesSync = function() {
+          fs20.lutimesSync = function() {
           };
         }
       }
       function chmodFix(orig) {
         if (!orig) return orig;
         return function(target, mode, cb) {
-          return orig.call(fs16, target, mode, function(er) {
+          return orig.call(fs19, target, mode, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -19080,7 +19319,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, mode) {
           try {
-            return orig.call(fs16, target, mode);
+            return orig.call(fs19, target, mode);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -19089,7 +19328,7 @@ var require_polyfills = __commonJS({
       function chownFix(orig) {
         if (!orig) return orig;
         return function(target, uid, gid, cb) {
-          return orig.call(fs16, target, uid, gid, function(er) {
+          return orig.call(fs19, target, uid, gid, function(er) {
             if (chownErOk(er)) er = null;
             if (cb) cb.apply(this, arguments);
           });
@@ -19099,7 +19338,7 @@ var require_polyfills = __commonJS({
         if (!orig) return orig;
         return function(target, uid, gid) {
           try {
-            return orig.call(fs16, target, uid, gid);
+            return orig.call(fs19, target, uid, gid);
           } catch (er) {
             if (!chownErOk(er)) throw er;
           }
@@ -19119,13 +19358,13 @@ var require_polyfills = __commonJS({
             }
             if (cb) cb.apply(this, arguments);
           }
-          return options ? orig.call(fs16, target, options, callback) : orig.call(fs16, target, callback);
+          return options ? orig.call(fs19, target, options, callback) : orig.call(fs19, target, callback);
         };
       }
       function statFixSync(orig) {
         if (!orig) return orig;
         return function(target, options) {
-          var stats = options ? orig.call(fs16, target, options) : orig.call(fs16, target);
+          var stats = options ? orig.call(fs19, target, options) : orig.call(fs19, target);
           if (stats) {
             if (stats.uid < 0) stats.uid += 4294967296;
             if (stats.gid < 0) stats.gid += 4294967296;
@@ -19154,16 +19393,16 @@ var require_legacy_streams = __commonJS({
   "node_modules/graceful-fs/legacy-streams.js"(exports2, module2) {
     var Stream = require("stream").Stream;
     module2.exports = legacy;
-    function legacy(fs16) {
+    function legacy(fs19) {
       return {
         ReadStream,
         WriteStream
       };
-      function ReadStream(path25, options) {
-        if (!(this instanceof ReadStream)) return new ReadStream(path25, options);
+      function ReadStream(path27, options) {
+        if (!(this instanceof ReadStream)) return new ReadStream(path27, options);
         Stream.call(this);
         var self2 = this;
-        this.path = path25;
+        this.path = path27;
         this.fd = null;
         this.readable = true;
         this.paused = false;
@@ -19197,7 +19436,7 @@ var require_legacy_streams = __commonJS({
           });
           return;
         }
-        fs16.open(this.path, this.flags, this.mode, function(err, fd) {
+        fs19.open(this.path, this.flags, this.mode, function(err, fd) {
           if (err) {
             self2.emit("error", err);
             self2.readable = false;
@@ -19208,10 +19447,10 @@ var require_legacy_streams = __commonJS({
           self2._read();
         });
       }
-      function WriteStream(path25, options) {
-        if (!(this instanceof WriteStream)) return new WriteStream(path25, options);
+      function WriteStream(path27, options) {
+        if (!(this instanceof WriteStream)) return new WriteStream(path27, options);
         Stream.call(this);
-        this.path = path25;
+        this.path = path27;
         this.fd = null;
         this.writable = true;
         this.flags = "w";
@@ -19236,7 +19475,7 @@ var require_legacy_streams = __commonJS({
         this.busy = false;
         this._queue = [];
         if (this.fd === null) {
-          this._open = fs16.open;
+          this._open = fs19.open;
           this._queue.push([this._open, this.path, this.flags, this.mode, void 0]);
           this.flush();
         }
@@ -19271,7 +19510,7 @@ var require_clone = __commonJS({
 // node_modules/graceful-fs/graceful-fs.js
 var require_graceful_fs = __commonJS({
   "node_modules/graceful-fs/graceful-fs.js"(exports2, module2) {
-    var fs16 = require("fs");
+    var fs19 = require("fs");
     var polyfills = require_polyfills();
     var legacy = require_legacy_streams();
     var clone = require_clone();
@@ -19303,12 +19542,12 @@ var require_graceful_fs = __commonJS({
         m = "GFS4: " + m.split(/\n/).join("\nGFS4: ");
         console.error(m);
       };
-    if (!fs16[gracefulQueue]) {
+    if (!fs19[gracefulQueue]) {
       queue = global[gracefulQueue] || [];
-      publishQueue(fs16, queue);
-      fs16.close = function(fs$close) {
+      publishQueue(fs19, queue);
+      fs19.close = function(fs$close) {
         function close(fd, cb) {
-          return fs$close.call(fs16, fd, function(err) {
+          return fs$close.call(fs19, fd, function(err) {
             if (!err) {
               resetQueue();
             }
@@ -19320,48 +19559,48 @@ var require_graceful_fs = __commonJS({
           value: fs$close
         });
         return close;
-      }(fs16.close);
-      fs16.closeSync = function(fs$closeSync) {
+      }(fs19.close);
+      fs19.closeSync = function(fs$closeSync) {
         function closeSync(fd) {
-          fs$closeSync.apply(fs16, arguments);
+          fs$closeSync.apply(fs19, arguments);
           resetQueue();
         }
         Object.defineProperty(closeSync, previousSymbol, {
           value: fs$closeSync
         });
         return closeSync;
-      }(fs16.closeSync);
+      }(fs19.closeSync);
       if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || "")) {
         process.on("exit", function() {
-          debug(fs16[gracefulQueue]);
-          require("assert").equal(fs16[gracefulQueue].length, 0);
+          debug(fs19[gracefulQueue]);
+          require("assert").equal(fs19[gracefulQueue].length, 0);
         });
       }
     }
     var queue;
     if (!global[gracefulQueue]) {
-      publishQueue(global, fs16[gracefulQueue]);
+      publishQueue(global, fs19[gracefulQueue]);
     }
-    module2.exports = patch(clone(fs16));
-    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs16.__patched) {
-      module2.exports = patch(fs16);
-      fs16.__patched = true;
+    module2.exports = patch(clone(fs19));
+    if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs19.__patched) {
+      module2.exports = patch(fs19);
+      fs19.__patched = true;
     }
-    function patch(fs17) {
-      polyfills(fs17);
-      fs17.gracefulify = patch;
-      fs17.createReadStream = createReadStream;
-      fs17.createWriteStream = createWriteStream;
-      var fs$readFile = fs17.readFile;
-      fs17.readFile = readFile;
-      function readFile(path25, options, cb) {
+    function patch(fs20) {
+      polyfills(fs20);
+      fs20.gracefulify = patch;
+      fs20.createReadStream = createReadStream;
+      fs20.createWriteStream = createWriteStream;
+      var fs$readFile = fs20.readFile;
+      fs20.readFile = readFile;
+      function readFile(path27, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$readFile(path25, options, cb);
-        function go$readFile(path26, options2, cb2, startTime) {
-          return fs$readFile(path26, options2, function(err) {
+        return go$readFile(path27, options, cb);
+        function go$readFile(path28, options2, cb2, startTime) {
+          return fs$readFile(path28, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$readFile, [path26, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$readFile, [path28, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19369,16 +19608,16 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$writeFile = fs17.writeFile;
-      fs17.writeFile = writeFile;
-      function writeFile(path25, data, options, cb) {
+      var fs$writeFile = fs20.writeFile;
+      fs20.writeFile = writeFile;
+      function writeFile(path27, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$writeFile(path25, data, options, cb);
-        function go$writeFile(path26, data2, options2, cb2, startTime) {
-          return fs$writeFile(path26, data2, options2, function(err) {
+        return go$writeFile(path27, data, options, cb);
+        function go$writeFile(path28, data2, options2, cb2, startTime) {
+          return fs$writeFile(path28, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$writeFile, [path26, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$writeFile, [path28, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19386,17 +19625,17 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$appendFile = fs17.appendFile;
+      var fs$appendFile = fs20.appendFile;
       if (fs$appendFile)
-        fs17.appendFile = appendFile;
-      function appendFile(path25, data, options, cb) {
+        fs20.appendFile = appendFile;
+      function appendFile(path27, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$appendFile(path25, data, options, cb);
-        function go$appendFile(path26, data2, options2, cb2, startTime) {
-          return fs$appendFile(path26, data2, options2, function(err) {
+        return go$appendFile(path27, data, options, cb);
+        function go$appendFile(path28, data2, options2, cb2, startTime) {
+          return fs$appendFile(path28, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$appendFile, [path26, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$appendFile, [path28, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19404,9 +19643,9 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$copyFile = fs17.copyFile;
+      var fs$copyFile = fs20.copyFile;
       if (fs$copyFile)
-        fs17.copyFile = copyFile;
+        fs20.copyFile = copyFile;
       function copyFile(src, dest, flags, cb) {
         if (typeof flags === "function") {
           cb = flags;
@@ -19424,34 +19663,34 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      var fs$readdir = fs17.readdir;
-      fs17.readdir = readdir;
+      var fs$readdir = fs20.readdir;
+      fs20.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path25, options, cb) {
+      function readdir(path27, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path26, options2, cb2, startTime) {
-          return fs$readdir(path26, fs$readdirCallback(
-            path26,
+        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path28, options2, cb2, startTime) {
+          return fs$readdir(path28, fs$readdirCallback(
+            path28,
             options2,
             cb2,
             startTime
           ));
-        } : function go$readdir2(path26, options2, cb2, startTime) {
-          return fs$readdir(path26, options2, fs$readdirCallback(
-            path26,
+        } : function go$readdir2(path28, options2, cb2, startTime) {
+          return fs$readdir(path28, options2, fs$readdirCallback(
+            path28,
             options2,
             cb2,
             startTime
           ));
         };
-        return go$readdir(path25, options, cb);
-        function fs$readdirCallback(path26, options2, cb2, startTime) {
+        return go$readdir(path27, options, cb);
+        function fs$readdirCallback(path28, options2, cb2, startTime) {
           return function(err, files) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
               enqueue([
                 go$readdir,
-                [path26, options2, cb2],
+                [path28, options2, cb2],
                 err,
                 startTime || Date.now(),
                 Date.now()
@@ -19466,21 +19705,21 @@ var require_graceful_fs = __commonJS({
         }
       }
       if (process.version.substr(0, 4) === "v0.8") {
-        var legStreams = legacy(fs17);
+        var legStreams = legacy(fs20);
         ReadStream = legStreams.ReadStream;
         WriteStream = legStreams.WriteStream;
       }
-      var fs$ReadStream = fs17.ReadStream;
+      var fs$ReadStream = fs20.ReadStream;
       if (fs$ReadStream) {
         ReadStream.prototype = Object.create(fs$ReadStream.prototype);
         ReadStream.prototype.open = ReadStream$open;
       }
-      var fs$WriteStream = fs17.WriteStream;
+      var fs$WriteStream = fs20.WriteStream;
       if (fs$WriteStream) {
         WriteStream.prototype = Object.create(fs$WriteStream.prototype);
         WriteStream.prototype.open = WriteStream$open;
       }
-      Object.defineProperty(fs17, "ReadStream", {
+      Object.defineProperty(fs20, "ReadStream", {
         get: function() {
           return ReadStream;
         },
@@ -19490,7 +19729,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      Object.defineProperty(fs17, "WriteStream", {
+      Object.defineProperty(fs20, "WriteStream", {
         get: function() {
           return WriteStream;
         },
@@ -19501,7 +19740,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileReadStream = ReadStream;
-      Object.defineProperty(fs17, "FileReadStream", {
+      Object.defineProperty(fs20, "FileReadStream", {
         get: function() {
           return FileReadStream;
         },
@@ -19512,7 +19751,7 @@ var require_graceful_fs = __commonJS({
         configurable: true
       });
       var FileWriteStream = WriteStream;
-      Object.defineProperty(fs17, "FileWriteStream", {
+      Object.defineProperty(fs20, "FileWriteStream", {
         get: function() {
           return FileWriteStream;
         },
@@ -19522,7 +19761,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      function ReadStream(path25, options) {
+      function ReadStream(path27, options) {
         if (this instanceof ReadStream)
           return fs$ReadStream.apply(this, arguments), this;
         else
@@ -19542,7 +19781,7 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function WriteStream(path25, options) {
+      function WriteStream(path27, options) {
         if (this instanceof WriteStream)
           return fs$WriteStream.apply(this, arguments), this;
         else
@@ -19560,22 +19799,22 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function createReadStream(path25, options) {
-        return new fs17.ReadStream(path25, options);
+      function createReadStream(path27, options) {
+        return new fs20.ReadStream(path27, options);
       }
-      function createWriteStream(path25, options) {
-        return new fs17.WriteStream(path25, options);
+      function createWriteStream(path27, options) {
+        return new fs20.WriteStream(path27, options);
       }
-      var fs$open = fs17.open;
-      fs17.open = open;
-      function open(path25, flags, mode, cb) {
+      var fs$open = fs20.open;
+      fs20.open = open;
+      function open(path27, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
-        return go$open(path25, flags, mode, cb);
-        function go$open(path26, flags2, mode2, cb2, startTime) {
-          return fs$open(path26, flags2, mode2, function(err, fd) {
+        return go$open(path27, flags, mode, cb);
+        function go$open(path28, flags2, mode2, cb2, startTime) {
+          return fs$open(path28, flags2, mode2, function(err, fd) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$open, [path26, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$open, [path28, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -19583,20 +19822,20 @@ var require_graceful_fs = __commonJS({
           });
         }
       }
-      return fs17;
+      return fs20;
     }
     function enqueue(elem) {
       debug("ENQUEUE", elem[0].name, elem[1]);
-      fs16[gracefulQueue].push(elem);
+      fs19[gracefulQueue].push(elem);
       retry();
     }
     var retryTimer;
     function resetQueue() {
       var now = Date.now();
-      for (var i = 0; i < fs16[gracefulQueue].length; ++i) {
-        if (fs16[gracefulQueue][i].length > 2) {
-          fs16[gracefulQueue][i][3] = now;
-          fs16[gracefulQueue][i][4] = now;
+      for (var i = 0; i < fs19[gracefulQueue].length; ++i) {
+        if (fs19[gracefulQueue][i].length > 2) {
+          fs19[gracefulQueue][i][3] = now;
+          fs19[gracefulQueue][i][4] = now;
         }
       }
       retry();
@@ -19604,9 +19843,9 @@ var require_graceful_fs = __commonJS({
     function retry() {
       clearTimeout(retryTimer);
       retryTimer = void 0;
-      if (fs16[gracefulQueue].length === 0)
+      if (fs19[gracefulQueue].length === 0)
         return;
-      var elem = fs16[gracefulQueue].shift();
+      var elem = fs19[gracefulQueue].shift();
       var fn = elem[0];
       var args = elem[1];
       var err = elem[2];
@@ -19628,7 +19867,7 @@ var require_graceful_fs = __commonJS({
           debug("RETRY", fn.name, args);
           fn.apply(null, args.concat([startTime]));
         } else {
-          fs16[gracefulQueue].push(elem);
+          fs19[gracefulQueue].push(elem);
         }
       }
       if (retryTimer === void 0) {
@@ -19643,7 +19882,7 @@ var require_fs2 = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/fs/index.js"(exports2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var fs16 = require_graceful_fs();
+    var fs19 = require_graceful_fs();
     var api = [
       "access",
       "appendFile",
@@ -19680,26 +19919,26 @@ var require_fs2 = __commonJS({
       "utimes",
       "writeFile"
     ].filter((key) => {
-      return typeof fs16[key] === "function";
+      return typeof fs19[key] === "function";
     });
-    Object.assign(exports2, fs16);
+    Object.assign(exports2, fs19);
     api.forEach((method) => {
-      exports2[method] = u(fs16[method]);
+      exports2[method] = u(fs19[method]);
     });
     exports2.exists = function(filename, callback) {
       if (typeof callback === "function") {
-        return fs16.exists(filename, callback);
+        return fs19.exists(filename, callback);
       }
       return new Promise((resolve) => {
-        return fs16.exists(filename, resolve);
+        return fs19.exists(filename, resolve);
       });
     };
     exports2.read = function(fd, buffer, offset, length, position, callback) {
       if (typeof callback === "function") {
-        return fs16.read(fd, buffer, offset, length, position, callback);
+        return fs19.read(fd, buffer, offset, length, position, callback);
       }
       return new Promise((resolve, reject) => {
-        fs16.read(fd, buffer, offset, length, position, (err, bytesRead, buffer2) => {
+        fs19.read(fd, buffer, offset, length, position, (err, bytesRead, buffer2) => {
           if (err) return reject(err);
           resolve({ bytesRead, buffer: buffer2 });
         });
@@ -19707,30 +19946,30 @@ var require_fs2 = __commonJS({
     };
     exports2.write = function(fd, buffer, ...args) {
       if (typeof args[args.length - 1] === "function") {
-        return fs16.write(fd, buffer, ...args);
+        return fs19.write(fd, buffer, ...args);
       }
       return new Promise((resolve, reject) => {
-        fs16.write(fd, buffer, ...args, (err, bytesWritten, buffer2) => {
+        fs19.write(fd, buffer, ...args, (err, bytesWritten, buffer2) => {
           if (err) return reject(err);
           resolve({ bytesWritten, buffer: buffer2 });
         });
       });
     };
-    if (typeof fs16.writev === "function") {
+    if (typeof fs19.writev === "function") {
       exports2.writev = function(fd, buffers, ...args) {
         if (typeof args[args.length - 1] === "function") {
-          return fs16.writev(fd, buffers, ...args);
+          return fs19.writev(fd, buffers, ...args);
         }
         return new Promise((resolve, reject) => {
-          fs16.writev(fd, buffers, ...args, (err, bytesWritten, buffers2) => {
+          fs19.writev(fd, buffers, ...args, (err, bytesWritten, buffers2) => {
             if (err) return reject(err);
             resolve({ bytesWritten, buffers: buffers2 });
           });
         });
       };
     }
-    if (typeof fs16.realpath.native === "function") {
-      exports2.realpath.native = u(fs16.realpath.native);
+    if (typeof fs19.realpath.native === "function") {
+      exports2.realpath.native = u(fs19.realpath.native);
     } else {
       process.emitWarning(
         "fs.realpath.native is not a function. Is fs being monkey-patched?",
@@ -19745,10 +19984,10 @@ var require_fs2 = __commonJS({
 var require_utils2 = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/mkdirs/utils.js"(exports2, module2) {
     "use strict";
-    var path25 = require("path");
+    var path27 = require("path");
     module2.exports.checkPath = function checkPath(pth) {
       if (process.platform === "win32") {
-        const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path25.parse(pth).root, ""));
+        const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path27.parse(pth).root, ""));
         if (pathHasInvalidWinCharacters) {
           const error = new Error(`Path contains invalid characters: ${pth}`);
           error.code = "EINVAL";
@@ -19763,7 +20002,7 @@ var require_utils2 = __commonJS({
 var require_make_dir = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/mkdirs/make-dir.js"(exports2, module2) {
     "use strict";
-    var fs16 = require_fs2();
+    var fs19 = require_fs2();
     var { checkPath } = require_utils2();
     var getMode = (options) => {
       const defaults = { mode: 511 };
@@ -19772,14 +20011,14 @@ var require_make_dir = __commonJS({
     };
     module2.exports.makeDir = async (dir, options) => {
       checkPath(dir);
-      return fs16.mkdir(dir, {
+      return fs19.mkdir(dir, {
         mode: getMode(options),
         recursive: true
       });
     };
     module2.exports.makeDirSync = (dir, options) => {
       checkPath(dir);
-      return fs16.mkdirSync(dir, {
+      return fs19.mkdirSync(dir, {
         mode: getMode(options),
         recursive: true
       });
@@ -19811,13 +20050,13 @@ var require_path_exists2 = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/path-exists/index.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var fs16 = require_fs2();
-    function pathExists(path25) {
-      return fs16.access(path25).then(() => true).catch(() => false);
+    var fs19 = require_fs2();
+    function pathExists(path27) {
+      return fs19.access(path27).then(() => true).catch(() => false);
     }
     module2.exports = {
       pathExists: u(pathExists),
-      pathExistsSync: fs16.existsSync
+      pathExistsSync: fs19.existsSync
     };
   }
 });
@@ -19826,21 +20065,21 @@ var require_path_exists2 = __commonJS({
 var require_utimes = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/util/utimes.js"(exports2, module2) {
     "use strict";
-    var fs16 = require_graceful_fs();
-    function utimesMillis(path25, atime, mtime, callback) {
-      fs16.open(path25, "r+", (err, fd) => {
+    var fs19 = require_graceful_fs();
+    function utimesMillis(path27, atime, mtime, callback) {
+      fs19.open(path27, "r+", (err, fd) => {
         if (err) return callback(err);
-        fs16.futimes(fd, atime, mtime, (futimesErr) => {
-          fs16.close(fd, (closeErr) => {
+        fs19.futimes(fd, atime, mtime, (futimesErr) => {
+          fs19.close(fd, (closeErr) => {
             if (callback) callback(futimesErr || closeErr);
           });
         });
       });
     }
-    function utimesMillisSync(path25, atime, mtime) {
-      const fd = fs16.openSync(path25, "r+");
-      fs16.futimesSync(fd, atime, mtime);
-      return fs16.closeSync(fd);
+    function utimesMillisSync(path27, atime, mtime) {
+      const fd = fs19.openSync(path27, "r+");
+      fs19.futimesSync(fd, atime, mtime);
+      return fs19.closeSync(fd);
     }
     module2.exports = {
       utimesMillis,
@@ -19853,11 +20092,11 @@ var require_utimes = __commonJS({
 var require_stat = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/util/stat.js"(exports2, module2) {
     "use strict";
-    var fs16 = require_fs2();
-    var path25 = require("path");
+    var fs19 = require_fs2();
+    var path27 = require("path");
     var util = require("util");
     function getStats(src, dest, opts) {
-      const statFunc = opts.dereference ? (file) => fs16.stat(file, { bigint: true }) : (file) => fs16.lstat(file, { bigint: true });
+      const statFunc = opts.dereference ? (file) => fs19.stat(file, { bigint: true }) : (file) => fs19.lstat(file, { bigint: true });
       return Promise.all([
         statFunc(src),
         statFunc(dest).catch((err) => {
@@ -19868,7 +20107,7 @@ var require_stat = __commonJS({
     }
     function getStatsSync(src, dest, opts) {
       let destStat;
-      const statFunc = opts.dereference ? (file) => fs16.statSync(file, { bigint: true }) : (file) => fs16.lstatSync(file, { bigint: true });
+      const statFunc = opts.dereference ? (file) => fs19.statSync(file, { bigint: true }) : (file) => fs19.lstatSync(file, { bigint: true });
       const srcStat = statFunc(src);
       try {
         destStat = statFunc(dest);
@@ -19884,8 +20123,8 @@ var require_stat = __commonJS({
         const { srcStat, destStat } = stats;
         if (destStat) {
           if (areIdentical(srcStat, destStat)) {
-            const srcBaseName = path25.basename(src);
-            const destBaseName = path25.basename(dest);
+            const srcBaseName = path27.basename(src);
+            const destBaseName = path27.basename(dest);
             if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
               return cb(null, { srcStat, destStat, isChangingCase: true });
             }
@@ -19908,8 +20147,8 @@ var require_stat = __commonJS({
       const { srcStat, destStat } = getStatsSync(src, dest, opts);
       if (destStat) {
         if (areIdentical(srcStat, destStat)) {
-          const srcBaseName = path25.basename(src);
-          const destBaseName = path25.basename(dest);
+          const srcBaseName = path27.basename(src);
+          const destBaseName = path27.basename(dest);
           if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
             return { srcStat, destStat, isChangingCase: true };
           }
@@ -19928,10 +20167,10 @@ var require_stat = __commonJS({
       return { srcStat, destStat };
     }
     function checkParentPaths(src, srcStat, dest, funcName, cb) {
-      const srcParent = path25.resolve(path25.dirname(src));
-      const destParent = path25.resolve(path25.dirname(dest));
-      if (destParent === srcParent || destParent === path25.parse(destParent).root) return cb();
-      fs16.stat(destParent, { bigint: true }, (err, destStat) => {
+      const srcParent = path27.resolve(path27.dirname(src));
+      const destParent = path27.resolve(path27.dirname(dest));
+      if (destParent === srcParent || destParent === path27.parse(destParent).root) return cb();
+      fs19.stat(destParent, { bigint: true }, (err, destStat) => {
         if (err) {
           if (err.code === "ENOENT") return cb();
           return cb(err);
@@ -19943,12 +20182,12 @@ var require_stat = __commonJS({
       });
     }
     function checkParentPathsSync(src, srcStat, dest, funcName) {
-      const srcParent = path25.resolve(path25.dirname(src));
-      const destParent = path25.resolve(path25.dirname(dest));
-      if (destParent === srcParent || destParent === path25.parse(destParent).root) return;
+      const srcParent = path27.resolve(path27.dirname(src));
+      const destParent = path27.resolve(path27.dirname(dest));
+      if (destParent === srcParent || destParent === path27.parse(destParent).root) return;
       let destStat;
       try {
-        destStat = fs16.statSync(destParent, { bigint: true });
+        destStat = fs19.statSync(destParent, { bigint: true });
       } catch (err) {
         if (err.code === "ENOENT") return;
         throw err;
@@ -19962,8 +20201,8 @@ var require_stat = __commonJS({
       return destStat.ino && destStat.dev && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev;
     }
     function isSrcSubdir(src, dest) {
-      const srcArr = path25.resolve(src).split(path25.sep).filter((i) => i);
-      const destArr = path25.resolve(dest).split(path25.sep).filter((i) => i);
+      const srcArr = path27.resolve(src).split(path27.sep).filter((i) => i);
+      const destArr = path27.resolve(dest).split(path27.sep).filter((i) => i);
       return srcArr.reduce((acc, cur, i) => acc && destArr[i] === cur, true);
     }
     function errMsg(src, dest, funcName) {
@@ -19984,8 +20223,8 @@ var require_stat = __commonJS({
 var require_copy = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/copy/copy.js"(exports2, module2) {
     "use strict";
-    var fs16 = require_graceful_fs();
-    var path25 = require("path");
+    var fs19 = require_graceful_fs();
+    var path27 = require("path");
     var mkdirs = require_mkdirs().mkdirs;
     var pathExists = require_path_exists2().pathExists;
     var utimesMillis = require_utimes().utimesMillis;
@@ -20020,7 +20259,7 @@ var require_copy = __commonJS({
       });
     }
     function checkParentDir(destStat, src, dest, opts, cb) {
-      const destParent = path25.dirname(dest);
+      const destParent = path27.dirname(dest);
       pathExists(destParent, (err, dirExists) => {
         if (err) return cb(err);
         if (dirExists) return getStats(destStat, src, dest, opts, cb);
@@ -20041,7 +20280,7 @@ var require_copy = __commonJS({
       return getStats(destStat, src, dest, opts, cb);
     }
     function getStats(destStat, src, dest, opts, cb) {
-      const stat2 = opts.dereference ? fs16.stat : fs16.lstat;
+      const stat2 = opts.dereference ? fs19.stat : fs19.lstat;
       stat2(src, (err, srcStat) => {
         if (err) return cb(err);
         if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts, cb);
@@ -20058,7 +20297,7 @@ var require_copy = __commonJS({
     }
     function mayCopyFile(srcStat, src, dest, opts, cb) {
       if (opts.overwrite) {
-        fs16.unlink(dest, (err) => {
+        fs19.unlink(dest, (err) => {
           if (err) return cb(err);
           return copyFile(srcStat, src, dest, opts, cb);
         });
@@ -20067,7 +20306,7 @@ var require_copy = __commonJS({
       } else return cb();
     }
     function copyFile(srcStat, src, dest, opts, cb) {
-      fs16.copyFile(src, dest, (err) => {
+      fs19.copyFile(src, dest, (err) => {
         if (err) return cb(err);
         if (opts.preserveTimestamps) return handleTimestampsAndMode(srcStat.mode, src, dest, cb);
         return setDestMode(dest, srcStat.mode, cb);
@@ -20095,10 +20334,10 @@ var require_copy = __commonJS({
       });
     }
     function setDestMode(dest, srcMode, cb) {
-      return fs16.chmod(dest, srcMode, cb);
+      return fs19.chmod(dest, srcMode, cb);
     }
     function setDestTimestamps(src, dest, cb) {
-      fs16.stat(src, (err, updatedSrcStat) => {
+      fs19.stat(src, (err, updatedSrcStat) => {
         if (err) return cb(err);
         return utimesMillis(dest, updatedSrcStat.atime, updatedSrcStat.mtime, cb);
       });
@@ -20108,7 +20347,7 @@ var require_copy = __commonJS({
       return copyDir(src, dest, opts, cb);
     }
     function mkDirAndCopy(srcMode, src, dest, opts, cb) {
-      fs16.mkdir(dest, (err) => {
+      fs19.mkdir(dest, (err) => {
         if (err) return cb(err);
         copyDir(src, dest, opts, (err2) => {
           if (err2) return cb(err2);
@@ -20117,7 +20356,7 @@ var require_copy = __commonJS({
       });
     }
     function copyDir(src, dest, opts, cb) {
-      fs16.readdir(src, (err, items2) => {
+      fs19.readdir(src, (err, items2) => {
         if (err) return cb(err);
         return copyDirItems(items2, src, dest, opts, cb);
       });
@@ -20128,8 +20367,8 @@ var require_copy = __commonJS({
       return copyDirItem(items2, item, src, dest, opts, cb);
     }
     function copyDirItem(items2, item, src, dest, opts, cb) {
-      const srcItem = path25.join(src, item);
-      const destItem = path25.join(dest, item);
+      const srcItem = path27.join(src, item);
+      const destItem = path27.join(dest, item);
       stat.checkPaths(srcItem, destItem, "copy", opts, (err, stats) => {
         if (err) return cb(err);
         const { destStat } = stats;
@@ -20140,21 +20379,21 @@ var require_copy = __commonJS({
       });
     }
     function onLink(destStat, src, dest, opts, cb) {
-      fs16.readlink(src, (err, resolvedSrc) => {
+      fs19.readlink(src, (err, resolvedSrc) => {
         if (err) return cb(err);
         if (opts.dereference) {
-          resolvedSrc = path25.resolve(process.cwd(), resolvedSrc);
+          resolvedSrc = path27.resolve(process.cwd(), resolvedSrc);
         }
         if (!destStat) {
-          return fs16.symlink(resolvedSrc, dest, cb);
+          return fs19.symlink(resolvedSrc, dest, cb);
         } else {
-          fs16.readlink(dest, (err2, resolvedDest) => {
+          fs19.readlink(dest, (err2, resolvedDest) => {
             if (err2) {
-              if (err2.code === "EINVAL" || err2.code === "UNKNOWN") return fs16.symlink(resolvedSrc, dest, cb);
+              if (err2.code === "EINVAL" || err2.code === "UNKNOWN") return fs19.symlink(resolvedSrc, dest, cb);
               return cb(err2);
             }
             if (opts.dereference) {
-              resolvedDest = path25.resolve(process.cwd(), resolvedDest);
+              resolvedDest = path27.resolve(process.cwd(), resolvedDest);
             }
             if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
               return cb(new Error(`Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`));
@@ -20168,9 +20407,9 @@ var require_copy = __commonJS({
       });
     }
     function copyLink(resolvedSrc, dest, cb) {
-      fs16.unlink(dest, (err) => {
+      fs19.unlink(dest, (err) => {
         if (err) return cb(err);
-        return fs16.symlink(resolvedSrc, dest, cb);
+        return fs19.symlink(resolvedSrc, dest, cb);
       });
     }
     module2.exports = copy;
@@ -20181,8 +20420,8 @@ var require_copy = __commonJS({
 var require_copy_sync = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/copy/copy-sync.js"(exports2, module2) {
     "use strict";
-    var fs16 = require_graceful_fs();
-    var path25 = require("path");
+    var fs19 = require_graceful_fs();
+    var path27 = require("path");
     var mkdirsSync = require_mkdirs().mkdirsSync;
     var utimesMillisSync = require_utimes().utimesMillisSync;
     var stat = require_stat();
@@ -20206,8 +20445,8 @@ var require_copy_sync = __commonJS({
     }
     function handleFilterAndCopy(destStat, src, dest, opts) {
       if (opts.filter && !opts.filter(src, dest)) return;
-      const destParent = path25.dirname(dest);
-      if (!fs16.existsSync(destParent)) mkdirsSync(destParent);
+      const destParent = path27.dirname(dest);
+      if (!fs19.existsSync(destParent)) mkdirsSync(destParent);
       return getStats(destStat, src, dest, opts);
     }
     function startCopy(destStat, src, dest, opts) {
@@ -20215,7 +20454,7 @@ var require_copy_sync = __commonJS({
       return getStats(destStat, src, dest, opts);
     }
     function getStats(destStat, src, dest, opts) {
-      const statSync = opts.dereference ? fs16.statSync : fs16.lstatSync;
+      const statSync = opts.dereference ? fs19.statSync : fs19.lstatSync;
       const srcStat = statSync(src);
       if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts);
       else if (srcStat.isFile() || srcStat.isCharacterDevice() || srcStat.isBlockDevice()) return onFile(srcStat, destStat, src, dest, opts);
@@ -20230,14 +20469,14 @@ var require_copy_sync = __commonJS({
     }
     function mayCopyFile(srcStat, src, dest, opts) {
       if (opts.overwrite) {
-        fs16.unlinkSync(dest);
+        fs19.unlinkSync(dest);
         return copyFile(srcStat, src, dest, opts);
       } else if (opts.errorOnExist) {
         throw new Error(`'${dest}' already exists`);
       }
     }
     function copyFile(srcStat, src, dest, opts) {
-      fs16.copyFileSync(src, dest);
+      fs19.copyFileSync(src, dest);
       if (opts.preserveTimestamps) handleTimestamps(srcStat.mode, src, dest);
       return setDestMode(dest, srcStat.mode);
     }
@@ -20252,10 +20491,10 @@ var require_copy_sync = __commonJS({
       return setDestMode(dest, srcMode | 128);
     }
     function setDestMode(dest, srcMode) {
-      return fs16.chmodSync(dest, srcMode);
+      return fs19.chmodSync(dest, srcMode);
     }
     function setDestTimestamps(src, dest) {
-      const updatedSrcStat = fs16.statSync(src);
+      const updatedSrcStat = fs19.statSync(src);
       return utimesMillisSync(dest, updatedSrcStat.atime, updatedSrcStat.mtime);
     }
     function onDir(srcStat, destStat, src, dest, opts) {
@@ -20263,49 +20502,49 @@ var require_copy_sync = __commonJS({
       return copyDir(src, dest, opts);
     }
     function mkDirAndCopy(srcMode, src, dest, opts) {
-      fs16.mkdirSync(dest);
+      fs19.mkdirSync(dest);
       copyDir(src, dest, opts);
       return setDestMode(dest, srcMode);
     }
     function copyDir(src, dest, opts) {
-      fs16.readdirSync(src).forEach((item) => copyDirItem(item, src, dest, opts));
+      fs19.readdirSync(src).forEach((item) => copyDirItem(item, src, dest, opts));
     }
     function copyDirItem(item, src, dest, opts) {
-      const srcItem = path25.join(src, item);
-      const destItem = path25.join(dest, item);
+      const srcItem = path27.join(src, item);
+      const destItem = path27.join(dest, item);
       const { destStat } = stat.checkPathsSync(srcItem, destItem, "copy", opts);
       return startCopy(destStat, srcItem, destItem, opts);
     }
     function onLink(destStat, src, dest, opts) {
-      let resolvedSrc = fs16.readlinkSync(src);
+      let resolvedSrc = fs19.readlinkSync(src);
       if (opts.dereference) {
-        resolvedSrc = path25.resolve(process.cwd(), resolvedSrc);
+        resolvedSrc = path27.resolve(process.cwd(), resolvedSrc);
       }
       if (!destStat) {
-        return fs16.symlinkSync(resolvedSrc, dest);
+        return fs19.symlinkSync(resolvedSrc, dest);
       } else {
         let resolvedDest;
         try {
-          resolvedDest = fs16.readlinkSync(dest);
+          resolvedDest = fs19.readlinkSync(dest);
         } catch (err) {
-          if (err.code === "EINVAL" || err.code === "UNKNOWN") return fs16.symlinkSync(resolvedSrc, dest);
+          if (err.code === "EINVAL" || err.code === "UNKNOWN") return fs19.symlinkSync(resolvedSrc, dest);
           throw err;
         }
         if (opts.dereference) {
-          resolvedDest = path25.resolve(process.cwd(), resolvedDest);
+          resolvedDest = path27.resolve(process.cwd(), resolvedDest);
         }
         if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
           throw new Error(`Cannot copy '${resolvedSrc}' to a subdirectory of itself, '${resolvedDest}'.`);
         }
-        if (fs16.statSync(dest).isDirectory() && stat.isSrcSubdir(resolvedDest, resolvedSrc)) {
+        if (fs19.statSync(dest).isDirectory() && stat.isSrcSubdir(resolvedDest, resolvedSrc)) {
           throw new Error(`Cannot overwrite '${resolvedDest}' with '${resolvedSrc}'.`);
         }
         return copyLink(resolvedSrc, dest);
       }
     }
     function copyLink(resolvedSrc, dest) {
-      fs16.unlinkSync(dest);
-      return fs16.symlinkSync(resolvedSrc, dest);
+      fs19.unlinkSync(dest);
+      return fs19.symlinkSync(resolvedSrc, dest);
     }
     module2.exports = copySync;
   }
@@ -20327,8 +20566,8 @@ var require_copy2 = __commonJS({
 var require_rimraf = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/remove/rimraf.js"(exports2, module2) {
     "use strict";
-    var fs16 = require_graceful_fs();
-    var path25 = require("path");
+    var fs19 = require_graceful_fs();
+    var path27 = require("path");
     var assert = require("assert");
     var isWindows = process.platform === "win32";
     function defaults(options) {
@@ -20341,9 +20580,9 @@ var require_rimraf = __commonJS({
         "readdir"
       ];
       methods.forEach((m) => {
-        options[m] = options[m] || fs16[m];
+        options[m] = options[m] || fs19[m];
         m = m + "Sync";
-        options[m] = options[m] || fs16[m];
+        options[m] = options[m] || fs19[m];
       });
       options.maxBusyTries = options.maxBusyTries || 3;
     }
@@ -20473,7 +20712,7 @@ var require_rimraf = __commonJS({
         let errState;
         if (n === 0) return options.rmdir(p, cb);
         files.forEach((f) => {
-          rimraf(path25.join(p, f), options, (er2) => {
+          rimraf(path27.join(p, f), options, (er2) => {
             if (errState) {
               return;
             }
@@ -20538,7 +20777,7 @@ var require_rimraf = __commonJS({
     function rmkidsSync(p, options) {
       assert(p);
       assert(options);
-      options.readdirSync(p).forEach((f) => rimrafSync(path25.join(p, f), options));
+      options.readdirSync(p).forEach((f) => rimrafSync(path27.join(p, f), options));
       if (isWindows) {
         const startTime = Date.now();
         do {
@@ -20562,16 +20801,16 @@ var require_rimraf = __commonJS({
 var require_remove = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/remove/index.js"(exports2, module2) {
     "use strict";
-    var fs16 = require_graceful_fs();
+    var fs19 = require_graceful_fs();
     var u = require_universalify().fromCallback;
     var rimraf = require_rimraf();
-    function remove(path25, callback) {
-      if (fs16.rm) return fs16.rm(path25, { recursive: true, force: true }, callback);
-      rimraf(path25, callback);
+    function remove(path27, callback) {
+      if (fs19.rm) return fs19.rm(path27, { recursive: true, force: true }, callback);
+      rimraf(path27, callback);
     }
-    function removeSync(path25) {
-      if (fs16.rmSync) return fs16.rmSync(path25, { recursive: true, force: true });
-      rimraf.sync(path25);
+    function removeSync(path27) {
+      if (fs19.rmSync) return fs19.rmSync(path27, { recursive: true, force: true });
+      rimraf.sync(path27);
     }
     module2.exports = {
       remove: u(remove),
@@ -20585,28 +20824,28 @@ var require_empty = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/empty/index.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var fs16 = require_fs2();
-    var path25 = require("path");
+    var fs19 = require_fs2();
+    var path27 = require("path");
     var mkdir = require_mkdirs();
     var remove = require_remove();
     var emptyDir = u(async function emptyDir2(dir) {
       let items2;
       try {
-        items2 = await fs16.readdir(dir);
+        items2 = await fs19.readdir(dir);
       } catch {
         return mkdir.mkdirs(dir);
       }
-      return Promise.all(items2.map((item) => remove.remove(path25.join(dir, item))));
+      return Promise.all(items2.map((item) => remove.remove(path27.join(dir, item))));
     });
     function emptyDirSync(dir) {
       let items2;
       try {
-        items2 = fs16.readdirSync(dir);
+        items2 = fs19.readdirSync(dir);
       } catch {
         return mkdir.mkdirsSync(dir);
       }
       items2.forEach((item) => {
-        item = path25.join(dir, item);
+        item = path27.join(dir, item);
         remove.removeSync(item);
       });
     }
@@ -20624,20 +20863,20 @@ var require_file = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/file.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var path25 = require("path");
-    var fs16 = require_graceful_fs();
+    var path27 = require("path");
+    var fs19 = require_graceful_fs();
     var mkdir = require_mkdirs();
     function createFile(file, callback) {
       function makeFile() {
-        fs16.writeFile(file, "", (err) => {
+        fs19.writeFile(file, "", (err) => {
           if (err) return callback(err);
           callback();
         });
       }
-      fs16.stat(file, (err, stats) => {
+      fs19.stat(file, (err, stats) => {
         if (!err && stats.isFile()) return callback();
-        const dir = path25.dirname(file);
-        fs16.stat(dir, (err2, stats2) => {
+        const dir = path27.dirname(file);
+        fs19.stat(dir, (err2, stats2) => {
           if (err2) {
             if (err2.code === "ENOENT") {
               return mkdir.mkdirs(dir, (err3) => {
@@ -20649,7 +20888,7 @@ var require_file = __commonJS({
           }
           if (stats2.isDirectory()) makeFile();
           else {
-            fs16.readdir(dir, (err3) => {
+            fs19.readdir(dir, (err3) => {
               if (err3) return callback(err3);
             });
           }
@@ -20659,20 +20898,20 @@ var require_file = __commonJS({
     function createFileSync(file) {
       let stats;
       try {
-        stats = fs16.statSync(file);
+        stats = fs19.statSync(file);
       } catch {
       }
       if (stats && stats.isFile()) return;
-      const dir = path25.dirname(file);
+      const dir = path27.dirname(file);
       try {
-        if (!fs16.statSync(dir).isDirectory()) {
-          fs16.readdirSync(dir);
+        if (!fs19.statSync(dir).isDirectory()) {
+          fs19.readdirSync(dir);
         }
       } catch (err) {
         if (err && err.code === "ENOENT") mkdir.mkdirsSync(dir);
         else throw err;
       }
-      fs16.writeFileSync(file, "");
+      fs19.writeFileSync(file, "");
     }
     module2.exports = {
       createFile: u(createFile),
@@ -20686,26 +20925,26 @@ var require_link = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/link.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var path25 = require("path");
-    var fs16 = require_graceful_fs();
+    var path27 = require("path");
+    var fs19 = require_graceful_fs();
     var mkdir = require_mkdirs();
     var pathExists = require_path_exists2().pathExists;
     var { areIdentical } = require_stat();
     function createLink(srcpath, dstpath, callback) {
       function makeLink(srcpath2, dstpath2) {
-        fs16.link(srcpath2, dstpath2, (err) => {
+        fs19.link(srcpath2, dstpath2, (err) => {
           if (err) return callback(err);
           callback(null);
         });
       }
-      fs16.lstat(dstpath, (_, dstStat) => {
-        fs16.lstat(srcpath, (err, srcStat) => {
+      fs19.lstat(dstpath, (_, dstStat) => {
+        fs19.lstat(srcpath, (err, srcStat) => {
           if (err) {
             err.message = err.message.replace("lstat", "ensureLink");
             return callback(err);
           }
           if (dstStat && areIdentical(srcStat, dstStat)) return callback(null);
-          const dir = path25.dirname(dstpath);
+          const dir = path27.dirname(dstpath);
           pathExists(dir, (err2, dirExists) => {
             if (err2) return callback(err2);
             if (dirExists) return makeLink(srcpath, dstpath);
@@ -20720,21 +20959,21 @@ var require_link = __commonJS({
     function createLinkSync(srcpath, dstpath) {
       let dstStat;
       try {
-        dstStat = fs16.lstatSync(dstpath);
+        dstStat = fs19.lstatSync(dstpath);
       } catch {
       }
       try {
-        const srcStat = fs16.lstatSync(srcpath);
+        const srcStat = fs19.lstatSync(srcpath);
         if (dstStat && areIdentical(srcStat, dstStat)) return;
       } catch (err) {
         err.message = err.message.replace("lstat", "ensureLink");
         throw err;
       }
-      const dir = path25.dirname(dstpath);
-      const dirExists = fs16.existsSync(dir);
-      if (dirExists) return fs16.linkSync(srcpath, dstpath);
+      const dir = path27.dirname(dstpath);
+      const dirExists = fs19.existsSync(dir);
+      if (dirExists) return fs19.linkSync(srcpath, dstpath);
       mkdir.mkdirsSync(dir);
-      return fs16.linkSync(srcpath, dstpath);
+      return fs19.linkSync(srcpath, dstpath);
     }
     module2.exports = {
       createLink: u(createLink),
@@ -20747,12 +20986,12 @@ var require_link = __commonJS({
 var require_symlink_paths = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/symlink-paths.js"(exports2, module2) {
     "use strict";
-    var path25 = require("path");
-    var fs16 = require_graceful_fs();
+    var path27 = require("path");
+    var fs19 = require_graceful_fs();
     var pathExists = require_path_exists2().pathExists;
     function symlinkPaths(srcpath, dstpath, callback) {
-      if (path25.isAbsolute(srcpath)) {
-        return fs16.lstat(srcpath, (err) => {
+      if (path27.isAbsolute(srcpath)) {
+        return fs19.lstat(srcpath, (err) => {
           if (err) {
             err.message = err.message.replace("lstat", "ensureSymlink");
             return callback(err);
@@ -20763,8 +21002,8 @@ var require_symlink_paths = __commonJS({
           });
         });
       } else {
-        const dstdir = path25.dirname(dstpath);
-        const relativeToDst = path25.join(dstdir, srcpath);
+        const dstdir = path27.dirname(dstpath);
+        const relativeToDst = path27.join(dstdir, srcpath);
         return pathExists(relativeToDst, (err, exists) => {
           if (err) return callback(err);
           if (exists) {
@@ -20773,14 +21012,14 @@ var require_symlink_paths = __commonJS({
               toDst: srcpath
             });
           } else {
-            return fs16.lstat(srcpath, (err2) => {
+            return fs19.lstat(srcpath, (err2) => {
               if (err2) {
                 err2.message = err2.message.replace("lstat", "ensureSymlink");
                 return callback(err2);
               }
               return callback(null, {
                 toCwd: srcpath,
-                toDst: path25.relative(dstdir, srcpath)
+                toDst: path27.relative(dstdir, srcpath)
               });
             });
           }
@@ -20789,28 +21028,28 @@ var require_symlink_paths = __commonJS({
     }
     function symlinkPathsSync(srcpath, dstpath) {
       let exists;
-      if (path25.isAbsolute(srcpath)) {
-        exists = fs16.existsSync(srcpath);
+      if (path27.isAbsolute(srcpath)) {
+        exists = fs19.existsSync(srcpath);
         if (!exists) throw new Error("absolute srcpath does not exist");
         return {
           toCwd: srcpath,
           toDst: srcpath
         };
       } else {
-        const dstdir = path25.dirname(dstpath);
-        const relativeToDst = path25.join(dstdir, srcpath);
-        exists = fs16.existsSync(relativeToDst);
+        const dstdir = path27.dirname(dstpath);
+        const relativeToDst = path27.join(dstdir, srcpath);
+        exists = fs19.existsSync(relativeToDst);
         if (exists) {
           return {
             toCwd: relativeToDst,
             toDst: srcpath
           };
         } else {
-          exists = fs16.existsSync(srcpath);
+          exists = fs19.existsSync(srcpath);
           if (!exists) throw new Error("relative srcpath does not exist");
           return {
             toCwd: srcpath,
-            toDst: path25.relative(dstdir, srcpath)
+            toDst: path27.relative(dstdir, srcpath)
           };
         }
       }
@@ -20826,12 +21065,12 @@ var require_symlink_paths = __commonJS({
 var require_symlink_type = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/symlink-type.js"(exports2, module2) {
     "use strict";
-    var fs16 = require_graceful_fs();
+    var fs19 = require_graceful_fs();
     function symlinkType(srcpath, type, callback) {
       callback = typeof type === "function" ? type : callback;
       type = typeof type === "function" ? false : type;
       if (type) return callback(null, type);
-      fs16.lstat(srcpath, (err, stats) => {
+      fs19.lstat(srcpath, (err, stats) => {
         if (err) return callback(null, "file");
         type = stats && stats.isDirectory() ? "dir" : "file";
         callback(null, type);
@@ -20841,7 +21080,7 @@ var require_symlink_type = __commonJS({
       let stats;
       if (type) return type;
       try {
-        stats = fs16.lstatSync(srcpath);
+        stats = fs19.lstatSync(srcpath);
       } catch {
         return "file";
       }
@@ -20859,8 +21098,8 @@ var require_symlink = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/ensure/symlink.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var path25 = require("path");
-    var fs16 = require_fs2();
+    var path27 = require("path");
+    var fs19 = require_fs2();
     var _mkdirs = require_mkdirs();
     var mkdirs = _mkdirs.mkdirs;
     var mkdirsSync = _mkdirs.mkdirsSync;
@@ -20875,11 +21114,11 @@ var require_symlink = __commonJS({
     function createSymlink(srcpath, dstpath, type, callback) {
       callback = typeof type === "function" ? type : callback;
       type = typeof type === "function" ? false : type;
-      fs16.lstat(dstpath, (err, stats) => {
+      fs19.lstat(dstpath, (err, stats) => {
         if (!err && stats.isSymbolicLink()) {
           Promise.all([
-            fs16.stat(srcpath),
-            fs16.stat(dstpath)
+            fs19.stat(srcpath),
+            fs19.stat(dstpath)
           ]).then(([srcStat, dstStat]) => {
             if (areIdentical(srcStat, dstStat)) return callback(null);
             _createSymlink(srcpath, dstpath, type, callback);
@@ -20893,13 +21132,13 @@ var require_symlink = __commonJS({
         srcpath = relative.toDst;
         symlinkType(relative.toCwd, type, (err2, type2) => {
           if (err2) return callback(err2);
-          const dir = path25.dirname(dstpath);
+          const dir = path27.dirname(dstpath);
           pathExists(dir, (err3, dirExists) => {
             if (err3) return callback(err3);
-            if (dirExists) return fs16.symlink(srcpath, dstpath, type2, callback);
+            if (dirExists) return fs19.symlink(srcpath, dstpath, type2, callback);
             mkdirs(dir, (err4) => {
               if (err4) return callback(err4);
-              fs16.symlink(srcpath, dstpath, type2, callback);
+              fs19.symlink(srcpath, dstpath, type2, callback);
             });
           });
         });
@@ -20908,22 +21147,22 @@ var require_symlink = __commonJS({
     function createSymlinkSync(srcpath, dstpath, type) {
       let stats;
       try {
-        stats = fs16.lstatSync(dstpath);
+        stats = fs19.lstatSync(dstpath);
       } catch {
       }
       if (stats && stats.isSymbolicLink()) {
-        const srcStat = fs16.statSync(srcpath);
-        const dstStat = fs16.statSync(dstpath);
+        const srcStat = fs19.statSync(srcpath);
+        const dstStat = fs19.statSync(dstpath);
         if (areIdentical(srcStat, dstStat)) return;
       }
       const relative = symlinkPathsSync(srcpath, dstpath);
       srcpath = relative.toDst;
       type = symlinkTypeSync(relative.toCwd, type);
-      const dir = path25.dirname(dstpath);
-      const exists = fs16.existsSync(dir);
-      if (exists) return fs16.symlinkSync(srcpath, dstpath, type);
+      const dir = path27.dirname(dstpath);
+      const exists = fs19.existsSync(dir);
+      if (exists) return fs19.symlinkSync(srcpath, dstpath, type);
       mkdirsSync(dir);
-      return fs16.symlinkSync(srcpath, dstpath, type);
+      return fs19.symlinkSync(srcpath, dstpath, type);
     }
     module2.exports = {
       createSymlink: u(createSymlink),
@@ -20993,9 +21232,9 @@ var require_jsonfile = __commonJS({
       if (typeof options === "string") {
         options = { encoding: options };
       }
-      const fs16 = options.fs || _fs;
+      const fs19 = options.fs || _fs;
       const shouldThrow = "throws" in options ? options.throws : true;
-      let data = await universalify.fromCallback(fs16.readFile)(file, options);
+      let data = await universalify.fromCallback(fs19.readFile)(file, options);
       data = stripBom(data);
       let obj;
       try {
@@ -21015,10 +21254,10 @@ var require_jsonfile = __commonJS({
       if (typeof options === "string") {
         options = { encoding: options };
       }
-      const fs16 = options.fs || _fs;
+      const fs19 = options.fs || _fs;
       const shouldThrow = "throws" in options ? options.throws : true;
       try {
-        let content = fs16.readFileSync(file, options);
+        let content = fs19.readFileSync(file, options);
         content = stripBom(content);
         return JSON.parse(content, options.reviver);
       } catch (err) {
@@ -21031,15 +21270,15 @@ var require_jsonfile = __commonJS({
       }
     }
     async function _writeFile(file, obj, options = {}) {
-      const fs16 = options.fs || _fs;
+      const fs19 = options.fs || _fs;
       const str = stringify(obj, options);
-      await universalify.fromCallback(fs16.writeFile)(file, str, options);
+      await universalify.fromCallback(fs19.writeFile)(file, str, options);
     }
     var writeFile = universalify.fromPromise(_writeFile);
     function writeFileSync(file, obj, options = {}) {
-      const fs16 = options.fs || _fs;
+      const fs19 = options.fs || _fs;
       const str = stringify(obj, options);
-      return fs16.writeFileSync(file, str, options);
+      return fs19.writeFileSync(file, str, options);
     }
     module2.exports = {
       readFile,
@@ -21070,8 +21309,8 @@ var require_output_file = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/output-file/index.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromCallback;
-    var fs16 = require_graceful_fs();
-    var path25 = require("path");
+    var fs19 = require_graceful_fs();
+    var path27 = require("path");
     var mkdir = require_mkdirs();
     var pathExists = require_path_exists2().pathExists;
     function outputFile(file, data, encoding, callback) {
@@ -21079,23 +21318,23 @@ var require_output_file = __commonJS({
         callback = encoding;
         encoding = "utf8";
       }
-      const dir = path25.dirname(file);
+      const dir = path27.dirname(file);
       pathExists(dir, (err, itDoes) => {
         if (err) return callback(err);
-        if (itDoes) return fs16.writeFile(file, data, encoding, callback);
+        if (itDoes) return fs19.writeFile(file, data, encoding, callback);
         mkdir.mkdirs(dir, (err2) => {
           if (err2) return callback(err2);
-          fs16.writeFile(file, data, encoding, callback);
+          fs19.writeFile(file, data, encoding, callback);
         });
       });
     }
     function outputFileSync(file, ...args) {
-      const dir = path25.dirname(file);
-      if (fs16.existsSync(dir)) {
-        return fs16.writeFileSync(file, ...args);
+      const dir = path27.dirname(file);
+      if (fs19.existsSync(dir)) {
+        return fs19.writeFileSync(file, ...args);
       }
       mkdir.mkdirsSync(dir);
-      fs16.writeFileSync(file, ...args);
+      fs19.writeFileSync(file, ...args);
     }
     module2.exports = {
       outputFile: u(outputFile),
@@ -21154,8 +21393,8 @@ var require_json = __commonJS({
 var require_move = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/move/move.js"(exports2, module2) {
     "use strict";
-    var fs16 = require_graceful_fs();
-    var path25 = require("path");
+    var fs19 = require_graceful_fs();
+    var path27 = require("path");
     var copy = require_copy2().copy;
     var remove = require_remove().remove;
     var mkdirp = require_mkdirs().mkdirp;
@@ -21174,7 +21413,7 @@ var require_move = __commonJS({
         stat.checkParentPaths(src, srcStat, dest, "move", (err2) => {
           if (err2) return cb(err2);
           if (isParentRoot(dest)) return doRename(src, dest, overwrite, isChangingCase, cb);
-          mkdirp(path25.dirname(dest), (err3) => {
+          mkdirp(path27.dirname(dest), (err3) => {
             if (err3) return cb(err3);
             return doRename(src, dest, overwrite, isChangingCase, cb);
           });
@@ -21182,8 +21421,8 @@ var require_move = __commonJS({
       });
     }
     function isParentRoot(dest) {
-      const parent = path25.dirname(dest);
-      const parsedPath = path25.parse(parent);
+      const parent = path27.dirname(dest);
+      const parsedPath = path27.parse(parent);
       return parsedPath.root === parent;
     }
     function doRename(src, dest, overwrite, isChangingCase, cb) {
@@ -21201,7 +21440,7 @@ var require_move = __commonJS({
       });
     }
     function rename(src, dest, overwrite, cb) {
-      fs16.rename(src, dest, (err) => {
+      fs19.rename(src, dest, (err) => {
         if (!err) return cb();
         if (err.code !== "EXDEV") return cb(err);
         return moveAcrossDevice(src, dest, overwrite, cb);
@@ -21225,8 +21464,8 @@ var require_move = __commonJS({
 var require_move_sync = __commonJS({
   "node_modules/electron-updater/node_modules/fs-extra/lib/move/move-sync.js"(exports2, module2) {
     "use strict";
-    var fs16 = require_graceful_fs();
-    var path25 = require("path");
+    var fs19 = require_graceful_fs();
+    var path27 = require("path");
     var copySync = require_copy2().copySync;
     var removeSync = require_remove().removeSync;
     var mkdirpSync = require_mkdirs().mkdirpSync;
@@ -21236,12 +21475,12 @@ var require_move_sync = __commonJS({
       const overwrite = opts.overwrite || opts.clobber || false;
       const { srcStat, isChangingCase = false } = stat.checkPathsSync(src, dest, "move", opts);
       stat.checkParentPathsSync(src, srcStat, dest, "move");
-      if (!isParentRoot(dest)) mkdirpSync(path25.dirname(dest));
+      if (!isParentRoot(dest)) mkdirpSync(path27.dirname(dest));
       return doRename(src, dest, overwrite, isChangingCase);
     }
     function isParentRoot(dest) {
-      const parent = path25.dirname(dest);
-      const parsedPath = path25.parse(parent);
+      const parent = path27.dirname(dest);
+      const parsedPath = path27.parse(parent);
       return parsedPath.root === parent;
     }
     function doRename(src, dest, overwrite, isChangingCase) {
@@ -21250,12 +21489,12 @@ var require_move_sync = __commonJS({
         removeSync(dest);
         return rename(src, dest, overwrite);
       }
-      if (fs16.existsSync(dest)) throw new Error("dest already exists.");
+      if (fs19.existsSync(dest)) throw new Error("dest already exists.");
       return rename(src, dest, overwrite);
     }
     function rename(src, dest, overwrite) {
       try {
-        fs16.renameSync(src, dest);
+        fs19.renameSync(src, dest);
       } catch (err) {
         if (err.code !== "EXDEV") throw err;
         return moveAcrossDevice(src, dest, overwrite);
@@ -21906,7 +22145,7 @@ var require_has_flag = __commonJS({
 var require_supports_color = __commonJS({
   "node_modules/supports-color/index.js"(exports2, module2) {
     "use strict";
-    var os2 = require("os");
+    var os3 = require("os");
     var tty = require("tty");
     var hasFlag = require_has_flag();
     var { env } = process;
@@ -21963,7 +22202,7 @@ var require_supports_color = __commonJS({
         return min;
       }
       if (process.platform === "win32") {
-        const osRelease = os2.release().split(".");
+        const osRelease = os3.release().split(".");
         if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
           return Number(osRelease[2]) >= 14931 ? 3 : 2;
         }
@@ -22219,13 +22458,13 @@ var require_ProgressCallbackTransform = __commonJS({
         this.delta = 0;
         this.nextUpdate = this.start + 1e3;
       }
-      _transform(chunk, encoding, callback) {
+      _transform(chunk2, encoding, callback) {
         if (this.cancellationToken.cancelled) {
           callback(new Error("cancelled"), null);
           return;
         }
-        this.transferred += chunk.length;
-        this.delta += chunk.length;
+        this.transferred += chunk2.length;
+        this.delta += chunk2.length;
         const now = Date.now();
         if (now >= this.nextUpdate && this.transferred !== this.total) {
           this.nextUpdate = now + 1e3;
@@ -22238,7 +22477,7 @@ var require_ProgressCallbackTransform = __commonJS({
           });
           this.delta = 0;
         }
-        callback(null, chunk);
+        callback(null, chunk2);
       }
       _flush(callback) {
         if (this.cancellationToken.cancelled) {
@@ -22417,7 +22656,7 @@ Please double check that your authentication token is correct. Due to security r
         response.setEncoding("utf8");
         let data = "";
         response.on("error", reject);
-        response.on("data", (chunk) => data += chunk);
+        response.on("data", (chunk2) => data += chunk2);
         response.on("end", () => {
           try {
             if (response.statusCode != null && response.statusCode >= 400) {
@@ -22459,13 +22698,13 @@ Please double check that your authentication token is correct. Due to security r
             },
             responseHandler: (response, callback) => {
               let receivedLength = 0;
-              response.on("data", (chunk) => {
-                receivedLength += chunk.length;
+              response.on("data", (chunk2) => {
+                receivedLength += chunk2.length;
                 if (receivedLength > 524288e3) {
                   callback(new Error("Maximum allowed size is 500 MB"));
                   return;
                 }
-                responseChunks.push(chunk);
+                responseChunks.push(chunk2);
               });
               response.on("end", () => {
                 callback(null);
@@ -22540,8 +22779,8 @@ Please double check that your authentication token is correct. Due to security r
         }
         const hostname = options.hostname;
         const port = options.port ? `:${options.port}` : "";
-        const path25 = options.path || "/";
-        return new url_1.URL(`${protocol}//${hostname}${port}${path25}`);
+        const path27 = options.path || "/";
+        return new url_1.URL(`${protocol}//${hostname}${port}${path27}`);
       }
       static isCrossOriginRedirect(originalUrl, redirectUrl) {
         if (originalUrl.hostname.toLowerCase() !== redirectUrl.hostname.toLowerCase()) {
@@ -22616,9 +22855,9 @@ Please double check that your authentication token is correct. Due to security r
         this.digester = (0, crypto_1.createHash)(algorithm);
       }
       // noinspection JSUnusedGlobalSymbols
-      _transform(chunk, encoding, callback) {
-        this.digester.update(chunk);
-        callback(null, chunk);
+      _transform(chunk2, encoding, callback) {
+        this.digester.update(chunk2);
+        callback(null, chunk2);
       }
       // noinspection JSUnusedGlobalSymbols
       _flush(callback) {
@@ -23371,9 +23610,9 @@ var require_sax = __commonJS({
         this.emit("data", data);
         return true;
       };
-      SAXStream.prototype.end = function(chunk) {
-        if (chunk && chunk.length) {
-          this.write(chunk);
+      SAXStream.prototype.end = function(chunk2) {
+        if (chunk2 && chunk2.length) {
+          this.write(chunk2);
         }
         if (this._decoderBuffer) {
           var finalChunk = this._decodeBuffer(Buffer.alloc(0), true);
@@ -24085,14 +24324,14 @@ var require_sax = __commonJS({
           parser.state = S.TEXT;
         }
       }
-      function charAt(chunk, i) {
+      function charAt(chunk2, i) {
         var result = "";
-        if (i < chunk.length) {
-          result = chunk.charAt(i);
+        if (i < chunk2.length) {
+          result = chunk2.charAt(i);
         }
         return result;
       }
-      function write(chunk) {
+      function write(chunk2) {
         var parser = this;
         if (this.error) {
           throw this.error;
@@ -24103,16 +24342,16 @@ var require_sax = __commonJS({
             "Cannot write after close. Assign an onready handler."
           );
         }
-        if (chunk === null) {
+        if (chunk2 === null) {
           return end(parser);
         }
-        if (typeof chunk === "object") {
-          chunk = chunk.toString();
+        if (typeof chunk2 === "object") {
+          chunk2 = chunk2.toString();
         }
         var i = 0;
         var c = "";
         while (true) {
-          c = charAt(chunk, i++);
+          c = charAt(chunk2, i++);
           parser.c = c;
           if (!c) {
             break;
@@ -24141,7 +24380,7 @@ var require_sax = __commonJS({
               if (parser.sawRoot && !parser.closedRoot) {
                 var starti = i - 1;
                 while (c && c !== "<" && c !== "&") {
-                  c = charAt(chunk, i++);
+                  c = charAt(chunk2, i++);
                   if (c && parser.trackPosition) {
                     parser.position++;
                     if (c === "\n") {
@@ -24152,7 +24391,7 @@ var require_sax = __commonJS({
                     }
                   }
                 }
-                parser.textNode += chunk.substring(starti, i - 1);
+                parser.textNode += chunk2.substring(starti, i - 1);
               }
               if (c === "<" && !(parser.sawRoot && parser.closedRoot && !parser.strict)) {
                 parser.state = S.OPEN_WAKA;
@@ -24329,7 +24568,7 @@ var require_sax = __commonJS({
             case S.CDATA:
               var starti = i - 1;
               while (c && c !== "]") {
-                c = charAt(chunk, i++);
+                c = charAt(chunk2, i++);
                 if (c && parser.trackPosition) {
                   parser.position++;
                   if (c === "\n") {
@@ -24340,7 +24579,7 @@ var require_sax = __commonJS({
                   }
                 }
               }
-              parser.cdata += chunk.substring(starti, i - 1);
+              parser.cdata += chunk2.substring(starti, i - 1);
               if (c === "]") {
                 parser.state = S.CDATA_ENDING;
               }
@@ -30742,7 +30981,7 @@ var require_DownloadedUpdateHelper = __commonJS({
     var fs_1 = require("fs");
     var isEqual = require_lodash();
     var fs_extra_1 = require_lib();
-    var path25 = require("path");
+    var path27 = require("path");
     var DownloadedUpdateHelper = class {
       constructor(cacheDir) {
         this.cacheDir = cacheDir;
@@ -30762,7 +31001,7 @@ var require_DownloadedUpdateHelper = __commonJS({
         return this._packageFile;
       }
       get cacheDirForPendingUpdate() {
-        return path25.join(this.cacheDir, "pending");
+        return path27.join(this.cacheDir, "pending");
       }
       async validateDownloadedPath(updateFile, updateInfo, fileInfo, logger) {
         if (this.versionInfo != null && this.file === updateFile && this.fileInfo != null) {
@@ -30841,7 +31080,7 @@ var require_DownloadedUpdateHelper = __commonJS({
           await this.cleanCacheDirForPendingUpdate();
           return null;
         }
-        const updateFile = path25.join(this.cacheDirForPendingUpdate, cachedInfo.fileName);
+        const updateFile = path27.join(this.cacheDirForPendingUpdate, cachedInfo.fileName);
         if (!await (0, fs_extra_1.pathExists)(updateFile)) {
           logger.info("Cached update file doesn't exist");
           return null;
@@ -30856,7 +31095,7 @@ var require_DownloadedUpdateHelper = __commonJS({
         return updateFile;
       }
       getUpdateInfoFile() {
-        return path25.join(this.cacheDirForPendingUpdate, "update-info.json");
+        return path27.join(this.cacheDirForPendingUpdate, "update-info.json");
       }
     };
     exports2.DownloadedUpdateHelper = DownloadedUpdateHelper;
@@ -30876,7 +31115,7 @@ var require_DownloadedUpdateHelper = __commonJS({
     }
     async function createTempUpdateFile(name, cacheDir, log3) {
       let nameCounter = 0;
-      let result = path25.join(cacheDir, name);
+      let result = path27.join(cacheDir, name);
       for (let i = 0; i < 3; i++) {
         try {
           await (0, fs_extra_1.unlink)(result);
@@ -30886,7 +31125,7 @@ var require_DownloadedUpdateHelper = __commonJS({
             return result;
           }
           log3.warn(`Error on remove temp update file: ${e}`);
-          result = path25.join(cacheDir, `${nameCounter++}-${name}`);
+          result = path27.join(cacheDir, `${nameCounter++}-${name}`);
         }
       }
       return result;
@@ -30900,17 +31139,17 @@ var require_AppAdapter = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getAppCacheDir = getAppCacheDir;
-    var path25 = require("path");
+    var path27 = require("path");
     var os_1 = require("os");
     function getAppCacheDir() {
       const homedir = (0, os_1.homedir)();
       let result;
       if (process.platform === "win32") {
-        result = process.env["LOCALAPPDATA"] || path25.join(homedir, "AppData", "Local");
+        result = process.env["LOCALAPPDATA"] || path27.join(homedir, "AppData", "Local");
       } else if (process.platform === "darwin") {
-        result = path25.join(homedir, "Library", "Caches");
+        result = path27.join(homedir, "Library", "Caches");
       } else {
-        result = process.env["XDG_CACHE_HOME"] || path25.join(homedir, ".cache");
+        result = process.env["XDG_CACHE_HOME"] || path27.join(homedir, ".cache");
       }
       return result;
     }
@@ -30923,11 +31162,11 @@ var require_ElectronAppAdapter = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ElectronAppAdapter = void 0;
-    var path25 = require("path");
+    var path27 = require("path");
     var AppAdapter_1 = require_AppAdapter();
     var ElectronAppAdapter = class {
-      constructor(app12 = require("electron").app) {
-        this.app = app12;
+      constructor(app13 = require("electron").app) {
+        this.app = app13;
       }
       whenReady() {
         return this.app.whenReady();
@@ -30942,7 +31181,7 @@ var require_ElectronAppAdapter = __commonJS({
         return this.app.isPackaged === true;
       }
       get appUpdateConfigPath() {
-        return this.isPackaged ? path25.join(process.resourcesPath, "app-update.yml") : path25.join(this.app.getAppPath(), "dev-app-update.yml");
+        return this.isPackaged ? path27.join(process.resourcesPath, "app-update.yml") : path27.join(this.app.getAppPath(), "dev-app-update.yml");
       }
       get userDataPath() {
         return this.app.getPath("userData");
@@ -31883,7 +32122,7 @@ var require_PrivateGitHubProvider = __commonJS({
     exports2.PrivateGitHubProvider = void 0;
     var builder_util_runtime_1 = require_out();
     var js_yaml_1 = require_js_yaml();
-    var path25 = require("path");
+    var path27 = require("path");
     var url_1 = require("url");
     var util_1 = require_util3();
     var GitHubProvider_1 = require_GitHubProvider();
@@ -31954,7 +32193,7 @@ var require_PrivateGitHubProvider = __commonJS({
       }
       resolveFiles(updateInfo) {
         return (0, Provider_1.getFileList)(updateInfo).map((it) => {
-          const name = path25.posix.basename(it.url).replace(/ /g, "-");
+          const name = path27.posix.basename(it.url).replace(/ /g, "-");
           const asset = updateInfo.assets.find((it2) => it2 != null && it2.name === name);
           if (asset == null) {
             throw (0, builder_util_runtime_1.newError)(`Cannot find asset "${name}" in: ${JSON.stringify(updateInfo.assets, null, 2)}`, "ERR_UPDATER_ASSET_NOT_FOUND");
@@ -32232,26 +32471,26 @@ var require_DataSplitter = __commonJS({
           callback();
         }).catch(callback);
       }
-      async handleData(chunk) {
+      async handleData(chunk2) {
         let start = 0;
         if (this.ignoreByteCount !== 0 && this.remainingPartDataCount !== 0) {
           throw (0, builder_util_runtime_1.newError)("Internal error", "ERR_DATA_SPLITTER_BYTE_COUNT_MISMATCH");
         }
         if (this.ignoreByteCount > 0) {
-          const toIgnore = Math.min(this.ignoreByteCount, chunk.length);
+          const toIgnore = Math.min(this.ignoreByteCount, chunk2.length);
           this.ignoreByteCount -= toIgnore;
           start = toIgnore;
         } else if (this.remainingPartDataCount > 0) {
-          const toRead = Math.min(this.remainingPartDataCount, chunk.length);
+          const toRead = Math.min(this.remainingPartDataCount, chunk2.length);
           this.remainingPartDataCount -= toRead;
-          await this.processPartData(chunk, 0, toRead);
+          await this.processPartData(chunk2, 0, toRead);
           start = toRead;
         }
-        if (start === chunk.length) {
+        if (start === chunk2.length) {
           return;
         }
         if (this.readState === ReadState.HEADER) {
-          const headerListEnd = this.searchHeaderListEnd(chunk, start);
+          const headerListEnd = this.searchHeaderListEnd(chunk2, start);
           if (headerListEnd === -1) {
             return;
           }
@@ -32283,7 +32522,7 @@ var require_DataSplitter = __commonJS({
               this.finishHandler();
               return;
             }
-            start = this.searchHeaderListEnd(chunk, start);
+            start = this.searchHeaderListEnd(chunk2, start);
             if (start === -1) {
               this.readState = ReadState.HEADER;
               return;
@@ -32291,15 +32530,15 @@ var require_DataSplitter = __commonJS({
           }
           const partLength = this.partIndexToLength[this.partIndex];
           const end = start + partLength;
-          const effectiveEnd = Math.min(end, chunk.length);
-          await this.processPartStarted(chunk, start, effectiveEnd);
+          const effectiveEnd = Math.min(end, chunk2.length);
+          await this.processPartStarted(chunk2, start, effectiveEnd);
           this.remainingPartDataCount = partLength - (effectiveEnd - start);
           if (this.remainingPartDataCount > 0) {
             return;
           }
           start = end + this.boundaryLength;
-          if (start >= chunk.length) {
-            this.ignoreByteCount = this.boundaryLength - (chunk.length - end);
+          if (start >= chunk2.length) {
+            this.ignoreByteCount = this.boundaryLength - (chunk2.length - end);
             return;
           }
         }
@@ -32324,12 +32563,12 @@ var require_DataSplitter = __commonJS({
           w();
         });
       }
-      searchHeaderListEnd(chunk, readOffset) {
-        const headerListEnd = chunk.indexOf(DOUBLE_CRLF, readOffset);
+      searchHeaderListEnd(chunk2, readOffset) {
+        const headerListEnd = chunk2.indexOf(DOUBLE_CRLF, readOffset);
         if (headerListEnd !== -1) {
           return headerListEnd + DOUBLE_CRLF.length;
         }
-        const partialChunk = readOffset === 0 ? chunk : chunk.slice(readOffset);
+        const partialChunk = readOffset === 0 ? chunk2 : chunk2.slice(readOffset);
         if (this.headerListBuffer == null) {
           this.headerListBuffer = partialChunk;
         } else {
@@ -32514,17 +32753,17 @@ var require_ProgressDifferentialDownloadCallbackTransform = __commonJS({
         this.operationType = OperationKind.COPY;
         this.nextUpdate = this.start + 1e3;
       }
-      _transform(chunk, encoding, callback) {
+      _transform(chunk2, encoding, callback) {
         if (this.cancellationToken.cancelled) {
           callback(new Error("cancelled"), null);
           return;
         }
         if (this.operationType == OperationKind.COPY) {
-          callback(null, chunk);
+          callback(null, chunk2);
           return;
         }
-        this.transferred += chunk.length;
-        this.delta += chunk.length;
+        this.transferred += chunk2.length;
+        this.delta += chunk2.length;
         const now = Date.now();
         if (now >= this.nextUpdate && this.transferred !== this.expectedBytes && this.transferred !== this.progressDifferentialDownloadInfo.grandTotal) {
           this.nextUpdate = now + 1e3;
@@ -32537,7 +32776,7 @@ var require_ProgressDifferentialDownloadCallbackTransform = __commonJS({
           });
           this.delta = 0;
         }
-        callback(null, chunk);
+        callback(null, chunk2);
       }
       beginFileCopy() {
         this.operationType = OperationKind.COPY;
@@ -32790,9 +33029,9 @@ var require_DifferentialDownloader = __commonJS({
         const requestOptions = this.createRequestOptions();
         requestOptions.headers.range = `bytes=${start}-${endInclusive}`;
         let position = 0;
-        await this.request(requestOptions, (chunk) => {
-          chunk.copy(buffer, position);
-          position += chunk.length;
+        await this.request(requestOptions, (chunk2) => {
+          chunk2.copy(buffer, position);
+          position += chunk2.length;
         });
         if (position !== buffer.length) {
           throw new Error(`Received data length ${position} is not equal to expected ${buffer.length}`);
@@ -32905,7 +33144,7 @@ var require_AppUpdater = __commonJS({
     var fs_extra_1 = require_lib();
     var js_yaml_1 = require_js_yaml();
     var lazy_val_1 = require_main();
-    var path25 = require("path");
+    var path27 = require("path");
     var semver_1 = require_semver4();
     var DownloadedUpdateHelper_1 = require_DownloadedUpdateHelper();
     var ElectronAppAdapter_1 = require_ElectronAppAdapter();
@@ -32995,7 +33234,7 @@ var require_AppUpdater = __commonJS({
           this._isUserWithinRollout = value;
         }
       }
-      constructor(options, app12) {
+      constructor(options, app13) {
         super();
         this.autoDownload = true;
         this.autoInstallOnAppQuit = true;
@@ -33025,11 +33264,11 @@ var require_AppUpdater = __commonJS({
         this.on("error", (error) => {
           this._logger.error(`Error: ${error.stack || error.message}`);
         });
-        if (app12 == null) {
+        if (app13 == null) {
           this.app = new ElectronAppAdapter_1.ElectronAppAdapter();
           this.httpExecutor = new electronHttpExecutor_1.ElectronHttpExecutor((authInfo, callback) => this.emit("login", authInfo, callback));
         } else {
-          this.app = app12;
+          this.app = app13;
           this.httpExecutor = null;
         }
         const currentVersionString = this.app.version;
@@ -33303,7 +33542,7 @@ var require_AppUpdater = __commonJS({
         return this.computeFinalHeaders({ accept: "*/*" });
       }
       async getOrCreateStagingUserId() {
-        const file = path25.join(this.app.userDataPath, ".updaterId");
+        const file = path27.join(this.app.userDataPath, ".updaterId");
         try {
           const id2 = await (0, fs_extra_1.readFile)(file, "utf-8");
           if (builder_util_runtime_1.UUID.check(id2)) {
@@ -33347,7 +33586,7 @@ var require_AppUpdater = __commonJS({
           if (dirName == null) {
             logger.error("updaterCacheDirName is not specified in app-update.yml Was app build using at least electron-builder 20.34.0?");
           }
-          const cacheDir = path25.join(this.app.baseCachePath, dirName || this.app.name);
+          const cacheDir = path27.join(this.app.baseCachePath, dirName || this.app.name);
           if (logger.debug != null) {
             logger.debug(`updater cache dir: ${cacheDir}`);
           }
@@ -33373,26 +33612,26 @@ var require_AppUpdater = __commonJS({
         function getCacheUpdateFileName() {
           const urlPath = decodeURIComponent(taskOptions.fileInfo.url.pathname);
           if (urlPath.toLowerCase().endsWith(`.${taskOptions.fileExtension.toLowerCase()}`)) {
-            return path25.basename(urlPath);
+            return path27.basename(urlPath);
           } else {
-            return path25.basename(taskOptions.fileInfo.info.url);
+            return path27.basename(taskOptions.fileInfo.info.url);
           }
         }
         const downloadedUpdateHelper = await this.getOrCreateDownloadHelper();
         const cacheDir = downloadedUpdateHelper.cacheDirForPendingUpdate;
         await (0, fs_extra_1.mkdir)(cacheDir, { recursive: true });
         const updateFileName = getCacheUpdateFileName();
-        let updateFile = path25.join(cacheDir, updateFileName);
-        const packageFile = packageInfo == null ? null : path25.join(cacheDir, `package-${version}${path25.extname(packageInfo.path) || ".7z"}`);
+        let updateFile = path27.join(cacheDir, updateFileName);
+        const packageFile = packageInfo == null ? null : path27.join(cacheDir, `package-${version}${path27.extname(packageInfo.path) || ".7z"}`);
         const done = async (isSaveCache) => {
           await downloadedUpdateHelper.setDownloadedFile(updateFile, packageFile, updateInfo, fileInfo, updateFileName, isSaveCache);
           await taskOptions.done({
             ...updateInfo,
             downloadedFile: updateFile
           });
-          const currentBlockMapFile = path25.join(cacheDir, "current.blockmap");
+          const currentBlockMapFile = path27.join(cacheDir, "current.blockmap");
           if (await (0, fs_extra_1.pathExists)(currentBlockMapFile)) {
-            await (0, fs_extra_1.copyFile)(currentBlockMapFile, path25.join(downloadedUpdateHelper.cacheDir, "current.blockmap"));
+            await (0, fs_extra_1.copyFile)(currentBlockMapFile, path27.join(downloadedUpdateHelper.cacheDir, "current.blockmap"));
           }
           return packageFile == null ? [updateFile] : [updateFile, packageFile];
         };
@@ -33457,7 +33696,7 @@ var require_AppUpdater = __commonJS({
           };
           const downloadOptions = {
             newUrl: fileInfo.url,
-            oldFile: path25.join(this.downloadedUpdateHelper.cacheDir, oldInstallerFileName),
+            oldFile: path27.join(this.downloadedUpdateHelper.cacheDir, oldInstallerFileName),
             logger: this._logger,
             newFile: installerPath,
             isUseMultipleRangeRequest: provider2.isUseMultipleRangeRequest,
@@ -33468,11 +33707,11 @@ var require_AppUpdater = __commonJS({
             downloadOptions.onProgress = (it) => this.emit(types_1.DOWNLOAD_PROGRESS, it);
           }
           const saveBlockMapToCacheDir = async (blockMapData, cacheDir) => {
-            const blockMapFile = path25.join(cacheDir, "current.blockmap");
+            const blockMapFile = path27.join(cacheDir, "current.blockmap");
             await (0, fs_extra_1.outputFile)(blockMapFile, (0, zlib_1.gzipSync)(JSON.stringify(blockMapData)));
           };
           const getBlockMapFromCacheDir = async (cacheDir) => {
-            const blockMapFile = path25.join(cacheDir, "current.blockmap");
+            const blockMapFile = path27.join(cacheDir, "current.blockmap");
             try {
               if (await (0, fs_extra_1.pathExists)(blockMapFile)) {
                 return JSON.parse((0, zlib_1.gunzipSync)(await (0, fs_extra_1.readFile)(blockMapFile)).toString());
@@ -33526,11 +33765,11 @@ var require_BaseUpdater = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.BaseUpdater = void 0;
     var child_process_1 = require("child_process");
-    var path25 = require("path");
+    var path27 = require("path");
     var AppUpdater_1 = require_AppUpdater();
     var BaseUpdater = class extends AppUpdater_1.AppUpdater {
-      constructor(options, app12) {
-        super(options, app12);
+      constructor(options, app13) {
+        super(options, app13);
         this.quitAndInstallCalled = false;
         this.quitHandlerAdded = false;
       }
@@ -33613,7 +33852,7 @@ var require_BaseUpdater = __commonJS({
        * a trusted package manager binary.
        */
       sanitizeEnvPath(envPath) {
-        return envPath.split(path25.delimiter).filter((dir) => path25.isAbsolute(dir)).join(path25.delimiter);
+        return envPath.split(path27.delimiter).filter((dir) => path27.isAbsolute(dir)).join(path27.delimiter);
       }
       spawnSyncLog(cmd, args = [], env = {}) {
         var _a;
@@ -33715,14 +33954,14 @@ var require_AppImageUpdater = __commonJS({
     var child_process_1 = require("child_process");
     var fs_extra_1 = require_lib();
     var fs_1 = require("fs");
-    var path25 = require("path");
+    var path27 = require("path");
     var BaseUpdater_1 = require_BaseUpdater();
     var FileWithEmbeddedBlockMapDifferentialDownloader_1 = require_FileWithEmbeddedBlockMapDifferentialDownloader();
     var Provider_1 = require_Provider();
     var types_1 = require_types3();
     var AppImageUpdater = class extends BaseUpdater_1.BaseUpdater {
-      constructor(options, app12) {
-        super(options, app12);
+      constructor(options, app13) {
+        super(options, app13);
       }
       isUpdaterActive() {
         if (process.env["APPIMAGE"] == null && !this.forceDevUpdateConfig) {
@@ -33781,21 +34020,21 @@ var require_AppImageUpdater = __commonJS({
         if (appImageFile == null) {
           throw (0, builder_util_runtime_1.newError)("APPIMAGE env is not defined", "ERR_UPDATER_OLD_FILE_NOT_FOUND");
         }
-        if (!path25.isAbsolute(appImageFile) || appImageFile.includes("\0")) {
+        if (!path27.isAbsolute(appImageFile) || appImageFile.includes("\0")) {
           throw (0, builder_util_runtime_1.newError)(`APPIMAGE env is not a valid absolute path: "${appImageFile}"`, "ERR_UPDATER_OLD_FILE_NOT_FOUND");
         }
         (0, fs_1.unlinkSync)(appImageFile);
         let destination;
-        const existingBaseName = path25.basename(appImageFile);
+        const existingBaseName = path27.basename(appImageFile);
         const installerPath = this.installerPath;
         if (installerPath == null) {
           this.dispatchError(new Error("No update filepath provided, can't quit and install"));
           return false;
         }
-        if (path25.basename(installerPath) === existingBaseName || !/\d+\.\d+\.\d+/.test(existingBaseName)) {
+        if (path27.basename(installerPath) === existingBaseName || !/\d+\.\d+\.\d+/.test(existingBaseName)) {
           destination = appImageFile;
         } else {
-          destination = path25.join(path25.dirname(appImageFile), path25.basename(installerPath));
+          destination = path27.join(path27.dirname(appImageFile), path27.basename(installerPath));
         }
         (0, child_process_1.execFileSync)("mv", ["-f", installerPath, destination]);
         if (destination !== appImageFile) {
@@ -33827,8 +34066,8 @@ var require_LinuxUpdater = __commonJS({
     var BaseUpdater_1 = require_BaseUpdater();
     var SAFE_PM_REGEX = /^[a-zA-Z0-9_-]+$/;
     var LinuxUpdater = class extends BaseUpdater_1.BaseUpdater {
-      constructor(options, app12) {
-        super(options, app12);
+      constructor(options, app13) {
+        super(options, app13);
       }
       /**
        * Returns true if the current process is running as root.
@@ -33939,8 +34178,8 @@ var require_DebUpdater = __commonJS({
     var types_1 = require_types3();
     var LinuxUpdater_1 = require_LinuxUpdater();
     var DebUpdater = class _DebUpdater extends LinuxUpdater_1.LinuxUpdater {
-      constructor(options, app12) {
-        super(options, app12);
+      constructor(options, app13) {
+        super(options, app13);
       }
       /*** @private */
       doDownloadUpdate(downloadUpdateOptions) {
@@ -34023,8 +34262,8 @@ var require_PacmanUpdater = __commonJS({
     var Provider_1 = require_Provider();
     var LinuxUpdater_1 = require_LinuxUpdater();
     var PacmanUpdater = class _PacmanUpdater extends LinuxUpdater_1.LinuxUpdater {
-      constructor(options, app12) {
-        super(options, app12);
+      constructor(options, app13) {
+        super(options, app13);
       }
       /*** @private */
       doDownloadUpdate(downloadUpdateOptions) {
@@ -34090,8 +34329,8 @@ var require_RpmUpdater = __commonJS({
     var Provider_1 = require_Provider();
     var LinuxUpdater_1 = require_LinuxUpdater();
     var RpmUpdater = class _RpmUpdater extends LinuxUpdater_1.LinuxUpdater {
-      constructor(options, app12) {
-        super(options, app12);
+      constructor(options, app13) {
+        super(options, app13);
       }
       /*** @private */
       doDownloadUpdate(downloadUpdateOptions) {
@@ -34158,15 +34397,15 @@ var require_MacUpdater = __commonJS({
     var builder_util_runtime_1 = require_out();
     var fs_extra_1 = require_lib();
     var fs_1 = require("fs");
-    var path25 = require("path");
+    var path27 = require("path");
     var http_1 = require("http");
     var AppUpdater_1 = require_AppUpdater();
     var Provider_1 = require_Provider();
     var child_process_1 = require("child_process");
     var crypto_1 = require("crypto");
     var MacUpdater = class _MacUpdater extends AppUpdater_1.AppUpdater {
-      constructor(options, app12) {
-        super(options, app12);
+      constructor(options, app13) {
+        super(options, app13);
         this.nativeUpdater = require("electron").autoUpdater;
         this.squirrelDownloadedUpdate = false;
         this.nativeUpdater.on("error", (it) => {
@@ -34242,7 +34481,7 @@ var require_MacUpdater = __commonJS({
           fileInfo: zipFileInfo,
           downloadUpdateOptions,
           task: async (destinationFile, downloadOptions) => {
-            const cachedUpdateFilePath = path25.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
+            const cachedUpdateFilePath = path27.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
             const canDifferentialDownload = () => {
               if (!(0, fs_extra_1.pathExistsSync)(cachedUpdateFilePath)) {
                 log3.info("Unable to locate previous update.zip for differential download (is this first install?), falling back to full download");
@@ -34261,7 +34500,7 @@ var require_MacUpdater = __commonJS({
           done: async (event) => {
             if (!downloadUpdateOptions.disableDifferentialDownload) {
               try {
-                const cachedUpdateFilePath = path25.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
+                const cachedUpdateFilePath = path27.join(this.downloadedUpdateHelper.cacheDir, CURRENT_MAC_APP_ZIP_FILE_NAME);
                 await (0, fs_extra_1.copyFile)(event.downloadedFile, cachedUpdateFilePath);
               } catch (error) {
                 this._logger.warn(`Unable to copy file for caching for future differential downloads: ${error.message}`);
@@ -34403,8 +34642,8 @@ var require_windowsExecutableCodeSignatureVerifier = __commonJS({
     exports2.verifySignature = verifySignature;
     var builder_util_runtime_1 = require_out();
     var child_process_1 = require("child_process");
-    var os2 = require("os");
-    var path25 = require("path");
+    var os3 = require("os");
+    var path27 = require("path");
     function preparePowerShellExec(command, timeout) {
       const executable = `set "PSModulePath=" & chcp 65001 >NUL & powershell.exe`;
       const args = ["-NoProfile", "-NonInteractive", "-InputFormat", "None", "-Command", command];
@@ -34429,8 +34668,8 @@ var require_windowsExecutableCodeSignatureVerifier = __commonJS({
             const data = parseOut(stdout);
             if (data.Status === 0) {
               try {
-                const normlaizedUpdateFilePath = path25.normalize(data.Path);
-                const normalizedTempUpdateFile = path25.normalize(unescapedTempUpdateFile);
+                const normlaizedUpdateFilePath = path27.normalize(data.Path);
+                const normalizedTempUpdateFile = path27.normalize(unescapedTempUpdateFile);
                 logger.info(`LiteralPath: ${normlaizedUpdateFilePath}. Update Path: ${normalizedTempUpdateFile}`);
                 if (normlaizedUpdateFilePath !== normalizedTempUpdateFile) {
                   handleError(logger, new Error(`LiteralPath of ${normlaizedUpdateFilePath} is different than ${normalizedTempUpdateFile}`), stderr, reject);
@@ -34504,7 +34743,7 @@ var require_windowsExecutableCodeSignatureVerifier = __commonJS({
       }
     }
     function isOldWin6() {
-      const winVersion = os2.release();
+      const winVersion = os3.release();
       return winVersion.startsWith("6.") && !winVersion.startsWith("6.3");
     }
   }
@@ -34517,7 +34756,7 @@ var require_NsisUpdater = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.NsisUpdater = void 0;
     var builder_util_runtime_1 = require_out();
-    var path25 = require("path");
+    var path27 = require("path");
     var BaseUpdater_1 = require_BaseUpdater();
     var FileWithEmbeddedBlockMapDifferentialDownloader_1 = require_FileWithEmbeddedBlockMapDifferentialDownloader();
     var types_1 = require_types3();
@@ -34526,8 +34765,8 @@ var require_NsisUpdater = __commonJS({
     var windowsExecutableCodeSignatureVerifier_1 = require_windowsExecutableCodeSignatureVerifier();
     var url_1 = require("url");
     var NsisUpdater = class extends BaseUpdater_1.BaseUpdater {
-      constructor(options, app12) {
-        super(options, app12);
+      constructor(options, app13) {
+        super(options, app13);
         this._verifyUpdateCodeSignature = (publisherNames, unescapedTempUpdateFile) => (0, windowsExecutableCodeSignatureVerifier_1.verifySignature)(publisherNames, unescapedTempUpdateFile, this._logger);
       }
       /**
@@ -34626,7 +34865,7 @@ var require_NsisUpdater = __commonJS({
           args.push(`--package-file=${packagePath}`);
         }
         const callUsingElevation = () => {
-          this.spawnLog(path25.join(process.resourcesPath, "elevate.exe"), [installerPath].concat(args)).catch((e) => this.dispatchError(e));
+          this.spawnLog(path27.join(process.resourcesPath, "elevate.exe"), [installerPath].concat(args)).catch((e) => this.dispatchError(e));
         };
         if (options.isAdminRightsRequired) {
           this._logger.info("isAdminRightsRequired is set to true, run installer using elevate.exe");
@@ -34653,7 +34892,7 @@ var require_NsisUpdater = __commonJS({
         try {
           const downloadOptions = {
             newUrl: new url_1.URL(packageInfo.path),
-            oldFile: path25.join(this.downloadedUpdateHelper.cacheDir, builder_util_runtime_1.CURRENT_APP_PACKAGE_FILE_NAME),
+            oldFile: path27.join(this.downloadedUpdateHelper.cacheDir, builder_util_runtime_1.CURRENT_APP_PACKAGE_FILE_NAME),
             logger: this._logger,
             newFile: packagePath,
             requestHeaders: this.requestHeaders,
@@ -34698,7 +34937,7 @@ var require_main2 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.NsisUpdater = exports2.MacUpdater = exports2.RpmUpdater = exports2.PacmanUpdater = exports2.DebUpdater = exports2.AppImageUpdater = exports2.Provider = exports2.NoOpLogger = exports2.AppUpdater = exports2.BaseUpdater = void 0;
     var fs_extra_1 = require_lib();
-    var path25 = require("path");
+    var path27 = require("path");
     var BaseUpdater_1 = require_BaseUpdater();
     Object.defineProperty(exports2, "BaseUpdater", { enumerable: true, get: function() {
       return BaseUpdater_1.BaseUpdater;
@@ -34748,7 +34987,7 @@ var require_main2 = __commonJS({
       } else {
         _autoUpdater = new (require_AppImageUpdater()).AppImageUpdater();
         try {
-          const identity = path25.join(process.resourcesPath, "package-type");
+          const identity = path27.join(process.resourcesPath, "package-type");
           if (!(0, fs_extra_1.existsSync)(identity)) {
             return _autoUpdater;
           }
@@ -34785,12 +35024,12 @@ var require_main2 = __commonJS({
 var require_path_is_absolute = __commonJS({
   "node_modules/path-is-absolute/index.js"(exports2, module2) {
     "use strict";
-    function posix(path25) {
-      return path25.charAt(0) === "/";
+    function posix(path27) {
+      return path27.charAt(0) === "/";
     }
-    function win32(path25) {
+    function win32(path27) {
       var splitDeviceRe = /^([a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?([\\\/])?([\s\S]*?)$/;
-      var result = splitDeviceRe.exec(path25);
+      var result = splitDeviceRe.exec(path27);
       var device = result[1] || "";
       var isUnc = Boolean(device && device.charAt(1) !== ":");
       return Boolean(result[2] || isUnc);
@@ -34805,8 +35044,8 @@ var require_path_is_absolute = __commonJS({
 var require_registry = __commonJS({
   "node_modules/winreg/lib/registry.js"(exports2, module2) {
     var util = require("util");
-    var path25 = require("path");
-    var spawn5 = require("child_process").spawn;
+    var path27 = require("path");
+    var spawn6 = require("child_process").spawn;
     var log3 = function() {
     };
     var HKLM = "HKLM";
@@ -34874,7 +35113,7 @@ var require_registry = __commonJS({
     }
     function getRegExePath() {
       if (process.platform === "win32") {
-        return path25.join(process.env.windir, "system32", "reg.exe");
+        return path27.join(process.env.windir, "system32", "reg.exe");
       } else {
         return "REG";
       }
@@ -34961,7 +35200,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["QUERY", this.path];
       pushArch(args, this.arch);
-      var proc2 = spawn5(getRegExePath(), args, {
+      var proc2 = spawn6(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -35011,7 +35250,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["QUERY", this.path];
       pushArch(args, this.arch);
-      var proc2 = spawn5(getRegExePath(), args, {
+      var proc2 = spawn6(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -35069,7 +35308,7 @@ var require_registry = __commonJS({
       else
         args = args.concat(["/v", name]);
       pushArch(args, this.arch);
-      var proc2 = spawn5(getRegExePath(), args, {
+      var proc2 = spawn6(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -35124,7 +35363,7 @@ var require_registry = __commonJS({
         args = args.concat(["/v", name]);
       args = args.concat(["/t", type, "/d", value, "/f"]);
       pushArch(args, this.arch);
-      var proc2 = spawn5(getRegExePath(), args, {
+      var proc2 = spawn6(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -35154,7 +35393,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = name ? ["DELETE", this.path, "/f", "/v", name] : ["DELETE", this.path, "/f", "/ve"];
       pushArch(args, this.arch);
-      var proc2 = spawn5(getRegExePath(), args, {
+      var proc2 = spawn6(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -35184,7 +35423,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["DELETE", this.path, "/f", "/va"];
       pushArch(args, this.arch);
-      var proc2 = spawn5(getRegExePath(), args, {
+      var proc2 = spawn6(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -35215,7 +35454,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["DELETE", this.path, "/f"];
       pushArch(args, this.arch);
-      var proc2 = spawn5(getRegExePath(), args, {
+      var proc2 = spawn6(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -35245,7 +35484,7 @@ var require_registry = __commonJS({
         throw new TypeError("must specify a callback");
       var args = ["ADD", this.path, "/f"];
       pushArch(args, this.arch);
-      var proc2 = spawn5(getRegExePath(), args, {
+      var proc2 = spawn6(getRegExePath(), args, {
         cwd: void 0,
         env: process.env,
         stdio: ["ignore", "pipe", "pipe"]
@@ -35302,11 +35541,11 @@ var require_registry = __commonJS({
 var require_AutoLaunchWindows = __commonJS({
   "node_modules/auto-launch/dist/AutoLaunchWindows.js"(exports2, module2) {
     var Winreg;
-    var fs16;
-    var path25;
+    var fs19;
+    var path27;
     var regKey;
-    fs16 = require("fs");
-    path25 = require("path");
+    fs19 = require("fs");
+    path27 = require("path");
     Winreg = require_registry();
     regKey = new Winreg({
       hive: Winreg.HKCU,
@@ -35321,10 +35560,10 @@ var require_AutoLaunchWindows = __commonJS({
           var args, pathToAutoLaunchedApp, ref, updateDotExe;
           pathToAutoLaunchedApp = appPath;
           args = "";
-          updateDotExe = path25.join(path25.dirname(process.execPath), "..", "update.exe");
-          if (((ref = process.versions) != null ? ref.electron : void 0) != null && fs16.existsSync(updateDotExe)) {
+          updateDotExe = path27.join(path27.dirname(process.execPath), "..", "update.exe");
+          if (((ref = process.versions) != null ? ref.electron : void 0) != null && fs19.existsSync(updateDotExe)) {
             pathToAutoLaunchedApp = updateDotExe;
-            args = ' --processStart "' + path25.basename(process.execPath) + '"';
+            args = ' --processStart "' + path27.basename(process.execPath) + '"';
             if (isHiddenOnLaunch) {
               args += ' --process-start-args "--hidden"';
             }
@@ -35465,7 +35704,7 @@ var require_applescript_parser = __commonJS({
 // node_modules/applescript/lib/applescript.js
 var require_applescript = __commonJS({
   "node_modules/applescript/lib/applescript.js"(exports2) {
-    var spawn5 = require("child_process").spawn;
+    var spawn6 = require("child_process").spawn;
     exports2.Parsers = require_applescript_parser();
     var parse = exports2.Parsers.parse;
     exports2.osascript = "osascript";
@@ -35490,7 +35729,7 @@ var require_applescript = __commonJS({
       if (!isString) {
         args.push(strOrPath);
       }
-      var interpreter = spawn5(exports2.osascript, args);
+      var interpreter = spawn6(exports2.osascript, args);
       bufferBody(interpreter.stdout);
       bufferBody(interpreter.stderr);
       interpreter.on("exit", function(code) {
@@ -35513,8 +35752,8 @@ var require_applescript = __commonJS({
     function bufferBody(stream) {
       stream.body = "";
       stream.setEncoding("utf8");
-      stream.on("data", function(chunk) {
-        stream.body += chunk;
+      stream.on("data", function(chunk2) {
+        stream.body += chunk2;
       });
     }
   }
@@ -35537,8 +35776,8 @@ var require_untildify = __commonJS({
 // node_modules/mkdirp/index.js
 var require_mkdirp = __commonJS({
   "node_modules/mkdirp/index.js"(exports2, module2) {
-    var path25 = require("path");
-    var fs16 = require("fs");
+    var path27 = require("path");
+    var fs19 = require("fs");
     var _0777 = parseInt("0777", 8);
     module2.exports = mkdirP.mkdirp = mkdirP.mkdirP = mkdirP;
     function mkdirP(p, opts, f, made) {
@@ -35549,7 +35788,7 @@ var require_mkdirp = __commonJS({
         opts = { mode: opts };
       }
       var mode = opts.mode;
-      var xfs = opts.fs || fs16;
+      var xfs = opts.fs || fs19;
       if (mode === void 0) {
         mode = _0777;
       }
@@ -35557,7 +35796,7 @@ var require_mkdirp = __commonJS({
       var cb = f || /* istanbul ignore next */
       function() {
       };
-      p = path25.resolve(p);
+      p = path27.resolve(p);
       xfs.mkdir(p, mode, function(er) {
         if (!er) {
           made = made || p;
@@ -35565,8 +35804,8 @@ var require_mkdirp = __commonJS({
         }
         switch (er.code) {
           case "ENOENT":
-            if (path25.dirname(p) === p) return cb(er);
-            mkdirP(path25.dirname(p), opts, function(er2, made2) {
+            if (path27.dirname(p) === p) return cb(er);
+            mkdirP(path27.dirname(p), opts, function(er2, made2) {
               if (er2) cb(er2, made2);
               else mkdirP(p, opts, cb, made2);
             });
@@ -35588,19 +35827,19 @@ var require_mkdirp = __commonJS({
         opts = { mode: opts };
       }
       var mode = opts.mode;
-      var xfs = opts.fs || fs16;
+      var xfs = opts.fs || fs19;
       if (mode === void 0) {
         mode = _0777;
       }
       if (!made) made = null;
-      p = path25.resolve(p);
+      p = path27.resolve(p);
       try {
         xfs.mkdirSync(p, mode);
         made = made || p;
       } catch (err0) {
         switch (err0.code) {
           case "ENOENT":
-            made = sync(path25.dirname(p), opts, made);
+            made = sync(path27.dirname(p), opts, made);
             sync(p, opts, made);
             break;
           // In the case of any other error, just see if there's a dir
@@ -35625,9 +35864,9 @@ var require_mkdirp = __commonJS({
 // node_modules/auto-launch/dist/fileBasedUtilities.js
 var require_fileBasedUtilities = __commonJS({
   "node_modules/auto-launch/dist/fileBasedUtilities.js"(exports2, module2) {
-    var fs16;
+    var fs19;
     var mkdirp;
-    fs16 = require("fs");
+    fs19 = require("fs");
     mkdirp = require_mkdirp();
     module2.exports = {
       /* Public */
@@ -35639,7 +35878,7 @@ var require_fileBasedUtilities = __commonJS({
             if (mkdirErr != null) {
               return reject(mkdirErr);
             }
-            return fs16.writeFile(filePath, data, function(writeErr) {
+            return fs19.writeFile(filePath, data, function(writeErr) {
               if (writeErr != null) {
                 return reject(writeErr);
               }
@@ -35651,7 +35890,7 @@ var require_fileBasedUtilities = __commonJS({
       isEnabled: function(filePath) {
         return new Promise(/* @__PURE__ */ function(_this) {
           return function(resolve, reject) {
-            return fs16.stat(filePath, function(err, stat) {
+            return fs19.stat(filePath, function(err, stat) {
               if (err != null) {
                 return resolve(false);
               }
@@ -35663,11 +35902,11 @@ var require_fileBasedUtilities = __commonJS({
       removeFile: function(filePath) {
         return new Promise(/* @__PURE__ */ function(_this) {
           return function(resolve, reject) {
-            return fs16.stat(filePath, function(statErr) {
+            return fs19.stat(filePath, function(statErr) {
               if (statErr != null) {
                 return resolve();
               }
-              return fs16.unlink(filePath, function(unlinkErr) {
+              return fs19.unlink(filePath, function(unlinkErr) {
                 if (unlinkErr != null) {
                   return reject(unlinkErr);
                 }
@@ -35805,8 +36044,8 @@ var require_dist3 = __commonJS({
     isPathAbsolute = require_path_is_absolute();
     module2.exports = AutoLaunch2 = function() {
       function AutoLaunch3(arg) {
-        var isHidden, mac, name, path25, versions;
-        name = arg.name, isHidden = arg.isHidden, mac = arg.mac, path25 = arg.path;
+        var isHidden, mac, name, path27, versions;
+        name = arg.name, isHidden = arg.isHidden, mac = arg.mac, path27 = arg.path;
         this.fixOpts = bind(this.fixOpts, this);
         this.isEnabled = bind(this.isEnabled, this);
         this.disable = bind(this.disable, this);
@@ -35820,11 +36059,11 @@ var require_dist3 = __commonJS({
           mac: mac != null ? mac : {}
         };
         versions = typeof process !== "undefined" && process !== null ? process.versions : void 0;
-        if (path25 != null) {
-          if (!isPathAbsolute(path25)) {
+        if (path27 != null) {
+          if (!isPathAbsolute(path27)) {
             throw new Error("path must be absolute");
           }
-          this.opts.appPath = path25;
+          this.opts.appPath = path27;
         } else if (versions != null && (versions.nw != null || versions["node-webkit"] != null || versions.electron != null)) {
           this.opts.appPath = process.execPath;
         } else {
@@ -35851,12 +36090,12 @@ var require_dist3 = __commonJS({
       AutoLaunch3.prototype.isEnabled = function() {
         return this.api.isEnabled(this.opts.appName, this.opts.mac);
       };
-      AutoLaunch3.prototype.fixMacExecPath = function(path25, macOptions) {
-        path25 = path25.replace(/(^.+?[^\/]+?\.app)\/Contents\/(Frameworks\/((\1|[^\/]+?) Helper)\.app\/Contents\/MacOS\/\3|MacOS\/Electron)/, "$1");
+      AutoLaunch3.prototype.fixMacExecPath = function(path27, macOptions) {
+        path27 = path27.replace(/(^.+?[^\/]+?\.app)\/Contents\/(Frameworks\/((\1|[^\/]+?) Helper)\.app\/Contents\/MacOS\/\3|MacOS\/Electron)/, "$1");
         if (!macOptions.useLaunchAgent) {
-          path25 = path25.replace(/\.app\/Contents\/MacOS\/[^\/]*$/, ".app");
+          path27 = path27.replace(/\.app\/Contents\/MacOS\/[^\/]*$/, ".app");
         }
-        return path25;
+        return path27;
       };
       AutoLaunch3.prototype.fixOpts = function() {
         var tempPath;
@@ -35888,6 +36127,8 @@ var ffmpeg_exports = {};
 __export(ffmpeg_exports, {
   even: () => even,
   listDshowDevices: () => listDshowDevices,
+  probeMedia: () => probeMedia,
+  probeVideoSize: () => probeVideoSize,
   resolveFfmpeg: () => resolveFfmpeg,
   runFfmpeg: () => runFfmpeg
 });
@@ -35956,6 +36197,43 @@ function even(n) {
   const i = Math.max(2, Math.round(n));
   return i % 2 === 0 ? i : i - 1;
 }
+async function probeMedia(src) {
+  return new Promise((resolve) => {
+    const proc2 = (0, import_node_child_process.spawn)(resolveFfmpeg(), ["-i", src], { stdio: ["ignore", "pipe", "pipe"] });
+    let err = "";
+    proc2.stderr.on("data", (d) => {
+      err += String(d);
+    });
+    proc2.on("close", () => {
+      const vline = err.split(/\r?\n/).find((l) => l.includes("Stream #") && l.includes("Video:"));
+      const m = vline?.match(/(\d{2,5})x(\d{2,5})/);
+      const hasAudio = err.split(/\r?\n/).some((l) => l.includes("Stream #") && l.includes("Audio:"));
+      const dm = err.match(/Duration:\s*(\d+):(\d+):([\d.]+)/);
+      resolve({
+        width: m ? Number(m[1]) : 0,
+        height: m ? Number(m[2]) : 0,
+        hasAudio,
+        duration: dm ? Number(dm[1]) * 3600 + Number(dm[2]) * 60 + Number(dm[3]) : 0
+      });
+    });
+    proc2.on("error", () => resolve({ width: 0, height: 0, hasAudio: false, duration: 0 }));
+  });
+}
+async function probeVideoSize(src) {
+  return new Promise((resolve) => {
+    const proc2 = (0, import_node_child_process.spawn)(resolveFfmpeg(), ["-i", src], { stdio: ["ignore", "pipe", "pipe"] });
+    let err = "";
+    proc2.stderr.on("data", (d) => {
+      err += String(d);
+    });
+    proc2.on("close", () => {
+      const line = err.split(/\r?\n/).find((l) => l.includes("Stream #") && l.includes("Video:"));
+      const m = line?.match(/(\d{2,5})x(\d{2,5})/);
+      resolve(m ? { width: Number(m[1]), height: Number(m[2]) } : null);
+    });
+    proc2.on("error", () => resolve(null));
+  });
+}
 var import_node_fs8, import_node_path13, import_node_child_process;
 var init_ffmpeg = __esm({
   "electron/recording/ffmpeg.ts"() {
@@ -35963,6 +36241,229 @@ var init_ffmpeg = __esm({
     import_node_fs8 = __toESM(require("node:fs"));
     import_node_path13 = __toESM(require("node:path"));
     import_node_child_process = require("node:child_process");
+  }
+});
+
+// electron/recording/cursors.ts
+var cursors_exports = {};
+__export(cursors_exports, {
+  buildCursorOverlay: () => buildCursorOverlay,
+  cursorPixelSize: () => cursorPixelSize,
+  ensureCursorPng: () => ensureCursorPng,
+  isCompositedCursorStyle: () => isCompositedCursorStyle
+});
+function isCompositedCursorStyle(s) {
+  return s === "dot" || s === "hand" || s === "dark" || s === "light";
+}
+function cursorPixelSize(style) {
+  return style === "hand" ? 32 : 24;
+}
+function canvas(w, h) {
+  return { w, h, px: new Uint8ClampedArray(w * h * 4) };
+}
+function setPx(c, x, y, col) {
+  const ix = Math.round(x);
+  const iy = Math.round(y);
+  if (ix < 0 || iy < 0 || ix >= c.w || iy >= c.h) return;
+  const o = (iy * c.w + ix) * 4;
+  if (col[3] === 0) return;
+  if (col[3] === 255) {
+    c.px[o] = col[0];
+    c.px[o + 1] = col[1];
+    c.px[o + 2] = col[2];
+    c.px[o + 3] = 255;
+    return;
+  }
+  const a = col[3] / 255;
+  c.px[o] = col[0] * a + c.px[o] * (1 - a);
+  c.px[o + 1] = col[1] * a + c.px[o + 1] * (1 - a);
+  c.px[o + 2] = col[2] * a + c.px[o + 2] * (1 - a);
+  c.px[o + 3] = Math.max(c.px[o + 3], col[3]);
+}
+function fillCircle(c, cx, cy, r, col) {
+  for (let y = Math.floor(cy - r); y <= Math.ceil(cy + r); y++) {
+    for (let x = Math.floor(cx - r); x <= Math.ceil(cx + r); x++) {
+      const d = Math.hypot(x - cx, y - cy);
+      if (d <= r) setPx(c, x, y, d > r - 1 ? [col[0], col[1], col[2], 128] : col);
+    }
+  }
+}
+function fillPoly(c, pts, col) {
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const [, y] of pts) {
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
+  }
+  for (let y = Math.floor(minY); y <= Math.ceil(maxY); y++) {
+    const xs = [];
+    for (let i = 0; i < pts.length; i++) {
+      const [x1, y1] = pts[i];
+      const [x2, y2] = pts[(i + 1) % pts.length];
+      if (y1 <= y && y2 > y || y2 <= y && y1 > y) {
+        xs.push(x1 + (y - y1) / (y2 - y1) * (x2 - x1));
+      }
+    }
+    xs.sort((a, b) => a - b);
+    for (let k = 0; k + 1 < xs.length; k += 2) {
+      for (let x = Math.ceil(xs[k]); x <= Math.floor(xs[k + 1]); x++) setPx(c, x, y, col);
+    }
+  }
+}
+function strokeLine(c, x0, y0, x1, y1, col) {
+  const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
+  for (let i = 0; i <= steps; i++) {
+    setPx(c, x0 + (x1 - x0) * i / steps, y0 + (y1 - y0) * i / steps, col);
+  }
+}
+function strokePoly(c, pts, col) {
+  for (let i = 0; i < pts.length; i++) {
+    const [x1, y1] = pts[i];
+    const [x2, y2] = pts[(i + 1) % pts.length];
+    strokeLine(c, x1, y1, x2, y2, col);
+  }
+}
+function fillRect(c, x, y, w, h, col) {
+  for (let iy = Math.round(y); iy < Math.round(y + h); iy++) {
+    for (let ix = Math.round(x); ix < Math.round(x + w); ix++) setPx(c, ix, iy, col);
+  }
+}
+function crc32(buf) {
+  let c = -1;
+  for (let i = 0; i < buf.length; i++) c = crcTable[(c ^ buf[i]) & 255] ^ c >>> 8;
+  return (c ^ -1) >>> 0;
+}
+function chunk(type, data) {
+  const td = Buffer.from(type, "ascii");
+  const len = Buffer.alloc(4);
+  len.writeUInt32BE(data.length, 0);
+  const crc = Buffer.alloc(4);
+  crc.writeUInt32BE(crc32(Buffer.concat([td, data])), 0);
+  return Buffer.concat([len, td, data, crc]);
+}
+function encodePNG(c) {
+  const { w, h, px } = c;
+  const raw = Buffer.alloc((w * 4 + 1) * h);
+  for (let y = 0; y < h; y++) {
+    raw[y * (w * 4 + 1)] = 0;
+    Buffer.from(px.slice(y * w * 4, (y + 1) * w * 4)).copy(raw, y * (w * 4 + 1) + 1);
+  }
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(w, 0);
+  ihdr.writeUInt32BE(h, 4);
+  ihdr[8] = 8;
+  ihdr[9] = 6;
+  return Buffer.concat([
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+    chunk("IHDR", ihdr),
+    chunk("IDAT", import_node_zlib.default.deflateSync(raw)),
+    chunk("IEND", Buffer.alloc(0))
+  ]);
+}
+function drawArrow(fill, outline) {
+  const c = canvas(24, 24);
+  fillPoly(c, ARROW, fill);
+  strokePoly(c, ARROW, outline);
+  return c;
+}
+function drawDot() {
+  const c = canvas(24, 24);
+  fillCircle(c, 12, 12, 10, [255, 255, 255, 255]);
+  fillCircle(c, 12, 12, 8, [255, 45, 45, 255]);
+  return c;
+}
+function drawHand() {
+  const c = canvas(32, 32);
+  const W = [255, 255, 255, 255];
+  const B = [0, 0, 0, 255];
+  fillRect(c, 12, 2, 5, 14, W);
+  fillRect(c, 18, 7, 5, 10, W);
+  fillRect(c, 23, 10, 4, 8, W);
+  fillRect(c, 7, 10, 4, 8, W);
+  fillRect(c, 7, 15, 20, 13, W);
+  fillRect(c, 3, 16, 6, 4, W);
+  fillRect(c, 11, 1, 7, 1, B);
+  fillRect(c, 11, 1, 1, 15, B);
+  fillRect(c, 17, 2, 1, 14, B);
+  fillRect(c, 18, 6, 5, 1, B);
+  fillRect(c, 23, 6, 1, 4, B);
+  fillRect(c, 23, 9, 4, 1, B);
+  fillRect(c, 27, 10, 1, 8, B);
+  fillRect(c, 6, 9, 5, 1, B);
+  fillRect(c, 6, 9, 1, 9, B);
+  fillRect(c, 7, 28, 20, 1, B);
+  fillRect(c, 27, 18, 1, 10, B);
+  return c;
+}
+function ensureCursorPng(style) {
+  const dir = import_node_path14.default.join(import_node_os.default.tmpdir(), "reflecto-cursors");
+  import_node_fs9.default.mkdirSync(dir, { recursive: true });
+  const size = cursorPixelSize(style);
+  const p = import_node_path14.default.join(dir, `cursor-${style}-${size}-shaped.png`);
+  if (!import_node_fs9.default.existsSync(p) || import_node_fs9.default.statSync(p).size < 100) {
+    let c;
+    switch (style) {
+      case "dot":
+        c = drawDot();
+        break;
+      case "hand":
+        c = drawHand();
+        break;
+      case "dark":
+        c = drawArrow([20, 20, 20, 255], [255, 255, 255, 255]);
+        break;
+      case "light":
+        c = drawArrow([245, 245, 245, 255], [20, 20, 20, 255]);
+        break;
+    }
+    import_node_fs9.default.writeFileSync(p, encodePNG(c));
+  }
+  return p;
+}
+function buildCursorOverlay(last, style, samples, offset, outTag) {
+  const png = ensureCursorPng(style);
+  const kept = samples.filter((_, i) => i % 16 === 0).slice(0, 400);
+  const safe = kept.length ? kept : [{ t: 0, x: offset.x, y: offset.y }];
+  let chain = "";
+  let prev = last;
+  safe.forEach((s, i) => {
+    const isLast = i === safe.length - 1;
+    const t0 = (s.t / 1e3).toFixed(2);
+    const t1 = isLast ? "3600" : ((safe[i + 1]?.t ?? s.t + 250) / 1e3).toFixed(2);
+    const x = Math.max(0, Math.round(s.x - offset.x));
+    const y = Math.max(0, Math.round(s.y - offset.y));
+    const tag = i === safe.length - 1 ? outTag : `cur${i}`;
+    chain += `[${prev}][1:v]overlay=${x}:${y}:enable='between(t,${t0},${t1})'[${tag}];`;
+    prev = tag;
+  });
+  return { extraInputs: ["-i", png], filter: chain };
+}
+var import_node_fs9, import_node_os, import_node_path14, import_node_zlib, crcTable, ARROW;
+var init_cursors = __esm({
+  "electron/recording/cursors.ts"() {
+    "use strict";
+    import_node_fs9 = __toESM(require("node:fs"));
+    import_node_os = __toESM(require("node:os"));
+    import_node_path14 = __toESM(require("node:path"));
+    import_node_zlib = __toESM(require("node:zlib"));
+    crcTable = (() => {
+      const t = new Int32Array(256);
+      for (let n = 0; n < 256; n++) {
+        let c = n;
+        for (let k = 0; k < 8; k++) c = c & 1 ? 3988292384 ^ c >>> 1 : c >>> 1;
+        t[n] = c;
+      }
+      return t;
+    })();
+    ARROW = [
+      [4, 2],
+      [4, 18],
+      [9, 14],
+      [12, 21],
+      [14, 20],
+      [11, 13],
+      [16, 13]
+    ];
   }
 });
 
@@ -35996,7 +36497,7 @@ function ensureScript() {
     "if (-not [RW]::GetWindowRect([IntPtr]$Hwnd, [ref]$r)) { throw 'GetWindowRect failed' }",
     'Write-Output ("{0},{1},{2},{3}" -f $r.L,$r.T,$r.R,$r.B)'
   ].join("\n");
-  import_node_fs9.default.writeFileSync(scriptPath, body, "utf8");
+  import_node_fs10.default.writeFileSync(scriptPath, body, "utf8");
 }
 function getWindowRect(hwnd) {
   try {
@@ -36022,15 +36523,15 @@ function evenRect(rect) {
     height: rect.height - rect.height % 2
   };
 }
-var import_node_child_process2, import_node_fs9, import_node_os, import_node_path14, scriptPath;
+var import_node_child_process2, import_node_fs10, import_node_os2, import_node_path15, scriptPath;
 var init_win32 = __esm({
   "electron/win32.ts"() {
     "use strict";
     import_node_child_process2 = require("node:child_process");
-    import_node_fs9 = __toESM(require("node:fs"));
-    import_node_os = __toESM(require("node:os"));
-    import_node_path14 = __toESM(require("node:path"));
-    scriptPath = import_node_path14.default.join(import_node_os.default.tmpdir(), "reflecto-getwindowrect.ps1");
+    import_node_fs10 = __toESM(require("node:fs"));
+    import_node_os2 = __toESM(require("node:os"));
+    import_node_path15 = __toESM(require("node:path"));
+    scriptPath = import_node_path15.default.join(import_node_os2.default.tmpdir(), "reflecto-getwindowrect.ps1");
   }
 });
 
@@ -36060,6 +36561,11 @@ function clampToDesktop(rect) {
 }
 function resetGdiInfo() {
   lastInfo = null;
+  segments = [];
+  lastStart = null;
+}
+function gdiSegmentCount() {
+  return segments.length;
 }
 function lastGdiInfo() {
   return lastInfo;
@@ -36075,7 +36581,13 @@ function needsGdiGrab(opts) {
 }
 async function startGdiGrab(start) {
   await stopGdiGrab(false);
-  const dest = import_node_path15.default.join(import_electron19.app.getPath("temp"), `reflecto-gdi-${(0, import_node_crypto6.randomUUID)()}.mkv`);
+  segments = [];
+  lastStart = { ...start };
+  const info = await spawnSegment(start);
+  segments.push(info.dest);
+  return info;
+}
+function buildGdiArgs(start, dest) {
   const fps = start.fps || 30;
   const args = [
     "-y",
@@ -36149,6 +36661,11 @@ async function startGdiGrab(start) {
     "1",
     dest
   );
+  return { args, expected };
+}
+async function spawnSegment(start) {
+  const dest = import_node_path16.default.join(import_electron19.app.getPath("temp"), `reflecto-gdi-${(0, import_node_crypto6.randomUUID)()}.mkv`);
+  const { args, expected } = buildGdiArgs(start, dest);
   stderrBuf = "";
   current = dest;
   lastInfo = { args, dest, expected, kind: start.kind };
@@ -36178,12 +36695,105 @@ async function startGdiGrab(start) {
   });
   return lastInfo;
 }
-async function stopGdiGrab(save) {
-  const file = current;
+async function stopGdiGrab(save, cursor) {
+  await terminateProc();
+  const files = segments.filter((f) => import_node_fs11.default.existsSync(f) && import_node_fs11.default.statSync(f).size >= 1024);
+  segments = [];
+  lastStart = null;
+  if (!save || files.length === 0) {
+    for (const f of segments) {
+      try {
+        import_node_fs11.default.unlinkSync(f);
+      } catch {
+      }
+    }
+    log(`discarded gdigrab segments=${files.length}`);
+    return null;
+  }
+  let source = files[0];
+  let concatTmp = null;
+  if (files.length > 1) {
+    const list = import_node_path16.default.join(import_electron19.app.getPath("temp"), `reflecto-concat-${(0, import_node_crypto6.randomUUID)()}.txt`);
+    import_node_fs11.default.writeFileSync(list, files.map((f) => `file '${f.replace(/'/g, "'\\''")}'`).join("\n"), "utf8");
+    concatTmp = import_node_path16.default.join(import_electron19.app.getPath("temp"), `reflecto-gdi-joined-${(0, import_node_crypto6.randomUUID)()}.mkv`);
+    await runFfmpeg(["-y", "-f", "concat", "-safe", "0", "-i", list, "-c", "copy", concatTmp]);
+    try {
+      import_node_fs11.default.unlinkSync(list);
+    } catch {
+    }
+    source = concatTmp;
+    log(`concatenated ${files.length} segments -> ${concatTmp} bytes=${import_node_fs11.default.statSync(concatTmp).size}`);
+  }
+  const dest = import_node_path16.default.join(import_electron19.app.getPath("userData"), "recordings", `reflecto_${(0, import_node_crypto6.randomUUID)()}.mp4`);
+  import_node_fs11.default.mkdirSync(import_node_path16.default.dirname(dest), { recursive: true });
+  try {
+    if (cursor && isCompositedCursorStyle(cursor.style) && cursor.samples.length > 0) {
+      const off = lastInfo?.expected ? { x: lastInfo.expected.x, y: lastInfo.expected.y } : { x: 0, y: 0 };
+      const { extraInputs, filter } = buildCursorOverlay("0:v", cursor.style, cursor.samples, off, "cout");
+      await runFfmpeg([
+        "-y",
+        "-i",
+        source,
+        ...extraInputs,
+        "-filter_complex",
+        filter.replace(/;$/, ""),
+        "-map",
+        "[cout]",
+        "-map",
+        "0:a?",
+        "-c:v",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+        dest
+      ]);
+      log(`saved ${dest} cursor=${cursor.style} samples=${cursor.samples.length} segments=${files.length}`);
+    } else {
+      await runFfmpeg(["-y", "-i", source, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", dest]);
+      log(`saved ${dest} segments=${files.length}`);
+    }
+    for (const f of files) {
+      try {
+        import_node_fs11.default.unlinkSync(f);
+      } catch {
+      }
+    }
+    if (concatTmp) {
+      try {
+        import_node_fs11.default.unlinkSync(concatTmp);
+      } catch {
+      }
+    }
+    log(`saved ${dest} bytes=${import_node_fs11.default.statSync(dest).size} segments=${files.length}`);
+    if (lastInfo) lastInfo.dest = dest;
+    return dest;
+  } catch (err) {
+    log(`transcode failed, keeping source: ${err}`);
+    return source;
+  }
+}
+async function pauseGdiGrab() {
+  await terminateProc();
+  log(`gdigrab paused segments=${segments.length}`);
+}
+async function resumeGdiGrab() {
+  if (!lastStart) return null;
+  if (lastStart.kind === "window" && lastStart.hwnd) {
+    const live = getWindowRect(lastStart.hwnd);
+    if (live) lastStart = { ...lastStart, rect: live };
+  }
+  const info = await spawnSegment(lastStart);
+  segments.push(info.dest);
+  log(`gdigrab resumed segment=${segments.length} -> ${info.dest}`);
+  return info;
+}
+async function terminateProc() {
   const child = proc;
   proc = null;
   current = null;
-  if (!child) return null;
+  if (!child) return;
   await new Promise((resolve) => {
     const finish3 = () => resolve();
     child.once("close", finish3);
@@ -36199,51 +36809,38 @@ async function stopGdiGrab(save) {
     }, 2500);
     setTimeout(finish3, 6e3);
   });
-  if (!save || !file || !import_node_fs10.default.existsSync(file) || import_node_fs10.default.statSync(file).size < 1024) {
-    log(`discarded gdigrab size=${file && import_node_fs10.default.existsSync(file) ? import_node_fs10.default.statSync(file).size : 0}`);
-    return null;
-  }
-  const dest = import_node_path15.default.join(import_electron19.app.getPath("userData"), "recordings", `reflecto_${(0, import_node_crypto6.randomUUID)()}.mp4`);
-  import_node_fs10.default.mkdirSync(import_node_path15.default.dirname(dest), { recursive: true });
-  try {
-    await runFfmpeg(["-y", "-i", file, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", dest]);
-    try {
-      import_node_fs10.default.unlinkSync(file);
-    } catch {
-    }
-    log(`saved ${dest} bytes=${import_node_fs10.default.statSync(dest).size}`);
-    if (lastInfo) lastInfo.dest = dest;
-    return dest;
-  } catch (err) {
-    log(`transcode failed, keeping mkv: ${err}`);
-    return file;
-  }
 }
-var import_node_child_process3, import_node_fs10, import_node_path15, import_node_crypto6, import_electron19, proc, current, lastInfo, stderrBuf;
+var import_node_child_process3, import_node_fs11, import_node_path16, import_node_crypto6, import_electron19, proc, current, lastInfo, stderrBuf, segments, lastStart;
 var init_gdigrab = __esm({
   "electron/recording/gdigrab.ts"() {
     "use strict";
     import_node_child_process3 = require("node:child_process");
-    import_node_fs10 = __toESM(require("node:fs"));
-    import_node_path15 = __toESM(require("node:path"));
+    import_node_fs11 = __toESM(require("node:fs"));
+    import_node_path16 = __toESM(require("node:path"));
     import_node_crypto6 = require("node:crypto");
     import_electron19 = require("electron");
     init_ffmpeg();
+    init_cursors();
     init_win32();
     proc = null;
     current = null;
     lastInfo = null;
     stderrBuf = "";
+    segments = [];
+    lastStart = null;
   }
 });
 
 // electron/recording/engine.ts
 function lastCameraSidecar() {
-  if (!lastCameraPath || !import_node_fs11.default.existsSync(lastCameraPath)) return null;
-  return { path: lastCameraPath, size: import_node_fs11.default.statSync(lastCameraPath).size };
+  if (!lastCameraPath || !import_node_fs12.default.existsSync(lastCameraPath)) return null;
+  return { path: lastCameraPath, size: import_node_fs12.default.statSync(lastCameraPath).size };
 }
 function lastCaptureWorkerInfo() {
   return lastWorkerInfo;
+}
+function lastPointerLog() {
+  return pointerSamples.slice();
 }
 function log2(msg) {
   const line = `[${(/* @__PURE__ */ new Date()).toISOString()}] ${msg}`;
@@ -36293,7 +36890,7 @@ async function ensureCaptureWorker() {
   });
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) await worker2.loadURL(`${devURL}/src/entries/captureWorker.html`);
-  else await worker2.loadFile(import_node_path16.default.join(__dirname, "../dist/src/entries/captureWorker.html"));
+  else await worker2.loadFile(import_node_path17.default.join(__dirname, "../dist/src/entries/captureWorker.html"));
   await ready2;
   return worker2;
 }
@@ -36383,7 +36980,8 @@ async function pauseSession() {
   if (!session || session.state !== "recording") return;
   session.elapsedBeforePause = currentElapsed();
   if (gdiMode) {
-    log2("gdigrab pause keeps capturing (Windows ffmpeg cannot pause gdigrab mid-stream); elapsed timer paused");
+    await pauseGdiGrab();
+    log2(`gdigrab paused (true segment pause) segments=${gdiSegmentCount()}`);
   } else {
     worker2?.webContents.send("recording:worker-pause");
     log2("paused (MediaRecorder.pause)");
@@ -36396,7 +36994,8 @@ async function resumeSession() {
     worker2?.webContents.send("recording:worker-resume");
     log2("resumed (MediaRecorder.resume)");
   } else {
-    log2("gdigrab resume (timer only)");
+    await resumeGdiGrab();
+    log2(`gdigrab resumed segments=${gdiSegmentCount()}`);
   }
   session.state = "recording";
   session.startedAt = Date.now();
@@ -36408,9 +37007,14 @@ async function stopSession(save) {
   await stopCameraSidecar();
   if (gdiMode) {
     const notes2 = session.log;
+    const cursorStyle = session.options.cursorStyle || (session.options.showCursor === false ? "hidden" : "recorded");
+    const samples = pointerSamples.map((s) => {
+      const scale = import_electron20.screen.getDisplayNearestPoint({ x: Math.round(s.x), y: Math.round(s.y) }).scaleFactor || 1;
+      return { t: s.t, x: s.x * scale, y: s.y * scale };
+    });
     session = null;
     gdiMode = false;
-    const dest2 = await stopGdiGrab(save);
+    const dest2 = await stopGdiGrab(save, { style: cursorStyle, samples });
     logLine(notes2, dest2 ? `gdigrab saved ${dest2}` : "gdigrab discarded");
     return dest2;
   }
@@ -36430,27 +37034,27 @@ async function stopSession(save) {
     logLine(notes, `discarded blob=${blob?.length ?? 0}`);
     return null;
   }
-  const webm = import_node_path16.default.join(import_electron20.app.getPath("temp"), `reflecto-${(0, import_node_crypto7.randomUUID)()}.webm`);
-  import_node_fs11.default.writeFileSync(webm, blob);
-  const dest = import_node_path16.default.join(import_electron20.app.getPath("userData"), "recordings", `reflecto_${(0, import_node_crypto7.randomUUID)()}.mp4`);
-  import_node_fs11.default.mkdirSync(import_node_path16.default.dirname(dest), { recursive: true });
+  const webm = import_node_path17.default.join(import_electron20.app.getPath("temp"), `reflecto-${(0, import_node_crypto7.randomUUID)()}.webm`);
+  import_node_fs12.default.writeFileSync(webm, blob);
+  const dest = import_node_path17.default.join(import_electron20.app.getPath("userData"), "recordings", `reflecto_${(0, import_node_crypto7.randomUUID)()}.mp4`);
+  import_node_fs12.default.mkdirSync(import_node_path17.default.dirname(dest), { recursive: true });
   try {
     await runFfmpeg(["-y", "-i", webm, "-r", String(fps), "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-movflags", "+faststart", dest]);
     try {
-      import_node_fs11.default.unlinkSync(webm);
+      import_node_fs12.default.unlinkSync(webm);
     } catch {
     }
-    logLine(notes, `saved ${dest} bytes=${import_node_fs11.default.statSync(dest).size}`);
-    import_node_fs11.default.appendFileSync(import_node_path16.default.join(import_electron20.app.getPath("userData"), "recording-last.log"), notes.join("\n") + `
+    logLine(notes, `saved ${dest} bytes=${import_node_fs12.default.statSync(dest).size}`);
+    import_node_fs12.default.appendFileSync(import_node_path17.default.join(import_electron20.app.getPath("userData"), "recording-last.log"), notes.join("\n") + `
 saved ${dest}
 `);
     return dest;
   } catch (err) {
     logLine(notes, `transcode failed: ${err}`);
-    import_node_fs11.default.appendFileSync(import_node_path16.default.join(import_electron20.app.getPath("userData"), "recording-last.log"), notes.join("\n") + `
+    import_node_fs12.default.appendFileSync(import_node_path17.default.join(import_electron20.app.getPath("userData"), "recording-last.log"), notes.join("\n") + `
 ${err}
 `);
-    if (import_node_fs11.default.existsSync(webm) && import_node_fs11.default.statSync(webm).size > 1024) return webm;
+    if (import_node_fs12.default.existsSync(webm) && import_node_fs12.default.statSync(webm).size > 1024) return webm;
     throw err;
   }
 }
@@ -36466,7 +37070,7 @@ async function startCameraSidecar() {
     log2("no DirectShow camera for sidecar (BetterShot camera.mov equivalent)");
     return;
   }
-  const dest = import_node_path16.default.join(import_electron20.app.getPath("temp"), `reflecto-camera-${(0, import_node_crypto7.randomUUID)()}.mkv`);
+  const dest = import_node_path17.default.join(import_electron20.app.getPath("temp"), `reflecto-camera-${(0, import_node_crypto7.randomUUID)()}.mkv`);
   lastCameraPath = dest;
   log2(`camera sidecar dshow="${cam.name}" -> ${dest}`);
   await new Promise((resolve) => {
@@ -36521,23 +37125,23 @@ function stopCameraSidecar() {
       if (settled) return;
       settled = true;
       const src = lastCameraPath;
-      if (src && import_node_fs11.default.existsSync(src) && import_node_fs11.default.statSync(src).size > 2048) {
+      if (src && import_node_fs12.default.existsSync(src) && import_node_fs12.default.statSync(src).size > 2048) {
         const remux = src.replace(/\.mkv$/i, ".mp4");
         try {
           await runFfmpeg(["-y", "-i", src, "-c", "copy", "-movflags", "+faststart", remux]);
-          if (import_node_fs11.default.existsSync(remux) && import_node_fs11.default.statSync(remux).size > 1024) {
+          if (import_node_fs12.default.existsSync(remux) && import_node_fs12.default.statSync(remux).size > 1024) {
             try {
-              import_node_fs11.default.unlinkSync(src);
+              import_node_fs12.default.unlinkSync(src);
             } catch {
             }
             lastCameraPath = remux;
-            log2(`camera sidecar finalized ${remux} bytes=${import_node_fs11.default.statSync(remux).size}`);
+            log2(`camera sidecar finalized ${remux} bytes=${import_node_fs12.default.statSync(remux).size}`);
           }
         } catch (err) {
           log2(`camera sidecar remux failed, keeping mkv: ${err}`);
         }
       } else {
-        log2(`camera sidecar not finalized size=${src && import_node_fs11.default.existsSync(src) ? import_node_fs11.default.statSync(src).size : 0}`);
+        log2(`camera sidecar not finalized size=${src && import_node_fs12.default.existsSync(src) ? import_node_fs12.default.statSync(src).size : 0}`);
       }
       resolve();
     };
@@ -36628,13 +37232,13 @@ async function resolveSourceId(source) {
 function isRecordingActive() {
   return Boolean(session && session.state !== "idle");
 }
-var import_electron20, import_node_fs11, import_node_path16, import_node_crypto7, import_node_child_process4, session, worker2, pendingStart, pendingStop, lastBlob, mediaDevices, lastWorkerInfo, cameraProc, lastCameraPath, gdiMode, pointerTimer, pointerSamples, pointerStartedAt;
+var import_electron20, import_node_fs12, import_node_path17, import_node_crypto7, import_node_child_process4, session, worker2, pendingStart, pendingStop, lastBlob, mediaDevices, lastWorkerInfo, cameraProc, lastCameraPath, gdiMode, pointerTimer, pointerSamples, pointerStartedAt;
 var init_engine = __esm({
   "electron/recording/engine.ts"() {
     "use strict";
     import_electron20 = require("electron");
-    import_node_fs11 = __toESM(require("node:fs"));
-    import_node_path16 = __toESM(require("node:path"));
+    import_node_fs12 = __toESM(require("node:fs"));
+    import_node_path17 = __toESM(require("node:path"));
     import_node_crypto7 = require("node:crypto");
     import_node_child_process4 = require("node:child_process");
     init_ffmpeg();
@@ -36687,7 +37291,7 @@ function ensureBar() {
   barWin.setAlwaysOnTop(true, "screen-saver");
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) barWin.loadURL(`${devURL}/src/entries/recording.html`);
-  else barWin.loadFile(import_node_path17.default.join(__dirname, "../dist/src/entries/recording.html"));
+  else barWin.loadFile(import_node_path18.default.join(__dirname, "../dist/src/entries/recording.html"));
   barWin.on("closed", () => {
     barWin = null;
   });
@@ -36760,8 +37364,14 @@ async function finishRecording(save) {
   barWin?.hide();
   if (save && out) {
     HistoryStore.shared.importCapture(out, false, "recording");
+    const cam = lastCameraSidecar();
+    if (cam) {
+      HistoryStore.shared.importCapture(cam.path, false, "recording");
+      showToast({ message: "Recording + separate camera file saved!", icon: "success" });
+    } else {
+      showToast({ message: "Recording saved!", icon: "success" });
+    }
     showOnDeck(out);
-    showToast({ message: "Recording saved!", icon: "success" });
     if (getPref("openEditorAfterRecording")) openVideoEditor(out);
   } else if (!save) {
     showToast({ message: "Recording discarded", icon: "info" });
@@ -36872,12 +37482,12 @@ async function recordingPauseToggle() {
     push();
   }
 }
-var import_electron21, import_node_path17, barWin, ui, optionsMode, tickTimer;
+var import_electron21, import_node_path18, barWin, ui, optionsMode, tickTimer;
 var init_bar = __esm({
   "electron/recording/bar.ts"() {
     "use strict";
     import_electron21 = require("electron");
-    import_node_path17 = __toESM(require("node:path"));
+    import_node_path18 = __toESM(require("node:path"));
     init_preferences();
     init_paths();
     init_countdown();
@@ -36918,7 +37528,7 @@ function openOnboardingWindow() {
   win.setMenuBarVisibility(false);
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) win.loadURL(`${devURL}/src/entries/onboarding.html`);
-  else win.loadFile(import_node_path18.default.join(__dirname, "../dist/src/entries/onboarding.html"));
+  else win.loadFile(import_node_path19.default.join(__dirname, "../dist/src/entries/onboarding.html"));
   win.once("ready-to-show", () => win?.show());
   win.on("closed", () => {
     win = null;
@@ -36936,12 +37546,12 @@ function registerOnboardingIpc() {
     shouldPresent: shouldPresentOnboarding()
   }));
 }
-var import_electron22, import_node_path18, CURRENT, win;
+var import_electron22, import_node_path19, CURRENT, win;
 var init_window = __esm({
   "electron/onboarding/window.ts"() {
     "use strict";
     import_electron22 = require("electron");
-    import_node_path18 = __toESM(require("node:path"));
+    import_node_path19 = __toESM(require("node:path"));
     init_preferences();
     init_paths();
     init_bar();
@@ -36950,10 +37560,86 @@ var init_window = __esm({
   }
 });
 
+// src/shared/clipTimeline.ts
+function clampClipSpeed(s) {
+  const v = Number.isFinite(s) ? s : 1;
+  return Math.min(CLIP_MAX_SPEED, Math.max(CLIP_MIN_SPEED, v));
+}
+function clipSourceDuration(c) {
+  return Math.max(0, c.sourceEnd - c.sourceStart);
+}
+function clipEditorDuration(c) {
+  return clipSourceDuration(c) / Math.max(clampClipSpeed(c.speed), CLIP_MIN_SPEED);
+}
+function timelineDuration(clips) {
+  return clips.reduce((t, c) => t + clipEditorDuration(c), 0);
+}
+function normalizeClips(clips, sourceDuration) {
+  const safe = Math.max(0, Number.isFinite(sourceDuration) ? sourceDuration : 0);
+  const seen = /* @__PURE__ */ new Set();
+  let list = [];
+  for (const c of clips) {
+    const start = Math.min(Math.max(c.sourceStart ?? 0, 0), safe);
+    const end = Math.min(Math.max(c.sourceEnd ?? safe, start), safe);
+    if (end - start < CLIP_MIN_DURATION) continue;
+    let id = typeof c.id === "string" && c.id ? c.id : `clip-${list.length}-${Math.round(start * 1e3)}`;
+    if (seen.has(id)) id = `${id}-b`;
+    seen.add(id);
+    list.push({ id, sourceStart: start, sourceEnd: end, speed: clampClipSpeed(c.speed ?? 1) });
+  }
+  list.sort(
+    (a, b) => Math.abs(a.sourceStart - b.sourceStart) > 1e-6 ? a.sourceStart - b.sourceStart : a.sourceEnd - b.sourceEnd
+  );
+  const out = [];
+  let prevEnd = 0;
+  for (const c of list) {
+    const start = Math.max(c.sourceStart, prevEnd);
+    if (c.sourceEnd - start < CLIP_MIN_DURATION) continue;
+    out.push({ ...c, sourceStart: start });
+    prevEnd = c.sourceEnd;
+  }
+  if (!out.length && safe > 0) {
+    out.push({ id: "clip-full", sourceStart: 0, sourceEnd: safe, speed: 1 });
+  }
+  return out;
+}
+function editorTimeForSourceTime(clips, sourceTime) {
+  let editorStart = 0;
+  for (const c of clips) {
+    if (sourceTime >= c.sourceStart - 1e-6 && sourceTime <= c.sourceEnd + 1e-6) {
+      const off = Math.min(Math.max(sourceTime - c.sourceStart, 0), clipSourceDuration(c));
+      return editorStart + off / clampClipSpeed(c.speed);
+    }
+    editorStart += clipEditorDuration(c);
+  }
+  return null;
+}
+function remapSamplesToEditorTime(samples, clips) {
+  const out = [];
+  for (const s of samples) {
+    const e = editorTimeForSourceTime(clips, s.t / 1e3);
+    if (e != null) out.push({ ...s, t: Math.round(e * 1e3) });
+  }
+  return out;
+}
+var CLIP_MIN_DURATION, CLIP_MIN_SPEED, CLIP_MAX_SPEED;
+var init_clipTimeline = __esm({
+  "src/shared/clipTimeline.ts"() {
+    "use strict";
+    CLIP_MIN_DURATION = 0.12;
+    CLIP_MIN_SPEED = 0.25;
+    CLIP_MAX_SPEED = 8;
+  }
+});
+
 // electron/recording/exportVideo.ts
 function clampSpeed(n) {
-  const v = Math.round(n * 100) / 100;
-  return Math.min(8, Math.max(0.25, v));
+  const v = Number.isFinite(n) ? n : 1;
+  return Math.min(8, Math.max(0.25, Math.round(v * 100) / 100));
+}
+function clampAmount(n) {
+  const v = typeof n === "number" && Number.isFinite(n) ? n : 16;
+  return Math.min(80, Math.max(4, v));
 }
 function atempoChain(speed) {
   const parts = [];
@@ -36969,23 +37655,109 @@ function atempoChain(speed) {
   parts.push(`atempo=${s.toFixed(4)}`);
   return parts.join(",");
 }
+function defaultDest(req) {
+  if (req.audioOnly === "wav") return import_node_path22.default.join(import_electron25.app.getPath("videos"), `Reflecto_${Date.now()}.wav`);
+  if (req.audioOnly === "m4a") return import_node_path22.default.join(import_electron25.app.getPath("videos"), `Reflecto_${Date.now()}.m4a`);
+  const ext = req.container === "mov" ? "mov" : "mp4";
+  return import_node_path22.default.join(import_electron25.app.getPath("videos"), `Reflecto_${Date.now()}.${ext}`);
+}
 async function exportEditedVideo(req) {
-  const dest = req.dest ?? import_node_path21.default.join(import_electron25.app.getPath("videos"), `Reflecto_${Date.now()}.mp4`);
-  const speed = clampSpeed(req.speed ?? 1);
-  const args = ["-y", "-ss", String(req.trimStart), "-to", String(req.trimEnd), "-i", req.src];
-  const filters = [];
-  let last = "0:v";
-  if (req.crop && req.crop.width > 2 && req.crop.height > 2) {
-    filters.push(`[${last}]crop=${even(req.crop.width)}:${even(req.crop.height)}:${Math.round(req.crop.x)}:${Math.round(req.crop.y)}[c]`);
-    last = "c";
+  const media = await probeMedia(req.src);
+  const quality = req.quality ?? "medium";
+  const crf = req.crf ?? QUALITY_CRF[quality];
+  const abr = QUALITY_ABR[quality];
+  const codec = req.codec ?? "h264";
+  const container = req.audioOnly ? req.audioOnly === "wav" ? "wav" : "mp4" : req.container ?? "mp4";
+  const dest = req.dest ?? defaultDest({ ...req, container });
+  const legacySpeed = clampSpeed(req.speed ?? 1);
+  const clips = normalizeClips(
+    req.clips ?? [{ sourceStart: req.trimStart, sourceEnd: req.trimEnd, speed: legacySpeed }],
+    media.duration || Math.max(req.trimEnd, 0)
+  );
+  if (!clips.length) throw new Error("invalidRange: no clip survives normalization");
+  const TL = timelineDuration(clips);
+  if (!(TL > 0)) throw new Error("invalidRange: empty timeline");
+  const vcodec = codec === "hevc" ? "libx265" : "libx264";
+  const hasSrcAudio = media.hasAudio;
+  const useClipAudio = hasSrcAudio && !req.muted && !req.replacementAudio;
+  const W = media.width || 0;
+  const H = media.height || 0;
+  const args = ["-y"];
+  clips.forEach((c) => {
+    args.push("-ss", String(c.sourceStart), "-to", String(c.sourceEnd), "-i", req.src);
+  });
+  let replIndex = -1;
+  if (req.replacementAudio) {
+    replIndex = clips.length;
+    args.push("-ss", "0", "-t", String(TL), "-i", req.replacementAudio);
   }
-  req.masks.forEach((mask, i) => {
+  const filters = [];
+  const vlabels = [];
+  const alabels = [];
+  clips.forEach((c, i) => {
+    const speed = clampSpeed(c.speed);
+    if (!req.audioOnly) {
+      filters.push(`[${i}:v]setpts=(PTS-STARTPTS)/${speed}[v${i}]`);
+      vlabels.push(`[v${i}]`);
+    }
+    if (useClipAudio) {
+      filters.push(`[${i}:a]asetpts=PTS-STARTPTS,${atempoChain(speed)},aresample=48000,aformat=channel_layouts=stereo[ak${i}]`);
+      alabels.push(`[ak${i}]`);
+    }
+  });
+  let vlast = "vcat";
+  let alast = "acat";
+  if (clips.length > 1) {
+    if (!req.audioOnly) {
+      filters.push(`${vlabels.join("")}concat=n=${clips.length}:v=1:a=0[${vlast}]`);
+    }
+    if (alabels.length === clips.length) {
+      filters.push(`${alabels.join("")}concat=n=${clips.length}:v=0:a=1[${alast}]`);
+    }
+  } else {
+    vlast = "v0";
+    alast = alabels.length ? "ak0" : "";
+  }
+  if (!req.audioOnly) {
+    if (!vlabels.length) throw new Error("invalidRange: no video to export");
+    if (req.crop && req.crop.width > 2 && req.crop.height > 2) {
+      filters.push(`[${vlast}]crop=${even(req.crop.width)}:${even(req.crop.height)}:${Math.round(req.crop.x)}:${Math.round(req.crop.y)}[c]`);
+      vlast = "c";
+    }
+    vlast = applyMasks(filters, vlast, req.masks, TL, W, H);
+    if (req.resolution && req.resolution !== "original") {
+      const h = req.resolution === "1080" ? 1080 : req.resolution === "720" ? 720 : 480;
+      filters.push(`[${vlast}]scale=-2:${h}[rs]`);
+      vlast = "rs";
+    }
+    filters.push(`[${vlast}]fps=${req.fps},format=yuv420p[${vlast}x]`);
+    vlast = `${vlast}x`;
+  }
+  return runExport(req, dest, { args, filters, vlast, alast, clips, TL, vcodec, abr, crf, container, hasSrcAudio, useClipAudio, replIndex });
+}
+function applyMasks(filters, last, masks, timeline, srcW, srcH) {
+  masks.forEach((mask, i) => {
+    const s = mask.start == null ? 0 : Math.min(Math.max(mask.start, 0), Math.max(timeline, 0));
+    const e = mask.end == null ? timeline : Math.max(s, Math.min(mask.end, timeline));
+    if (!(e > s)) return;
+    const timed = mask.start != null || mask.end != null;
+    const enable = timed ? `:enable='between(t,${s.toFixed(2)},${e.toFixed(2)})'` : "";
     const tag = `m${i}`;
+    const amount = clampAmount(mask.amount);
+    const strength = Math.max(1, amount * (srcH || 1080) / 1080);
     if (mask.coverage === "full") {
       if (mask.type === "blur") {
-        filters.push(`[${last}]boxblur=8:1[${tag}]`);
+        const r = Math.max(2, Math.round(strength));
+        filters.push(`[${last}]split[b${i}s][b${i}k]`);
+        filters.push(`[b${i}s]boxblur=${r}:1[${tag}b]`);
+        filters.push(`[b${i}k][${tag}b]overlay=0:0${enable}[${tag}]`);
       } else {
-        filters.push(`[${last}]scale=iw/16:ih/16,scale=iw*16:ih*16:flags=neighbor[${tag}]`);
+        const cells = Math.max(2, Math.round(strength));
+        const W = srcW > 0 ? srcW : "iw";
+        const Hh = srcH > 0 ? srcH : "ih";
+        filters.push(`[${last}]split[p${i}s][p${i}k]`);
+        filters.push(`[p${i}s]scale=iw/${cells}:ih/${cells}:flags=neighbor,scale=${W}:${Hh}:flags=neighbor[${tag}p]`);
+        filters.push(`[p${i}k][${tag}p]overlay=0:0${enable}[${tag}]`);
       }
       last = tag;
       return;
@@ -36993,41 +37765,91 @@ async function exportEditedVideo(req) {
     const x = Math.round(mask.x), y = Math.round(mask.y);
     const w = even(mask.width), h = even(mask.height);
     if (mask.type === "blur") {
+      const r = Math.max(2, Math.round(strength));
       filters.push(`[${last}]split[b${i}s][b${i}k]`);
-      filters.push(`[b${i}s]crop=${w}:${h}:${x}:${y},boxblur=8:1[${tag}b]`);
-      filters.push(`[b${i}k][${tag}b]overlay=${x}:${y}[${tag}]`);
+      filters.push(`[b${i}s]crop=${w}:${h}:${x}:${y},boxblur=${r}:1[${tag}b]`);
+      filters.push(`[b${i}k][${tag}b]overlay=${x}:${y}${enable}[${tag}]`);
     } else {
+      const dw = Math.max(2, Math.round(w / Math.max(2, strength)));
+      const dh = Math.max(2, Math.round(h / Math.max(2, strength)));
       filters.push(`[${last}]split[p${i}s][p${i}k]`);
-      filters.push(`[p${i}s]crop=${w}:${h}:${x}:${y},scale=iw/16:ih/16,scale=${w}:${h}:flags=neighbor[${tag}p]`);
-      filters.push(`[p${i}k][${tag}p]overlay=${x}:${y}[${tag}]`);
+      filters.push(`[p${i}s]crop=${w}:${h}:${x}:${y},scale=${dw}:${dh}:flags=neighbor,scale=${w}:${h}:flags=neighbor[${tag}p]`);
+      filters.push(`[p${i}k][${tag}p]overlay=${x}:${y}${enable}[${tag}]`);
     }
     last = tag;
   });
-  if (Math.abs(speed - 1) > 1e-3) {
-    filters.push(`[${last}]setpts=PTS/${speed}[sp]`);
-    last = "sp";
+  return last;
+}
+async function runExport(req, dest, plan) {
+  const { args, filters, clips, TL, vcodec, abr, crf } = plan;
+  let { vlast, alast } = plan;
+  let cursorInputIndex = -1;
+  if (!req.audioOnly && isCompositedCursorStyle(req.cursorStyle) && req.cursorSamples && req.cursorSamples.length > 0) {
+    const remapped = remapSamplesToEditorTime(req.cursorSamples.map((s) => ({ ...s })), clips);
+    if (remapped.length) {
+      const { buildCursorOverlay: buildCursorOverlay2 } = await Promise.resolve().then(() => (init_cursors(), cursors_exports));
+      const { extraInputs, filter } = buildCursorOverlay2(vlast, req.cursorStyle, remapped, req.cursorOffset ?? { x: 0, y: 0 }, "cout");
+      const inputCount = clips.length + (plan.replIndex >= 0 ? 1 : 0);
+      args.push(...extraInputs);
+      cursorInputIndex = inputCount;
+      filters.push(filter.replaceAll("[1:v]", `[${cursorInputIndex}:v]`).replace(/;$/, ""));
+      vlast = "cout";
+    }
   }
   if (filters.length) {
-    args.push("-filter_complex", filters.join(";"), "-map", `[${last}]`);
-  } else {
-    args.push("-map", "0:v");
+    args.push("-filter_complex", filters.join(";"));
   }
-  if (Math.abs(speed - 1) > 1e-3) {
-    args.push("-filter:a", atempoChain(speed), "-map", "0:a?");
-  } else {
-    args.push("-map", "0:a?");
+  if (req.audioOnly === "wav") {
+    if (req.replacementAudio) {
+      args.push("-map", `${plan.replIndex}:a?`, "-t", String(TL));
+    } else if (plan.useClipAudio && alast) {
+      args.push("-map", `[${alast}]`);
+    } else {
+      throw new Error("noAudioTrack: this recording has no audio to export");
+    }
+    args.push("-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", dest);
+    await runFfmpeg(args);
+    return dest;
   }
-  args.push("-c:v", "libx264", "-preset", "medium", "-crf", String(req.crf), "-r", String(req.fps), "-c:a", "aac", "-movflags", "+faststart", dest);
+  if (req.audioOnly === "m4a") {
+    if (req.replacementAudio) {
+      args.push("-map", `${plan.replIndex}:a?`, "-t", String(TL));
+    } else if (plan.useClipAudio && alast) {
+      args.push("-map", `[${alast}]`);
+    } else {
+      throw new Error("noAudioTrack: this recording has no audio to export");
+    }
+    args.push("-c:a", "aac", "-b:a", abr, "-ar", "48000", "-ac", "2", "-movflags", "+faststart", dest);
+    await runFfmpeg(args);
+    return dest;
+  }
+  args.push("-map", `[${vlast}]`);
+  if (req.muted || !plan.useClipAudio && !req.replacementAudio) {
+    args.push("-an");
+  } else if (req.replacementAudio) {
+    args.push("-map", `${plan.replIndex}:a?`, "-t", String(TL), "-c:a", "aac", "-b:a", abr);
+  } else if (alast) {
+    args.push("-map", `[${alast}]`, "-c:a", "aac", "-b:a", abr);
+  } else {
+    args.push("-an");
+  }
+  args.push("-c:v", vcodec, "-preset", "medium", "-crf", String(crf));
+  if (plan.container === "mp4") args.push("-movflags", "+faststart");
+  args.push(dest);
   await runFfmpeg(args);
   return dest;
 }
-var import_electron25, import_node_path21;
+var import_electron25, import_node_path22, QUALITY_CRF, QUALITY_ABR;
 var init_exportVideo = __esm({
   "electron/recording/exportVideo.ts"() {
     "use strict";
     import_electron25 = require("electron");
-    import_node_path21 = __toESM(require("node:path"));
+    import_node_path22 = __toESM(require("node:path"));
     init_ffmpeg();
+    init_cursors();
+    init_clipTimeline();
+    QUALITY_CRF = { high: 20, medium: 26, low: 32 };
+    QUALITY_ABR = { high: "192k", medium: "128k", low: "96k" };
   }
 });
 
@@ -37069,7 +37891,7 @@ async function recordClip(options, ms) {
   const out = await stopSession(true);
   return {
     path: out,
-    size: out && import_node_fs13.default.existsSync(out) ? import_node_fs13.default.statSync(out).size : 0,
+    size: out && import_node_fs14.default.existsSync(out) ? import_node_fs14.default.statSync(out).size : 0,
     worker: lastCaptureWorkerInfo(),
     gdi: lastGdiInfo(),
     probe: out ? await probe(out) : ""
@@ -37088,7 +37910,7 @@ function fixtureWindow(bounds, title) {
   return win2;
 }
 async function runRecordingE2E() {
-  const reportPath = import_node_path22.default.join(import_electron26.app.getPath("userData"), "recording-e2e.json");
+  const reportPath = import_node_path23.default.join(import_electron26.app.getPath("userData"), "recording-e2e.json");
   const report = { startedAt: (/* @__PURE__ */ new Date()).toISOString() };
   try {
     const screens = await import_electron26.desktopCapturer.getSources({ types: ["screen"], thumbnailSize: { width: 16, height: 16 } });
@@ -37112,12 +37934,12 @@ async function runRecordingE2E() {
     await sleep2(900);
     const out = await stopSession(true);
     report.savedPath = out;
-    if (!out || !import_node_fs13.default.existsSync(out)) throw new Error("stopSession did not write a file");
-    report.size = import_node_fs13.default.statSync(out).size;
+    if (!out || !import_node_fs14.default.existsSync(out)) throw new Error("stopSession did not write a file");
+    report.size = import_node_fs14.default.statSync(out).size;
     report.probe = await probe(out);
     report.videoStream = extractStreamLine(String(report.probe), "Video");
     report.audioStream = extractStreamLine(String(report.probe), "Audio");
-    const maskedCrop = import_node_path22.default.join(import_electron26.app.getPath("userData"), "recordings", "e2e-masked-crop-2x.mp4");
+    const maskedCrop = import_node_path23.default.join(import_electron26.app.getPath("userData"), "recordings", "e2e-masked-crop-2x.mp4");
     const exportedCrop = await exportEditedVideo({
       src: out,
       dest: maskedCrop,
@@ -37131,11 +37953,11 @@ async function runRecordingE2E() {
     });
     report.maskedCrop2x = {
       path: exportedCrop,
-      size: import_node_fs13.default.existsSync(exportedCrop) ? import_node_fs13.default.statSync(exportedCrop).size : 0,
+      size: import_node_fs14.default.existsSync(exportedCrop) ? import_node_fs14.default.statSync(exportedCrop).size : 0,
       duration: extractDuration(await probe(exportedCrop)),
       video: extractStreamLine(await probe(exportedCrop), "Video")
     };
-    const maskedFull = import_node_path22.default.join(import_electron26.app.getPath("userData"), "recordings", "e2e-masked-full-0.5x.mp4");
+    const maskedFull = import_node_path23.default.join(import_electron26.app.getPath("userData"), "recordings", "e2e-masked-full-0.5x.mp4");
     const exportedFull = await exportEditedVideo({
       src: out,
       dest: maskedFull,
@@ -37149,7 +37971,7 @@ async function runRecordingE2E() {
     });
     report.maskedFull05x = {
       path: exportedFull,
-      size: import_node_fs13.default.existsSync(exportedFull) ? import_node_fs13.default.statSync(exportedFull).size : 0,
+      size: import_node_fs14.default.existsSync(exportedFull) ? import_node_fs14.default.statSync(exportedFull).size : 0,
       duration: extractDuration(await probe(exportedFull)),
       video: extractStreamLine(await probe(exportedFull), "Video")
     };
@@ -37330,6 +38152,78 @@ async function runRecordingE2E() {
     } else {
       report.camera = { skipped: "no videoinput device enumerated" };
     }
+    try {
+      const moveMouse = (x, y) => {
+        (0, import_node_child_process5.execFileSync)(
+          "powershell.exe",
+          ["-NoProfile", "-Command", `Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point(${x},${y})`],
+          { windowsHide: true, timeout: 15e3 }
+        );
+      };
+      const P1 = { x: 600, y: 400 };
+      const P2 = { x: 900, y: 550 };
+      await startSession({
+        source: { type: "display", sourceId: screens[0].id },
+        systemAudio: false,
+        showCursor: true,
+        cursorStyle: "dot",
+        fps: 24
+      });
+      moveMouse(P1.x, P1.y);
+      await sleep2(900);
+      moveMouse(P2.x, P2.y);
+      await sleep2(900);
+      const samples = lastPointerLog();
+      const dotOut = await stopSession(true);
+      const dotProbe = dotOut ? await probe(dotOut) : "";
+      const near = (p) => samples.some((s) => Math.hypot(s.x - p.x, s.y - p.y) < 60);
+      report.dotCursor = {
+        path: dotOut,
+        size: dotOut && import_node_fs14.default.existsSync(dotOut) ? import_node_fs14.default.statSync(dotOut).size : 0,
+        video: extractStreamLine(dotProbe, "Video"),
+        duration: extractDuration(dotProbe),
+        engine: lastGdiInfo() ? "gdigrab" : "chromium",
+        gdiArgs: lastGdiInfo()?.args,
+        sampleCount: samples.length,
+        commanded: [P1, P2],
+        sawP1: near(P1),
+        sawP2: near(P2),
+        scaleFactor: primary.scaleFactor
+      };
+      const prevEditor = getPref("openEditorAfterRecording");
+      setPref("openEditorAfterRecording", false);
+      const histBefore = HistoryStore.shared.records.length;
+      if (camId) {
+        await startSession({
+          source: { type: "display", sourceId: screens[0].id },
+          systemAudio: false,
+          camera: camId,
+          fps: 24
+        });
+        await sleep2(2500);
+        await finishRecording(true);
+        await sleep2(500);
+        const histAfter = HistoryStore.shared.records;
+        const fresh = histAfter.slice(0, Math.max(0, histAfter.length - histBefore));
+        const side2 = lastCameraSidecar();
+        const sideProbe2 = side2?.path ? await probe(side2.path) : "";
+        report.cameraToastPath = {
+          historyDelta: histAfter.length - histBefore,
+          fresh: fresh.map((r) => ({ filename: r.filename, kind: r.kind })),
+          sidecar: side2,
+          sidecarDuration: extractDuration(sideProbe2),
+          sidecarVideo: extractStreamLine(sideProbe2, "Video")
+        };
+      } else {
+        report.cameraToastPath = { skipped: "no camera" };
+      }
+      setPref("openEditorAfterRecording", prevEditor);
+      const dc = report.dotCursor;
+      const ct = report.cameraToastPath;
+      report.batch1Ok = Boolean(dc?.sawP1 && dc?.sawP2) && Number(dc?.size) > 1024 && Number(ct?.historyDelta) >= 2;
+    } catch (err) {
+      report.batch1Error = err instanceof Error ? err.stack || err.message : String(err);
+    }
     const scale = primary.scaleFactor;
     const expectedW = even2(areaRect.width * scale);
     const expectedH = even2(areaRect.height * scale);
@@ -37345,23 +38239,553 @@ async function runRecordingE2E() {
     report.error = err instanceof Error ? err.stack || err.message : String(err);
   }
   report.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
-  import_node_fs13.default.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  import_node_fs14.default.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   console.log("[Reflecto:e2e]", reportPath);
   console.log("[Reflecto:e2e]", JSON.stringify(report, null, 2));
   return reportPath;
 }
-var import_electron26, import_node_fs13, import_node_path22, import_node_child_process5;
+var import_electron26, import_node_fs14, import_node_path23, import_node_child_process5;
 var init_e2e = __esm({
   "electron/recording/e2e.ts"() {
     "use strict";
     import_electron26 = require("electron");
-    import_node_fs13 = __toESM(require("node:fs"));
-    import_node_path22 = __toESM(require("node:path"));
+    import_node_fs14 = __toESM(require("node:fs"));
+    import_node_path23 = __toESM(require("node:path"));
     import_node_child_process5 = require("node:child_process");
     init_engine();
+    init_bar();
+    init_store();
+    init_preferences();
     init_exportVideo();
     init_ffmpeg();
     init_win32();
+  }
+});
+
+// electron/e2e/editorE2E.ts
+var editorE2E_exports = {};
+__export(editorE2E_exports, {
+  runEditorE2E: () => runEditorE2E
+});
+function sleep3(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+function probe2(file) {
+  return new Promise((resolve) => {
+    const proc2 = (0, import_node_child_process6.spawn)(resolveFfmpeg(), ["-i", file], { stdio: ["ignore", "pipe", "pipe"] });
+    let out = "";
+    proc2.stderr.on("data", (d) => {
+      out += String(d);
+    });
+    proc2.on("close", () => resolve(out));
+    proc2.on("error", (err) => resolve(String(err)));
+  });
+}
+function streamSize(probeText) {
+  const line = probeText.split(/\r?\n/).find((l) => l.includes("Stream #") && l.includes("Video:"));
+  return line?.trim() ?? null;
+}
+function avgPixel(src, x, y) {
+  const raw = import_node_path24.default.join(TMP, `px-${Date.now()}-${Math.round(Math.random() * 1e6)}.raw`);
+  (0, import_node_child_process6.execFileSync)(
+    resolveFfmpeg(),
+    ["-y", "-i", src, "-filter_complex", `crop=8:8:${x}:${y},scale=1:1`, "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", raw],
+    { stdio: "ignore", windowsHide: true }
+  );
+  const b = import_node_fs15.default.readFileSync(raw);
+  try {
+    import_node_fs15.default.unlinkSync(raw);
+  } catch {
+  }
+  return { r: b[0], g: b[1], b: b[2] };
+}
+async function runEditorE2E() {
+  const reportPath = import_node_path24.default.join(import_electron27.app.getPath("userData"), "editor-e2e.json");
+  const report = { startedAt: (/* @__PURE__ */ new Date()).toISOString() };
+  try {
+    const src = import_node_fs15.default.readFileSync(import_node_path24.default.join(TMP, "solid-src.png"));
+    const solid = await beautifyPNG(src, {
+      ...defaultBeautifierConfig,
+      style: { kind: "solid", rgb: [18, 120, 220] },
+      padding: 0.2,
+      shadowStrength: 0
+    });
+    const solidPath = import_node_path24.default.join(import_electron27.app.getPath("userData"), "recordings", "e2e-solid-look.png");
+    import_node_fs15.default.writeFileSync(solidPath, solid);
+    const solidProbe = await probe2(solidPath);
+    const corner = avgPixel(solidPath, 5, 5);
+    const grad = await beautifyPNG(src, {
+      ...defaultBeautifierConfig,
+      style: { kind: "gradient", id: "soft-blue" },
+      padding: 0.2,
+      shadowStrength: 0
+    });
+    const gradPath = import_node_path24.default.join(import_electron27.app.getPath("userData"), "recordings", "e2e-gradient-look.png");
+    import_node_fs15.default.writeFileSync(gradPath, grad);
+    const gradCorner = avgPixel(gradPath, 5, 5);
+    const close = (a, b) => Math.abs(a - b) <= 3;
+    report.solidLook = {
+      path: solidPath,
+      size: solid.length,
+      video: streamSize(solidProbe),
+      corner,
+      gradCorner,
+      solidOk: close(corner.r, 18) && close(corner.g, 120) && close(corner.b, 220),
+      distinctFromGradient: Math.abs(gradCorner.r - 18) + Math.abs(gradCorner.g - 120) + Math.abs(gradCorner.b - 220) > 30
+    };
+  } catch (err) {
+    report.solidLook = { error: err instanceof Error ? err.stack || err.message : String(err) };
+  }
+  try {
+    const fixture = process.env.REFLECTO_LOOK2B_FIXTURE;
+    if (!fixture || !import_node_fs15.default.existsSync(fixture)) throw new Error("REFLECTO_LOOK2B_FIXTURE bundle missing");
+    const bundle = import_node_fs15.default.readFileSync(fixture, "utf8");
+    const win2 = new import_electron27.BrowserWindow({ width: 400, height: 400, show: false, webPreferences: { contextIsolation: true } });
+    await win2.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(`<body><script>${bundle}</script></body>`)}`);
+    let result = null;
+    for (let i = 0; i < 200 && !result; i++) {
+      await sleep3(100);
+      try {
+        result = await win2.webContents.executeJavaScript("window.__look2b || null", true);
+      } catch {
+      }
+    }
+    win2.destroy();
+    if (!result) throw new Error("look2b fixture produced no result");
+    report.look2b = result;
+  } catch (err) {
+    report.look2b = { error: err instanceof Error ? err.stack || err.message : String(err) };
+  }
+  try {
+    const fixture = process.env.REFLECTO_ROT_FIXTURE;
+    if (!fixture || !import_node_fs15.default.existsSync(fixture)) throw new Error("REFLECTO_ROT_FIXTURE bundle missing");
+    const bundle = import_node_fs15.default.readFileSync(fixture, "utf8");
+    const win2 = new import_electron27.BrowserWindow({ width: 300, height: 300, show: false, webPreferences: { contextIsolation: true } });
+    await win2.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(`<body><script>${bundle}</script></body>`)}`);
+    let result = null;
+    for (let i = 0; i < 100 && !result; i++) {
+      await sleep3(100);
+      try {
+        result = await win2.webContents.executeJavaScript("window.__rotResult || null", true);
+      } catch {
+      }
+    }
+    win2.destroy();
+    if (!result) throw new Error("rotation fixture produced no result");
+    report.rotation = { ...result, ok: result.pass === true };
+  } catch (err) {
+    report.rotation = { error: err instanceof Error ? err.stack || err.message : String(err) };
+  }
+  try {
+    const png = import_node_fs15.default.readFileSync(import_node_path24.default.join(TMP, "smart-test.png"));
+    const words = await recognizeWords(png);
+    const boxes = findSensitiveBoxes(
+      words,
+      1200,
+      420
+    );
+    const band = (y) => y < 130 ? "line1-email" : y < 240 ? "line2-card" : y < 370 ? "line3-jwt" : "outside";
+    report.smartRedact = {
+      wordCount: words.length,
+      boxes: boxes.map((b) => ({ ...b, cy: Math.round(b.y + b.h / 2), band: band(b.y + b.h / 2) })),
+      hasEmail: boxes.some((b) => b.kind === "email" && band(b.y + b.h / 2) === "line1-email"),
+      hasCard: boxes.some((b) => b.kind === "card" && band(b.y + b.h / 2) === "line2-card"),
+      hasJwt: boxes.some((b) => (b.kind === "jwt" || b.kind === "token") && band(b.y + b.h / 2) === "line3-jwt")
+    };
+    const s2 = report.smartRedact;
+    report.smartRedact.ok = Boolean(s2.hasEmail && s2.hasCard && s2.hasJwt);
+  } catch (err) {
+    report.smartRedact = { error: err instanceof Error ? err.stack || err.message : String(err) };
+  }
+  try {
+    const shot = import_node_path24.default.join(TMP, "ui-rect-src.png");
+    (0, import_node_child_process6.execFileSync)(
+      resolveFfmpeg(),
+      ["-y", "-f", "lavfi", "-i", "testsrc=s=320x200:r=10:d=1", "-frames:v", "1", shot],
+      { stdio: "ignore", windowsHide: true }
+    );
+    openAnnotateEditor(shot);
+    const js = async (code, retries = 50) => {
+      for (let i = 0; i < retries; i++) {
+        const win2 = import_electron27.BrowserWindow.getAllWindows().find((w) => w.getTitle() === "Reflecto Editor");
+        if (win2) {
+          try {
+            return await win2.webContents.executeJavaScript(code, true);
+          } catch {
+          }
+        }
+        await sleep3(200);
+      }
+      throw new Error("editor window not ready");
+    };
+    await js("document.readyState");
+    await js(`[...document.querySelectorAll('canvas')].length > 0 && document.querySelector('canvas').width > 0 ? 'ready' : Promise.reject('nocanvas')`);
+    const editor = import_electron27.BrowserWindow.getAllWindows().find((w) => w.getTitle() === "Reflecto Editor");
+    editor.focus();
+    await sleep3(400);
+    const canvasHash = async () => {
+      const url = await js("document.querySelector('canvas').toDataURL('image/png')");
+      return (0, import_node_crypto8.createHash)("sha256").update(url).digest("hex").slice(0, 16);
+    };
+    const key = async (k2) => {
+      editor.webContents.sendInputEvent({ type: "keyDown", keyCode: k2 });
+      editor.webContents.sendInputEvent({ type: "keyUp", keyCode: k2 });
+      await sleep3(300);
+    };
+    const rect = await js(
+      "JSON.stringify(document.querySelector('canvas').getBoundingClientRect())"
+    );
+    const { left, top, width: rw } = JSON.parse(rect);
+    const cw = await js("document.querySelector('canvas').width");
+    const k = cw / rw;
+    const click = async (cx, cy) => {
+      const x = Math.round(left + cx / k);
+      const y = Math.round(top + cy / k);
+      editor.webContents.sendInputEvent({ type: "mouseMove", x, y });
+      await sleep3(60);
+      editor.webContents.sendInputEvent({ type: "mouseDown", x, y, button: "left", clickCount: 1 });
+      await sleep3(60);
+      editor.webContents.sendInputEvent({ type: "mouseUp", x, y, button: "left", clickCount: 1 });
+      await sleep3(250);
+    };
+    const drag = async (x1, y1, x2, y2) => {
+      const a = { x: Math.round(left + x1 / k), y: Math.round(top + y1 / k) };
+      const b = { x: Math.round(left + x2 / k), y: Math.round(top + y2 / k) };
+      editor.webContents.sendInputEvent({ type: "mouseMove", x: a.x, y: a.y });
+      await sleep3(60);
+      editor.webContents.sendInputEvent({ type: "mouseDown", x: a.x, y: a.y, button: "left", clickCount: 1 });
+      for (let i = 1; i <= 5; i++) {
+        editor.webContents.sendInputEvent({
+          type: "mouseMove",
+          x: Math.round(a.x + (b.x - a.x) * i / 5),
+          y: Math.round(a.y + (b.y - a.y) * i / 5)
+        });
+        await sleep3(40);
+      }
+      editor.webContents.sendInputEvent({ type: "mouseUp", x: b.x, y: b.y, button: "left", clickCount: 1 });
+      await sleep3(400);
+    };
+    const blankHash = await canvasHash();
+    await key("r");
+    await drag(40, 40, 140, 120);
+    const drewHash = await canvasHash();
+    await key("h");
+    await click(90, 80);
+    const sliderOk = await js(
+      `[...document.querySelectorAll('input[type=range]')].some(i => (i.title || '').startsWith('Rotate'))`
+    );
+    await js(`(() => {
+      const s = [...document.querySelectorAll('input[type=range]')].find(i => (i.title || '').startsWith('Rotate'));
+      if (!s) throw new Error('no rotate slider');
+      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      setter.call(s, '90');
+      s.dispatchEvent(new Event('input', { bubbles: true }));
+      s.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      return 'set';
+    })()`);
+    await sleep3(500);
+    const rotatedHash = await canvasHash();
+    await js(`[...document.querySelectorAll('button')].find(b => b.textContent === 'Undo').click()`);
+    await sleep3(400);
+    const undoHash = await canvasHash();
+    await js(`[...document.querySelectorAll('button')].find(b => b.textContent === 'Redo').click()`);
+    await sleep3(400);
+    await click(90, 80);
+    const redoHash = await canvasHash();
+    editor.destroy();
+    report.editorUI = {
+      blankHash,
+      drewHash,
+      rotatedHash,
+      undoHash,
+      redoHash,
+      sliderOk,
+      drewDiffers: drewHash !== blankHash,
+      rotatedDiffers: rotatedHash !== drewHash,
+      undoRestores: undoHash === drewHash,
+      redoRestores: redoHash === rotatedHash,
+      ok: false
+    };
+    const e = report.editorUI;
+    e.ok = Boolean(e.drewDiffers && e.rotatedDiffers && e.undoRestores && e.redoRestores && sliderOk);
+  } catch (err) {
+    report.editorUI = { error: err instanceof Error ? err.stack || err.message : String(err) };
+  }
+  try {
+    const ipc = new import_electron27.BrowserWindow({
+      show: false,
+      webPreferences: { preload: preloadPath(), contextIsolation: true }
+    });
+    await ipc.loadURL("data:text/html;charset=utf-8,sidecar");
+    const call = (expr) => ipc.webContents.executeJavaScript(expr, true);
+    const toDataUrl = (p) => `data:image/png;base64,${import_node_fs15.default.readFileSync(p).toString("base64")}`;
+    const shapes = [
+      { id: "r1", tool: "rectangle", x1: 10, y1: 20, x2: 110, y2: 120, color: "#f73833", stroke: 4, rotation: 0.5 },
+      { id: "a1", tool: "arrow", x1: 0, y1: 0, x2: 50, y2: 60, color: "#2e7aff", stroke: 3 },
+      { id: "t1", tool: "text", x1: 5, y1: 5, x2: 5, y2: 5, color: "#111111", stroke: 4, text: "hi", fontSize: 28 },
+      { id: "f1", tool: "freehand", x1: 0, y1: 0, x2: 9, y2: 9, color: "#ffffff", stroke: 2, points: [{ x: 1, y: 2 }, { x: 3, y: 4 }] },
+      { id: "n1", tool: "numberedCircle", x1: 9, y1: 9, x2: 9, y2: 9, color: "#000000", stroke: 4, counter: 7 },
+      { id: "b1", tool: "blur", x1: 1, y1: 1, x2: 9, y2: 9, color: "#000000", stroke: 4, redactionStrength: 0.85 }
+    ];
+    const background = {
+      style: { kind: "solid", rgb: [1, 2, 3] },
+      padding: 0.1,
+      cornerRadius: 0.01,
+      shadowStrength: 0.2,
+      aspectRatio: "16:9",
+      border: { enabled: true, color: "#ffffff", thickness: 0.02, opacity: 0.9 },
+      camera: { panX: 0, panY: 0.1, tiltXDegrees: 0, tiltYDegrees: 12, rotationXDegrees: 0, rotationYDegrees: 0, rollDegrees: 0, fieldOfViewDegrees: 30, zoom: 1.2 },
+      progressiveBlur: { isEnabled: true, edgeMode: "bleed", mode: "directional", strength: 25, falloff: 0.4, focusSize: 0.3, focusPosition: { x: 0.4, y: 0.6 }, directionDegrees: 90 },
+      watermark: { text: "T", density: 5, fontSize: 40, rotationDegrees: 30, opacity: 0.2, color: "#ffffff" }
+    };
+    const payload = {
+      dataUrl: toDataUrl(import_node_path24.default.join(TMP, "smart-test.png")),
+      baseDataUrl: toDataUrl(import_node_path24.default.join(TMP, "solid-src.png")),
+      doc: { shapes, background, canvas: { w: 1200, h: 420 }, crop: { x: 5, y: 5, w: 600, h: 400 } }
+    };
+    const saved = await call(`window.reflecto.saveDocument(${JSON.stringify(payload).replace(/</g, "\\u003c")})`);
+    const filesOk = import_node_fs15.default.existsSync(saved.dest) && import_node_fs15.default.statSync(saved.dest).size > 1024 && import_node_fs15.default.existsSync(saved.sidecarPath) && import_node_fs15.default.existsSync(saved.basePath);
+    const sidecarJson = JSON.parse(import_node_fs15.default.readFileSync(saved.sidecarPath, "utf8"));
+    const loaded = await call(`window.reflecto.editorLoadSidecar(${JSON.stringify(saved.dest)})`);
+    const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    const checks = {
+      filesOk,
+      versionOk: sidecarJson.version === 1 && loaded?.doc.version === 1,
+      baseResolved: loaded?.basePath === saved.basePath,
+      shapesExact: eq(loaded?.doc.shapes, shapes),
+      bgStyle: eq(loaded?.doc.background.style, background.style),
+      bgPadding: loaded?.doc.background.padding === 0.1,
+      camTiltY: loaded?.doc.background.camera.tiltYDegrees === 12,
+      camFov: loaded?.doc.background.camera.fieldOfViewDegrees === 30,
+      camZoom: loaded?.doc.background.camera.zoom === 1.2,
+      blurStrength: loaded?.doc.background.progressiveBlur.strength === 25,
+      blurMode: loaded?.doc.background.progressiveBlur.mode === "directional",
+      blurEdge: loaded?.doc.background.progressiveBlur.edgeMode === "bleed",
+      wmText: loaded?.doc.background.watermark.text === "T",
+      wmOpacity: loaded?.doc.background.watermark.opacity === 0.2,
+      borderThick: loaded?.doc.background.border.thickness === 0.02,
+      canvasExact: eq(loaded?.doc.canvas, { w: 1200, h: 420 }),
+      cropExact: eq(loaded?.doc.crop, { x: 5, y: 5, w: 600, h: 400 })
+    };
+    openAnnotateEditor(saved.dest);
+    let editorCanvasW = 0;
+    for (let i = 0; i < 100; i++) {
+      await sleep3(200);
+      const win2 = import_electron27.BrowserWindow.getAllWindows().find((w) => w.getTitle() === "Reflecto Editor");
+      if (win2) {
+        try {
+          editorCanvasW = await win2.webContents.executeJavaScript(
+            "[...document.querySelectorAll('canvas')].length > 0 ? document.querySelector('canvas').width : 0",
+            true
+          );
+          if (editorCanvasW > 0 && editorCanvasW !== 300) break;
+        } catch {
+        }
+      }
+    }
+    import_electron27.BrowserWindow.getAllWindows().find((w) => w.getTitle() === "Reflecto Editor")?.destroy();
+    ipc.destroy();
+    report.sidecarRoundTrip = {
+      dest: saved.dest,
+      size: import_node_fs15.default.existsSync(saved.dest) ? import_node_fs15.default.statSync(saved.dest).size : 0,
+      sidecarSize: import_node_fs15.default.existsSync(saved.sidecarPath) ? import_node_fs15.default.statSync(saved.sidecarPath).size : 0,
+      baseSize: import_node_fs15.default.existsSync(saved.basePath) ? import_node_fs15.default.statSync(saved.basePath).size : 0,
+      editorCanvasW,
+      ...checks,
+      editorOpens: editorCanvasW > 0,
+      editorRendersFromBase: editorCanvasW > 0 && editorCanvasW !== 300 && editorCanvasW < 1200,
+      ok: false
+    };
+    const g = report.sidecarRoundTrip;
+    g.ok = Object.values(checks).every(Boolean) && g.editorRendersFromBase;
+  } catch (err) {
+    report.sidecarRoundTrip = { error: err instanceof Error ? err.stack || err.message : String(err) };
+  }
+  try {
+    const recDir = import_node_path24.default.join(import_electron27.app.getPath("userData"), "recordings");
+    const studioSrc = import_node_path24.default.join(recDir, "e2e-studio-src.mkv");
+    (0, import_node_child_process6.execFileSync)(
+      resolveFfmpeg(),
+      [
+        "-y",
+        "-f",
+        "lavfi",
+        "-i",
+        "testsrc=s=640x360:r=30:d=6",
+        "-f",
+        "lavfi",
+        "-i",
+        "sine=frequency=440:d=6",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "ultrafast",
+        "-pix_fmt",
+        "yuv420p",
+        "-c:a",
+        "aac",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-shortest",
+        studioSrc
+      ],
+      { stdio: "ignore", windowsHide: true }
+    );
+    const replSrc = import_node_path24.default.join(recDir, "e2e-studio-repl.m4a");
+    (0, import_node_child_process6.execFileSync)(
+      resolveFfmpeg(),
+      ["-y", "-f", "lavfi", "-i", "sine=frequency=880:d=10", "-c:a", "aac", "-ar", "48000", "-ac", "2", replSrc],
+      { stdio: "ignore", windowsHide: true }
+    );
+    const clips = [
+      { sourceStart: 0, sourceEnd: 2, speed: 1 },
+      { sourceStart: 2, sourceEnd: 4, speed: 2 },
+      { sourceStart: 4, sourceEnd: 6, speed: 0.5 }
+    ];
+    const combinedDest = import_node_path24.default.join(recDir, "e2e-studio-combined.mp4");
+    await exportEditedVideo({
+      src: studioSrc,
+      dest: combinedDest,
+      trimStart: 0,
+      trimEnd: 6,
+      clips,
+      crop: null,
+      masks: [
+        { type: "blur", x: 60, y: 60, width: 200, height: 120, coverage: "crop", start: 1, end: 3, amount: 30 },
+        { type: "pixelate", x: 0, y: 0, width: 10, height: 10, coverage: "full", start: 5, end: 7, amount: 24 }
+      ],
+      fps: 30,
+      crf: 28,
+      codec: "hevc",
+      resolution: "480",
+      container: "mp4",
+      quality: "low"
+    });
+    const combinedProbe = await probe2(combinedDest);
+    const m4aDest = import_node_path24.default.join(recDir, "e2e-studio-audio.m4a");
+    await exportEditedVideo({
+      src: studioSrc,
+      dest: m4aDest,
+      trimStart: 0,
+      trimEnd: 6,
+      clips,
+      crop: null,
+      masks: [],
+      fps: 30,
+      crf: 26,
+      audioOnly: "m4a"
+    });
+    const m4aProbe = await probe2(m4aDest);
+    const wavDest = import_node_path24.default.join(recDir, "e2e-studio-audio.wav");
+    await exportEditedVideo({
+      src: studioSrc,
+      dest: wavDest,
+      trimStart: 0,
+      trimEnd: 6,
+      clips,
+      crop: null,
+      masks: [],
+      fps: 30,
+      crf: 26,
+      audioOnly: "wav"
+    });
+    const wavProbe = await probe2(wavDest);
+    const replDest = import_node_path24.default.join(recDir, "e2e-studio-repl.mp4");
+    await exportEditedVideo({
+      src: studioSrc,
+      dest: replDest,
+      trimStart: 0,
+      trimEnd: 6,
+      clips,
+      crop: null,
+      masks: [],
+      fps: 30,
+      crf: 26,
+      replacementAudio: replSrc
+    });
+    const replProbe = await probe2(replDest);
+    const dur = (p) => {
+      const m2 = p.match(/Duration:\s*(\d+):(\d+):([\d.]+)/);
+      return m2 ? Number(m2[1]) * 3600 + Number(m2[2]) * 60 + Number(m2[3]) : 0;
+    };
+    const stream = (p, kind) => p.split(/\r?\n/).find((l2) => l2.includes("Stream #") && l2.includes(`${kind}:`))?.trim() ?? null;
+    const combinedVideo = stream(combinedProbe, "Video") ?? "";
+    const combinedAudio = stream(combinedProbe, "Audio") ?? "";
+    report.studioMatrix = {
+      combined: {
+        path: combinedDest,
+        size: import_node_fs15.default.existsSync(combinedDest) ? import_node_fs15.default.statSync(combinedDest).size : 0,
+        video: combinedVideo,
+        audio: combinedAudio,
+        duration: Math.round(dur(combinedProbe) * 100) / 100,
+        isHevc: /hevc/i.test(combinedVideo),
+        is480p: /854x480/.test(combinedVideo),
+        durationOk: Math.abs(dur(combinedProbe) - 7) < 0.4
+      },
+      m4a: {
+        size: import_node_fs15.default.existsSync(m4aDest) ? import_node_fs15.default.statSync(m4aDest).size : 0,
+        audio: stream(m4aProbe, "Audio"),
+        duration: Math.round(dur(m4aProbe) * 100) / 100,
+        isAac: /aac/i.test(stream(m4aProbe, "Audio") ?? ""),
+        durationOk: Math.abs(dur(m4aProbe) - 7) < 0.4
+      },
+      wav: {
+        size: import_node_fs15.default.existsSync(wavDest) ? import_node_fs15.default.statSync(wavDest).size : 0,
+        audio: stream(wavProbe, "Audio"),
+        duration: Math.round(dur(wavProbe) * 100) / 100,
+        isPcm: /pcm_s16le/i.test(stream(wavProbe, "Audio") ?? ""),
+        durationOk: Math.abs(dur(wavProbe) - 7) < 0.4
+      },
+      replacement: {
+        size: import_node_fs15.default.existsSync(replDest) ? import_node_fs15.default.statSync(replDest).size : 0,
+        video: stream(replProbe, "Video"),
+        audio: stream(replProbe, "Audio"),
+        duration: Math.round(dur(replProbe) * 100) / 100,
+        durationOk: Math.abs(dur(replProbe) - 7) < 0.4
+      },
+      ok: false
+    };
+    const st = report.studioMatrix;
+    st.ok = Boolean(
+      st.combined?.size && st.combined.size > 1024 && st.combined.isHevc && st.combined.is480p && st.combined.durationOk && st.combined.audio && st.m4a?.size && st.m4a.size > 1024 && st.m4a.isAac && st.m4a.durationOk && st.wav?.size && st.wav.size > 1024 && st.wav.isPcm && st.wav.durationOk && st.replacement?.size && st.replacement.size > 1024 && st.replacement.video && st.replacement.audio && st.replacement.durationOk
+    );
+  } catch (err) {
+    report.studioMatrix = { error: err instanceof Error ? err.stack || err.message : String(err) };
+  }
+  const s = report.solidLook;
+  const r = report.rotation;
+  const m = report.smartRedact;
+  const u = report.editorUI;
+  const l = report.look2b;
+  const d = report.sidecarRoundTrip;
+  const st2 = report.studioMatrix;
+  report.ok = Boolean(s?.solidOk && s?.distinctFromGradient && r?.ok && m?.ok && u?.ok && l?.pass && d?.ok && st2?.ok);
+  report.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
+  import_node_fs15.default.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  console.log("[Reflecto:editor-e2e]", reportPath);
+  console.log("[Reflecto:editor-e2e]", JSON.stringify(report, null, 2));
+  return reportPath;
+}
+var import_electron27, import_node_fs15, import_node_path24, import_node_child_process6, import_node_crypto8, TMP;
+var init_editorE2E = __esm({
+  "electron/e2e/editorE2E.ts"() {
+    "use strict";
+    import_electron27 = require("electron");
+    import_node_fs15 = __toESM(require("node:fs"));
+    import_node_path24 = __toESM(require("node:path"));
+    import_node_child_process6 = require("node:child_process");
+    import_node_crypto8 = require("node:crypto");
+    init_beautifier();
+    init_beautifierTypes();
+    init_tesseract();
+    init_smartRedact();
+    init_exportVideo();
+    init_ffmpeg();
+    init_annotatePresenter();
+    init_paths();
+    TMP = "C:\\Users\\soumy\\AppData\\Local\\Temp\\opencode";
   }
 });
 
@@ -37371,7 +38795,7 @@ __export(appE2E_exports, {
   runAppE2E: () => runAppE2E
 });
 async function runAppE2E() {
-  const reportPath = import_node_path23.default.join(import_electron27.app.getPath("userData"), "app-e2e.json");
+  const reportPath = import_node_path25.default.join(import_electron28.app.getPath("userData"), "app-e2e.json");
   const report = { startedAt: (/* @__PURE__ */ new Date()).toISOString() };
   const desired = { keyCode: 75, modifiers: 2 | 4, enabled: true };
   const conflictProbe = defaultShortcut(2 /* fullscreen */);
@@ -37379,12 +38803,12 @@ async function runAppE2E() {
   const setOk = setShortcutBinding(14 /* openSettings */, desired);
   report.shortcutSet = setOk;
   const accel = toAccelerator(desired);
-  report.shortcutRegistered = import_electron27.globalShortcut.isRegistered(accel);
+  report.shortcutRegistered = import_electron28.globalShortcut.isRegistered(accel);
   report.shortcutStored = effectiveShortcut(14 /* openSettings */);
   setShortcutBinding(14 /* openSettings */, defaultShortcut(14 /* openSettings */));
-  const tmp = import_node_path23.default.join(import_electron27.app.getPath("userData"), "library", `e2e-gallery-${Date.now()}.png`);
-  import_node_fs14.default.mkdirSync(import_node_path23.default.dirname(tmp), { recursive: true });
-  import_node_fs14.default.writeFileSync(tmp, Buffer.from(
+  const tmp = import_node_path25.default.join(import_electron28.app.getPath("userData"), "library", `e2e-gallery-${Date.now()}.png`);
+  import_node_fs16.default.mkdirSync(import_node_path25.default.dirname(tmp), { recursive: true });
+  import_node_fs16.default.writeFileSync(tmp, Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
     "base64"
   ));
@@ -37393,12 +38817,12 @@ async function runAppE2E() {
   if (rec) HistoryStore.shared.setShareURL(HistoryStore.shared.urlForRecord(rec), share);
   const fresh = rec ? HistoryStore.shared.records.find((r) => r.id === rec.id) ?? rec : null;
   const filePath = fresh ? HistoryStore.shared.urlForRecord(fresh) : tmp;
-  report.galleryBefore = { id: fresh?.id, exists: import_node_fs14.default.existsSync(filePath), shareURL: fresh?.shareURL };
+  report.galleryBefore = { id: fresh?.id, exists: import_node_fs16.default.existsSync(filePath), shareURL: fresh?.shareURL };
   const del = fresh ? await HistoryStore.shared.deleteRecord(fresh) : { trashed: false, keptShare: null };
   const after = rec ? HistoryStore.shared.records.find((r) => r.id === rec.id) : null;
   report.galleryDelete = {
     ...del,
-    fileExistsAfter: import_node_fs14.default.existsSync(filePath),
+    fileExistsAfter: import_node_fs16.default.existsSync(filePath),
     recordKept: Boolean(after),
     shareAfter: after?.shareURL ?? null,
     localDeleted: after?.localDeleted ?? null
@@ -37412,17 +38836,17 @@ async function runAppE2E() {
   if (previous !== 0) setPref("onboardingSeenVersion", previous);
   report.ok = Boolean(setOk.ok) && report.shortcutRegistered === true && del.trashed === true && report.galleryDelete && report.galleryDelete.fileExistsAfter === false && report.galleryDelete.shareAfter === share && first === true && second === false;
   report.finishedAt = (/* @__PURE__ */ new Date()).toISOString();
-  import_node_fs14.default.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  import_node_fs16.default.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   console.log("[Reflecto:app-e2e]", JSON.stringify(report, null, 2));
   return reportPath;
 }
-var import_node_fs14, import_node_path23, import_electron27;
+var import_node_fs16, import_node_path25, import_electron28;
 var init_appE2E = __esm({
   "electron/e2e/appE2E.ts"() {
     "use strict";
-    import_node_fs14 = __toESM(require("node:fs"));
-    import_node_path23 = __toESM(require("node:path"));
-    import_electron27 = require("electron");
+    import_node_fs16 = __toESM(require("node:fs"));
+    import_node_path25 = __toESM(require("node:path"));
+    import_electron28 = require("electron");
     init_shortcuts();
     init_store();
     init_preferences();
@@ -37430,10 +38854,174 @@ var init_appE2E = __esm({
   }
 });
 
+// src/shared/sidecar.ts
+var sidecar_exports = {};
+__export(sidecar_exports, {
+  SIDECAR_SUFFIX: () => SIDECAR_SUFFIX,
+  SIDECAR_VERSION: () => SIDECAR_VERSION,
+  baseImagePathFor: () => baseImagePathFor,
+  buildSidecar: () => buildSidecar,
+  parseSidecar: () => parseSidecar,
+  sidecarPathFor: () => sidecarPathFor
+});
+function sanitizeShape(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw;
+  if (typeof r.id !== "string" || !r.id) return null;
+  if (!KNOWN_TOOLS.includes(r.tool)) return null;
+  const shape = {
+    id: r.id,
+    tool: r.tool,
+    x1: finite(r.x1),
+    y1: finite(r.y1),
+    x2: finite(r.x2),
+    y2: finite(r.y2),
+    color: typeof r.color === "string" ? r.color : "#f73833",
+    stroke: finite(r.stroke, 4)
+  };
+  if (typeof r.text === "string") shape.text = r.text;
+  if (r.fontSize !== void 0) shape.fontSize = finite(r.fontSize, 28);
+  if (r.counter !== void 0) shape.counter = Math.round(finite(r.counter, 1));
+  if (r.rotation !== void 0) shape.rotation = finite(r.rotation);
+  if (r.redactionStrength !== void 0) shape.redactionStrength = finite(r.redactionStrength, 0.7);
+  if (Array.isArray(r.points)) {
+    const pts = [];
+    for (const p of r.points) {
+      const c = p;
+      if (c && Number.isFinite(c.x) && Number.isFinite(c.y)) {
+        pts.push({ x: c.x, y: c.y });
+      }
+    }
+    if (pts.length) shape.points = pts;
+  }
+  return shape;
+}
+function buildSidecar(shapes, background, canvas2, crop) {
+  return {
+    version: SIDECAR_VERSION,
+    shapes: shapes.map((s) => sanitizeShape(s)).filter((s) => s !== null),
+    background: normalizeBeautifierConfig(background),
+    canvas: { w: Math.round(canvas2.w), h: Math.round(canvas2.h) },
+    crop: crop ? { x: crop.x, y: crop.y, w: crop.w, h: crop.h } : null,
+    savedAt: (/* @__PURE__ */ new Date()).toISOString()
+  };
+}
+function parseSidecar(json) {
+  let raw;
+  try {
+    raw = JSON.parse(json);
+  } catch {
+    return null;
+  }
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw;
+  if (r.version !== SIDECAR_VERSION) return null;
+  const shapes = Array.isArray(r.shapes) ? r.shapes : [];
+  const clean = [];
+  let dropped = 0;
+  for (const s of shapes) {
+    const c = sanitizeShape(s);
+    if (c) clean.push(c);
+    else dropped++;
+  }
+  const canvas2 = r.canvas ?? {};
+  const cropRaw = r.crop ?? null;
+  return {
+    doc: {
+      version: SIDECAR_VERSION,
+      shapes: clean,
+      background: normalizeBeautifierConfig(r.background),
+      canvas: { w: Math.max(1, Math.round(finite(canvas2.w, 1))), h: Math.max(1, Math.round(finite(canvas2.h, 1))) },
+      crop: cropRaw && typeof cropRaw === "object" ? { x: finite(cropRaw.x), y: finite(cropRaw.y), w: finite(cropRaw.w), h: finite(cropRaw.h) } : null,
+      savedAt: typeof r.savedAt === "string" ? r.savedAt : ""
+    },
+    dropped
+  };
+}
+function sidecarPathFor(imagePath) {
+  return `${imagePath}${SIDECAR_SUFFIX}`;
+}
+function baseImagePathFor(imagePath) {
+  const sep = Math.max(imagePath.lastIndexOf("/"), imagePath.lastIndexOf("\\"));
+  const dir = sep >= 0 ? imagePath.slice(0, sep + 1) : "";
+  const file = sep >= 0 ? imagePath.slice(sep + 1) : imagePath;
+  const dot = file.lastIndexOf(".");
+  if (dot <= 0) return `${dir}${file}.base`;
+  return `${dir}${file.slice(0, dot)}.base${file.slice(dot)}`;
+}
+var SIDECAR_VERSION, SIDECAR_SUFFIX, KNOWN_TOOLS, finite;
+var init_sidecar = __esm({
+  "src/shared/sidecar.ts"() {
+    "use strict";
+    init_beautifierTypes();
+    SIDECAR_VERSION = 1;
+    SIDECAR_SUFFIX = ".reflecto.json";
+    KNOWN_TOOLS = [
+      "select",
+      "rectangle",
+      "filledRectangle",
+      "ellipse",
+      "line",
+      "arrow",
+      "freehand",
+      "numberedCircle",
+      "text",
+      "highlight",
+      "pixelate",
+      "blur"
+    ];
+    finite = (v, fallback = 0) => {
+      const n = typeof v === "number" ? v : Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    };
+  }
+});
+
+// electron/editor/sidecar.ts
+var sidecar_exports2 = {};
+__export(sidecar_exports2, {
+  loadSidecarFor: () => loadSidecarFor,
+  writeSidecarFiles: () => writeSidecarFiles
+});
+function writeSidecarFiles(destImagePath, compositePng, basePng, doc) {
+  import_node_fs17.default.writeFileSync(destImagePath, compositePng);
+  const basePath = baseImagePathFor(destImagePath);
+  import_node_fs17.default.writeFileSync(basePath, basePng);
+  const sidecarPath = sidecarPathFor(destImagePath);
+  import_node_fs17.default.writeFileSync(sidecarPath, JSON.stringify(doc, null, 2), "utf8");
+  return { dest: destImagePath, sidecarPath, basePath };
+}
+function loadSidecarFor(imagePath) {
+  const sidecarPath = sidecarPathFor(imagePath);
+  let raw;
+  try {
+    raw = import_node_fs17.default.readFileSync(sidecarPath, "utf8");
+  } catch {
+    return null;
+  }
+  const parsed = parseSidecar(raw);
+  if (!parsed) return null;
+  const basePath = baseImagePathFor(imagePath);
+  return {
+    doc: parsed.doc,
+    basePath: import_node_fs17.default.existsSync(basePath) ? basePath : null,
+    sidecarPath,
+    dropped: parsed.dropped
+  };
+}
+var import_node_fs17;
+var init_sidecar2 = __esm({
+  "electron/editor/sidecar.ts"() {
+    "use strict";
+    import_node_fs17 = __toESM(require("node:fs"));
+    init_sidecar();
+  }
+});
+
 // electron/main.ts
-var import_electron28 = require("electron");
-var import_node_path24 = __toESM(require("node:path"));
-var import_node_fs15 = __toESM(require("node:fs"));
+var import_electron29 = require("electron");
+var import_node_path26 = __toESM(require("node:path"));
+var import_node_fs18 = __toESM(require("node:fs"));
 init_tray();
 init_shortcuts();
 init_preferences();
@@ -37486,7 +39074,7 @@ init_bus();
 
 // electron/settings/window.ts
 var import_electron23 = require("electron");
-var import_node_path19 = __toESM(require("node:path"));
+var import_node_path20 = __toESM(require("node:path"));
 init_preferences();
 init_shortcuts();
 init_paths();
@@ -37513,7 +39101,7 @@ function openSettingsWindow(section) {
   settingsWin.setMenuBarVisibility(false);
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) settingsWin.loadURL(`${devURL}/src/entries/settings.html`);
-  else settingsWin.loadFile(import_node_path19.default.join(__dirname, "../dist/src/entries/settings.html"));
+  else settingsWin.loadFile(import_node_path20.default.join(__dirname, "../dist/src/entries/settings.html"));
   settingsWin.once("ready-to-show", () => {
     settingsWin?.show();
     if (section) settingsWin?.webContents.send("settings:section", section);
@@ -37575,8 +39163,8 @@ function registerSettingsIpc() {
 
 // electron/gallery/window.ts
 var import_electron24 = require("electron");
-var import_node_path20 = __toESM(require("node:path"));
-var import_node_fs12 = __toESM(require("node:fs"));
+var import_node_path21 = __toESM(require("node:path"));
+var import_node_fs13 = __toESM(require("node:fs"));
 init_store();
 init_deck();
 init_videoPresenter();
@@ -37605,7 +39193,7 @@ function openGalleryWindow() {
   galleryWin.setMenuBarVisibility(false);
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) galleryWin.loadURL(`${devURL}/src/entries/gallery.html`);
-  else galleryWin.loadFile(import_node_path20.default.join(__dirname, "../dist/src/entries/gallery.html"));
+  else galleryWin.loadFile(import_node_path21.default.join(__dirname, "../dist/src/entries/gallery.html"));
   galleryWin.once("ready-to-show", () => galleryWin?.show());
   galleryWin.on("closed", () => {
     galleryWin = null;
@@ -37633,13 +39221,13 @@ function registerGalleryIpc() {
         path: filePath,
         thumbnail: decodeThumbnail(filePath, 240),
         shareURL: r.shareURL ?? null,
-        exists: import_node_fs12.default.existsSync(filePath)
+        exists: import_node_fs13.default.existsSync(filePath)
       };
     });
   });
   import_electron24.ipcMain.handle("gallery:open", (_e, filePath) => {
-    if (!import_node_fs12.default.existsSync(filePath)) return;
-    const ext = import_node_path20.default.extname(filePath).toLowerCase();
+    if (!import_node_fs13.default.existsSync(filePath)) return;
+    const ext = import_node_path21.default.extname(filePath).toLowerCase();
     if (ext === ".mp4" || ext === ".mov" || ext === ".webm") openVideoEditor(filePath);
     else if (/\.(png|jpe?g|webp|gif)$/i.test(ext)) openAnnotateEditor(filePath);
     else showOnDeck(filePath);
@@ -37656,24 +39244,24 @@ init_bar();
 init_colorPicker();
 init_windowPicker();
 init_fileActions();
-var import_node_crypto8 = require("node:crypto");
+var import_node_crypto9 = require("node:crypto");
 init_exportVideo();
 init_r2();
 var tray2 = null;
-var gotLock = import_electron28.app.requestSingleInstanceLock();
+var gotLock = import_electron29.app.requestSingleInstanceLock();
 if (!gotLock) {
-  import_electron28.app.quit();
+  import_electron29.app.quit();
 } else {
-  import_electron28.app.on("second-instance", (_e, argv) => {
+  import_electron29.app.on("second-instance", (_e, argv) => {
     const url = argv.find((a) => a.startsWith("reflecto://"));
     if (url) handleReflectoUrl(url);
   });
-  import_electron28.app.whenReady().then(async () => {
+  import_electron29.app.whenReady().then(async () => {
     loadPreferences();
     if (process.defaultApp) {
-      if (process.argv.length >= 2) import_electron28.app.setAsDefaultProtocolClient("reflecto", process.execPath, [import_node_path24.default.resolve(process.argv[1])]);
+      if (process.argv.length >= 2) import_electron29.app.setAsDefaultProtocolClient("reflecto", process.execPath, [import_node_path26.default.resolve(process.argv[1])]);
     } else {
-      import_electron28.app.setAsDefaultProtocolClient("reflecto");
+      import_electron29.app.setAsDefaultProtocolClient("reflecto");
     }
     HistoryStore.shared;
     setRegionCompleteHandler((outcome, mode, captureKind) => {
@@ -37702,7 +39290,14 @@ if (!gotLock) {
       const { runRecordingE2E: runRecordingE2E2 } = await Promise.resolve().then(() => (init_e2e(), e2e_exports));
       const report = await runRecordingE2E2();
       console.log("E2E_REPORT", report);
-      import_electron28.app.exit(0);
+      import_electron29.app.exit(0);
+      return;
+    }
+    if (process.argv.includes("--editor-e2e")) {
+      const { runEditorE2E: runEditorE2E2 } = await Promise.resolve().then(() => (init_editorE2E(), editorE2E_exports));
+      const report = await runEditorE2E2();
+      console.log("EDITOR_E2E_REPORT", report);
+      import_electron29.app.exit(0);
       return;
     }
     if (process.argv.includes("--app-e2e")) {
@@ -37710,13 +39305,13 @@ if (!gotLock) {
       const report = await runAppE2E2();
       console.log("APP_E2E_REPORT", report);
       if (!process.argv.includes("--url-e2e")) {
-        import_electron28.app.exit(0);
+        import_electron29.app.exit(0);
         return;
       }
     }
     if (process.argv.includes("--url-e2e")) {
-      const ready2 = import_node_path24.default.join(import_electron28.app.getPath("userData"), "url-e2e-ready.json");
-      import_node_fs15.default.writeFileSync(ready2, JSON.stringify({ pid: process.pid, at: (/* @__PURE__ */ new Date()).toISOString() }));
+      const ready2 = import_node_path26.default.join(import_electron29.app.getPath("userData"), "url-e2e-ready.json");
+      import_node_fs18.default.writeFileSync(ready2, JSON.stringify({ pid: process.pid, at: (/* @__PURE__ */ new Date()).toISOString() }));
       console.log("URL_E2E_READY", ready2);
     }
     onBusEvent((channel, payload) => {
@@ -37761,7 +39356,7 @@ function handleTrayCapture(kind) {
     return;
   }
   if (kind === "quit") {
-    import_electron28.app.quit();
+    import_electron29.app.quit();
     return;
   }
   if (kind === "unpinAll") {
@@ -37817,12 +39412,12 @@ function registerIpc() {
   registerRecordingIpc();
   registerColorPickerIpc();
   registerWindowPickerIpc();
-  import_electron28.ipcMain.handle("capture:perform", (_e, req) => performCapture(req));
-  import_electron28.ipcMain.handle(
+  import_electron29.ipcMain.handle("capture:perform", (_e, req) => performCapture(req));
+  import_electron29.ipcMain.handle(
     "capture:startRegionSelection",
     (_e, allowsWindowSelection) => startRegionSelection(allowsWindowSelection)
   );
-  import_electron28.ipcMain.handle("capture:listWindows", async () => {
+  import_electron29.ipcMain.handle("capture:listWindows", async () => {
     const { desktopCapturer: desktopCapturer6 } = await import("electron");
     const sources = await desktopCapturer6.getSources({
       types: ["window"],
@@ -37836,17 +39431,17 @@ function registerIpc() {
       icon: s.appIcon?.toDataURL() ?? null
     }));
   });
-  import_electron28.ipcMain.handle("capture:windowById", async (_e, id) => {
+  import_electron29.ipcMain.handle("capture:windowById", async (_e, id) => {
     void performCapture({ kind: "window", windowId: id });
     return true;
   });
-  import_electron28.ipcMain.handle("prefs:get", () => ({ ...loadPreferences().store }));
-  import_electron28.ipcMain.handle("prefs:set", (_e, key, value) => {
+  import_electron29.ipcMain.handle("prefs:get", () => ({ ...loadPreferences().store }));
+  import_electron29.ipcMain.handle("prefs:set", (_e, key, value) => {
     setPref(key, value);
     return true;
   });
-  import_electron28.ipcMain.handle("prefs:getSingle", (_e, key) => getPref(key));
-  import_electron28.ipcMain.handle("history:recents", () => {
+  import_electron29.ipcMain.handle("prefs:getSingle", (_e, key) => getPref(key));
+  import_electron29.ipcMain.handle("history:recents", () => {
     const shots = HistoryStore.shared.recent("screenshot", 8).map((r) => ({
       filename: r.filename,
       kind: r.kind,
@@ -37861,121 +39456,173 @@ function registerIpc() {
     }));
     return [...shots, ...recs];
   });
-  import_electron28.ipcMain.handle("history:open", (_e, filePath) => {
-    if (import_node_fs15.default.existsSync(filePath)) showOnDeck(filePath);
+  import_electron29.ipcMain.handle("history:open", (_e, filePath) => {
+    if (import_node_fs18.default.existsSync(filePath)) showOnDeck(filePath);
   });
-  import_electron28.ipcMain.handle("pins:hasAny", () => hasPinnedWindows());
-  import_electron28.ipcMain.handle("pins:unpinAll", () => unpinAll());
-  import_electron28.ipcMain.handle("dialog:pickFolder", async () => {
-    const win2 = import_electron28.BrowserWindow.getFocusedWindow();
-    const result = await import_electron28.dialog.showOpenDialog(win2 ?? void 0, {
+  import_electron29.ipcMain.handle("pins:hasAny", () => hasPinnedWindows());
+  import_electron29.ipcMain.handle("pins:unpinAll", () => unpinAll());
+  import_electron29.ipcMain.handle("dialog:pickFolder", async () => {
+    const win2 = import_electron29.BrowserWindow.getFocusedWindow();
+    const result = await import_electron29.dialog.showOpenDialog(win2 ?? void 0, {
       properties: ["openDirectory", "createDirectory"]
     });
     return result.canceled ? null : result.filePaths[0];
   });
-  import_electron28.ipcMain.handle("dialog:pickSaveFile", async (_e, opts) => {
-    const win2 = import_electron28.BrowserWindow.getFocusedWindow();
-    const result = await import_electron28.dialog.showSaveDialog(win2 ?? void 0, opts);
+  import_electron29.ipcMain.handle("dialog:pickSaveFile", async (_e, opts) => {
+    const win2 = import_electron29.BrowserWindow.getFocusedWindow();
+    const result = await import_electron29.dialog.showSaveDialog(win2 ?? void 0, opts);
     return result.canceled ? null : result.filePath;
   });
-  import_electron28.ipcMain.handle("files:saveTempPNG", (_e, base64) => {
-    const file = import_node_path24.default.join(import_electron28.app.getPath("temp"), `reflecto-${Date.now()}.png`);
-    import_node_fs15.default.writeFileSync(file, Buffer.from(base64, "base64"));
+  import_electron29.ipcMain.handle("files:saveTempPNG", (_e, base64) => {
+    const file = import_node_path26.default.join(import_electron29.app.getPath("temp"), `reflecto-${Date.now()}.png`);
+    import_node_fs18.default.writeFileSync(file, Buffer.from(base64, "base64"));
     return file;
   });
-  import_electron28.ipcMain.handle("files:copyImage", (_e, dataUrl) => {
-    import_electron28.clipboard.writeImage(import_electron28.nativeImage.createFromDataURL(dataUrl));
+  import_electron29.ipcMain.handle("files:copyImage", (_e, dataUrl) => {
+    import_electron29.clipboard.writeImage(import_electron29.nativeImage.createFromDataURL(dataUrl));
     return true;
   });
-  import_electron28.ipcMain.handle("files:saveDataUrl", (_e, dataUrl) => {
+  import_electron29.ipcMain.handle("files:saveDataUrl", (_e, dataUrl) => {
     const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
-    const temp = import_node_path24.default.join(import_electron28.app.getPath("temp"), `reflecto-edit-${(0, import_node_crypto8.randomUUID)()}.png`);
-    import_node_fs15.default.writeFileSync(temp, Buffer.from(base64, "base64"));
+    const temp = import_node_path26.default.join(import_electron29.app.getPath("temp"), `reflecto-edit-${(0, import_node_crypto9.randomUUID)()}.png`);
+    import_node_fs18.default.writeFileSync(temp, Buffer.from(base64, "base64"));
     const dest = saveToDefaultLocation(temp);
     try {
-      import_node_fs15.default.unlinkSync(temp);
+      import_node_fs18.default.unlinkSync(temp);
     } catch {
     }
     return dest;
   });
-  import_electron28.ipcMain.handle("files:copyDataUrl", (_e, dataUrl) => {
+  import_electron29.ipcMain.handle("files:saveDocument", async (_e, payload) => {
+    const { buildSidecar: buildSidecar2 } = await Promise.resolve().then(() => (init_sidecar(), sidecar_exports));
+    const { writeSidecarFiles: writeSidecarFiles2 } = await Promise.resolve().then(() => (init_sidecar2(), sidecar_exports2));
+    const composite = Buffer.from(payload.dataUrl.replace(/^data:image\/\w+;base64,/, ""), "base64");
+    const base = Buffer.from(payload.baseDataUrl.replace(/^data:image\/\w+;base64,/, ""), "base64");
+    if (!composite.length || !base.length) throw new Error("Save needs image bytes");
+    const temp = import_node_path26.default.join(import_electron29.app.getPath("temp"), `reflecto-edit-${(0, import_node_crypto9.randomUUID)()}.png`);
+    import_node_fs18.default.writeFileSync(temp, composite);
+    const dest = saveToDefaultLocation(temp);
+    try {
+      import_node_fs18.default.unlinkSync(temp);
+    } catch {
+    }
+    const d = payload.doc ?? {};
+    const doc = buildSidecar2(d.shapes ?? [], d.background, d.canvas ?? { w: 0, h: 0 }, d.crop ?? null);
+    return writeSidecarFiles2(dest, composite, base, doc);
+  });
+  import_electron29.ipcMain.handle("editor:loadSidecar", async (_e, imagePath) => {
+    const { loadSidecarFor: loadSidecarFor2 } = await Promise.resolve().then(() => (init_sidecar2(), sidecar_exports2));
+    return loadSidecarFor2(imagePath);
+  });
+  import_electron29.ipcMain.handle("files:copyDataUrl", (_e, dataUrl) => {
     const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
-    const temp = import_node_path24.default.join(import_electron28.app.getPath("temp"), `reflecto-clip-${(0, import_node_crypto8.randomUUID)()}.png`);
-    import_node_fs15.default.writeFileSync(temp, Buffer.from(base64, "base64"));
+    const temp = import_node_path26.default.join(import_electron29.app.getPath("temp"), `reflecto-clip-${(0, import_node_crypto9.randomUUID)()}.png`);
+    import_node_fs18.default.writeFileSync(temp, Buffer.from(base64, "base64"));
     copyImageToClipboard(temp);
     return true;
   });
-  import_electron28.ipcMain.handle("files:exportDataUrl", async (_e, dataUrl) => {
-    const dest = await import_electron28.dialog.showSaveDialog({
+  import_electron29.ipcMain.handle("files:exportDataUrl", async (_e, dataUrl) => {
+    const dest = await import_electron29.dialog.showSaveDialog({
       title: "Export image",
-      defaultPath: import_node_path24.default.join(import_electron28.app.getPath("pictures"), `Reflecto_${Date.now()}.png`),
+      defaultPath: import_node_path26.default.join(import_electron29.app.getPath("pictures"), `Reflecto_${Date.now()}.png`),
       filters: [{ name: "PNG", extensions: ["png"] }, { name: "JPEG", extensions: ["jpg"] }]
     });
     if (dest.canceled || !dest.filePath) return null;
     const base64 = dataUrl.replace(/^data:image\/\w+;base64,/, "");
-    import_node_fs15.default.writeFileSync(dest.filePath, Buffer.from(base64, "base64"));
+    import_node_fs18.default.writeFileSync(dest.filePath, Buffer.from(base64, "base64"));
     return dest.filePath;
   });
-  import_electron28.ipcMain.handle("files:shareDataUrl", async (_e, dataUrl) => {
+  import_electron29.ipcMain.handle("files:shareDataUrl", async (_e, dataUrl) => {
     if (!isR2Configured()) {
       openSettingsWindow("sharing");
       return null;
     }
-    const temp = import_node_path24.default.join(import_electron28.app.getPath("temp"), `reflecto-share-${(0, import_node_crypto8.randomUUID)()}.png`);
-    import_node_fs15.default.writeFileSync(temp, Buffer.from(dataUrl.replace(/^data:image\/\w+;base64,/, ""), "base64"));
+    const temp = import_node_path26.default.join(import_electron29.app.getPath("temp"), `reflecto-share-${(0, import_node_crypto9.randomUUID)()}.png`);
+    import_node_fs18.default.writeFileSync(temp, Buffer.from(dataUrl.replace(/^data:image\/\w+;base64,/, ""), "base64"));
     const url = await uploadShare(temp);
-    import_electron28.clipboard.writeText(url);
+    import_electron29.clipboard.writeText(url);
     try {
-      import_node_fs15.default.unlinkSync(temp);
+      import_node_fs18.default.unlinkSync(temp);
     } catch {
     }
     return url;
   });
-  import_electron28.ipcMain.handle("video:export", async (_e, req) => {
-    const dest = await import_electron28.dialog.showSaveDialog({
+  import_electron29.ipcMain.handle("video:export", async (_e, req) => {
+    const audioOnly = req.audioOnly;
+    const container = req.container;
+    const opts = audioOnly === "wav" ? {
+      title: "Export audio",
+      defaultPath: import_node_path26.default.join(import_electron29.app.getPath("videos"), `Reflecto_${Date.now()}.wav`),
+      filters: [{ name: "WAV", extensions: ["wav"] }]
+    } : audioOnly === "m4a" ? {
+      title: "Export audio",
+      defaultPath: import_node_path26.default.join(import_electron29.app.getPath("videos"), `Reflecto_${Date.now()}.m4a`),
+      filters: [{ name: "M4A", extensions: ["m4a"] }]
+    } : container === "mov" ? {
       title: "Export video",
-      defaultPath: import_node_path24.default.join(import_electron28.app.getPath("videos"), `Reflecto_${Date.now()}.mp4`),
+      defaultPath: import_node_path26.default.join(import_electron29.app.getPath("videos"), `Reflecto_${Date.now()}.mov`),
+      filters: [{ name: "MOV", extensions: ["mov"] }]
+    } : {
+      title: "Export video",
+      defaultPath: import_node_path26.default.join(import_electron29.app.getPath("videos"), `Reflecto_${Date.now()}.mp4`),
       filters: [{ name: "MP4", extensions: ["mp4"] }]
-    });
+    };
+    const dest = await import_electron29.dialog.showSaveDialog(opts);
     if (dest.canceled || !dest.filePath) return null;
     return exportEditedVideo({ ...req, dest: dest.filePath });
   });
-  import_electron28.ipcMain.on("files:startDrag", (e, filePath) => {
-    e.sender.startDrag({ file: filePath, icon: import_electron28.nativeImage.createEmpty() });
+  import_electron29.ipcMain.handle("video:pickAudio", async () => {
+    const picked = await import_electron29.dialog.showOpenDialog({
+      title: "Choose replacement audio",
+      properties: ["openFile"],
+      filters: [{ name: "Audio", extensions: ["m4a", "mp3", "wav", "aac", "aiff", "ogg", "flac"] }]
+    });
+    if (picked.canceled || !picked.filePaths[0]) return null;
+    return picked.filePaths[0];
   });
-  import_electron28.ipcMain.handle("files:reveal", (_e, filePath) => {
-    import_electron28.shell.showItemInFolder(filePath);
+  import_electron29.ipcMain.on("files:startDrag", (e, filePath) => {
+    e.sender.startDrag({ file: filePath, icon: import_electron29.nativeImage.createEmpty() });
   });
-  import_electron28.ipcMain.handle("loginItem:set", (_e, enabled) => setLaunchAtLogin(enabled));
-  import_electron28.ipcMain.handle("loginItem:get", () => getLaunchAtLogin());
-  import_electron28.ipcMain.handle("app:version", () => import_electron28.app.getVersion());
-  import_electron28.ipcMain.on("app:quit", () => import_electron28.app.quit());
-  import_electron28.ipcMain.on("tray:openSettings", () => {
+  import_electron29.ipcMain.handle("files:reveal", (_e, filePath) => {
+    import_electron29.shell.showItemInFolder(filePath);
+  });
+  import_electron29.ipcMain.handle("editor:smartRedact", async (_e, payload) => {
+    const { smartRedactBoxes: smartRedactBoxes2 } = await Promise.resolve().then(() => (init_tesseract(), tesseract_exports));
+    const base64 = payload.dataUrl.replace(/^data:image\/\w+;base64,/, "");
+    const buf = Buffer.from(base64, "base64");
+    if (!buf.length) throw new Error("Smart Redact needs an image");
+    return smartRedactBoxes2(buf, Math.round(payload.width) || 0, Math.round(payload.height) || 0);
+  });
+  import_electron29.ipcMain.handle("loginItem:set", (_e, enabled) => setLaunchAtLogin(enabled));
+  import_electron29.ipcMain.handle("loginItem:get", () => getLaunchAtLogin());
+  import_electron29.ipcMain.handle("app:version", () => import_electron29.app.getVersion());
+  import_electron29.ipcMain.on("app:quit", () => import_electron29.app.quit());
+  import_electron29.ipcMain.on("tray:openSettings", () => {
     dismissPopover();
     openSettingsWindow();
   });
-  import_electron28.ipcMain.on("tray:openGallery", () => {
+  import_electron29.ipcMain.on("tray:openGallery", () => {
     dismissPopover();
     openGalleryWindow();
   });
 }
-import_electron28.app.on("will-quit", () => {
+import_electron29.app.on("will-quit", () => {
   unregisterShortcuts();
 });
-import_electron28.app.on("window-all-closed", () => {
+import_electron29.app.on("window-all-closed", () => {
 });
 function appendUrlE2E(route, action) {
   console.log(`[Reflecto:url] route=${route} action=${action}`);
   if (!process.argv.includes("--url-e2e")) return;
-  const file = import_node_path24.default.join(import_electron28.app.getPath("userData"), "url-e2e.json");
+  const file = import_node_path26.default.join(import_electron29.app.getPath("userData"), "url-e2e.json");
   let rows = [];
   try {
-    if (import_node_fs15.default.existsSync(file)) rows = JSON.parse(import_node_fs15.default.readFileSync(file, "utf8"));
+    if (import_node_fs18.default.existsSync(file)) rows = JSON.parse(import_node_fs18.default.readFileSync(file, "utf8"));
   } catch {
     rows = [];
   }
   rows.push({ at: (/* @__PURE__ */ new Date()).toISOString(), route, action });
-  import_node_fs15.default.writeFileSync(file, JSON.stringify(rows, null, 2));
+  import_node_fs18.default.writeFileSync(file, JSON.stringify(rows, null, 2));
 }
 function handleReflectoUrl(raw) {
   try {
@@ -38011,7 +39658,7 @@ function handleReflectoUrl(raw) {
   }
 }
 async function openImageFromDisk() {
-  const result = await import_electron28.dialog.showOpenDialog({
+  const result = await import_electron29.dialog.showOpenDialog({
     properties: ["openFile"],
     filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "webp", "gif"] }]
   });

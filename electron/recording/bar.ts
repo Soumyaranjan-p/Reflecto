@@ -18,6 +18,7 @@ import {
   handleWorkerEvent,
   takeBlob,
   refreshMediaDevices,
+  lastCameraSidecar,
 } from "./engine";
 import { performCapture } from "../capture/orchestrator";
 
@@ -129,7 +130,7 @@ async function beginRecording(source: Parameters<typeof startSession>[0]["source
   }
 }
 
-async function finishRecording(save: boolean) {
+export async function finishRecording(save: boolean) {
   stopTicker();
   const out = await stopSession(save);
   ui = "idle";
@@ -138,8 +139,17 @@ async function finishRecording(save: boolean) {
   barWin?.hide();
   if (save && out) {
     HistoryStore.shared.importCapture(out, false, "recording");
+    // BetterShot-faithful: camera stays a separate camera.mov-style sidecar,
+    // never baked in. Surface it as its own gallery item so the UI does not
+    // imply PiP. (Worker PiP path stays dead until a real compositor lands.)
+    const cam = lastCameraSidecar();
+    if (cam) {
+      HistoryStore.shared.importCapture(cam.path, false, "recording");
+      showToast({ message: "Recording + separate camera file saved!", icon: "success" });
+    } else {
+      showToast({ message: "Recording saved!", icon: "success" });
+    }
     showOnDeck(out);
-    showToast({ message: "Recording saved!", icon: "success" });
     if (getPref("openEditorAfterRecording")) openVideoEditor(out);
   } else if (!save) {
     showToast({ message: "Recording discarded", icon: "info" });

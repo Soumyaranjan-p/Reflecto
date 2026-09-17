@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { createRoot } from "react-dom/client";
 import "../theme/chrome.css";
 import {
+  cameraHasEffect,
   defaultBeautifierConfig,
+  normalizeBeautifierConfig,
   GRADIENT_PRESETS,
   type BeautifierConfig,
 } from "../shared/beautifierTypes";
@@ -33,6 +35,19 @@ function fileUrl(src: string): string {
   return `file:///${src.replace(/\\/g, "/")}`;
 }
 
+/** Sidecar lookup needs a plain fs path; data:/http: URLs have no sidecar. */
+function fsPathFor(url: string): string | null {
+  if (url.startsWith("file://")) {
+    try {
+      return decodeURI(url.replace(/^file:\/\/\//, ""));
+    } catch {
+      return null;
+    }
+  }
+  if (/^[A-Za-z]:[\\/]/.test(url)) return url;
+  return null;
+}
+
 function EditorApp() {
   const params = useMemo(() => new URLSearchParams(location.search), []);
   const [src, setSrc] = useState(fileUrl(params.get("src") || ""));
@@ -50,9 +65,16 @@ function EditorApp() {
   const [zoom, setZoom] = useState(1);
   const [fitZoom, setFitZoom] = useState(1);
   const [inspector, setInspector] = useState(true);
-  const [look, setLook] = useState<BeautifierConfig>({ ...defaultBeautifierConfig });
+  const [look, setLook] = useState<BeautifierConfig>(() => normalizeBeautifierConfig(defaultBeautifierConfig));
   const [textDraft, setTextDraft] = useState<{ x: number; y: number; value: string } | null>(null);
   const [busy, setBusy] = useState<"copy" | "save" | "export" | null>(null);
+  const [smartBusy, setSmartBusy] = useState(false);
+  const [smartMsg, setSmartMsg] = useState<string | null>(null);
+  const [hasSidecar, setHasSidecar] = useState(false);
+  // Last applied crop in pre-crop coords. Shapes are already shifted at save
+  // time, so this is provenance/validation metadata — never re-applied on load
+  // (BetterShot parity: crop rides along as the base image, not the document).
+  const lastCropRef = useRef<{ x: number; y: number; w: number; h: number } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -62,8 +84,22 @@ function EditorApp() {
     origin: Point;
     base: Annotation;
     snapshot: Annotation[];
+    grabAngle?: number;
   } | null>(null);
   const cropRef = useRef<{ start: Point; current: Point } | null>(null);
+  const shiftRef = useRef(false);
+  const rotateBaseRef = useRef<Annotation[] | null>(null);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => { if (e.key === "Shift") shiftRef.current = true; };
+    const up = (e: KeyboardEvent) => { if (e.key === "Shift") shiftRef.current = false; };
+    window.addEventListener("keydown", down);
+    window.addEventListener("keyup", up);
+    return () => {
+      window.removeEventListener("keydown", down);
+      window.removeEventListener("keyup", up);
+    };
+  }, []);
   const [cropRect, setCropRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
 
   useEffect(() => {
@@ -72,7 +108,7 @@ function EditorApp() {
     });
     void window.reflecto?.getPrefs?.().then((prefs: any) => {
       if (prefs?.defaultBeautifierConfig) {
-        setLook({ ...defaultBeautifierConfig, ...prefs.defaultBeautifierConfig, border: { ...defaultBeautifierConfig.border, ...prefs.defaultBeautifierConfig.border } });
+        setLook(normalizeBeautifierConfig(prefs.defaultBeautifierConfig));
       }
     });
     return () => { off?.(); };
@@ -80,17 +116,60 @@ function EditorApp() {
 
   useEffect(() => {
     if (!src) return;
+    let cancelled = false;
+    // Auto-detect the edit document (BetterShot AnnotationEditorModel.load):
+    // sidecar present -> render from the untouched base + restore shapes and
+    // background; otherwise open the flat image with prefs defaults.
     const img = new Image();
     img.onload = () => {
+      if (cancelled) return;
       imgRef.current = img;
       setImgSize({ w: img.naturalWidth, h: img.naturalHeight });
-      setAnnotations([]);
+      setAnnotations(doc?.shapes ?? []);
+      if (doc) {
+        setLook(normalizeBeautifierConfig(doc.background));
+        const counters = doc.shapes.map((a) => a.counter ?? 0);
+        setCounter(Math.max(0, ...counters) + 1);
+        setHasSidecar(true);
+        lastCropRef.current = doc.crop;
+      } else {
+        setCounter(1);
+        setHasSidecar(false);
+        lastCropRef.current = null;
+      }
       setUndoStack([]);
       setRedoStack([]);
       setSelectedId(null);
-      setCounter(1);
     };
-    img.src = src;
+    let doc: {
+      shapes: Annotation[];
+      background: BeautifierConfig;
+      canvas: { w: number; h: number };
+      crop: { x: number; y: number; w: number; h: number } | null;
+    } | null = null;
+    void (async () => {
+      const fp = fsPathFor(src);
+      if (fp) {
+        try {
+          const loaded = (await window.reflecto?.editorLoadSidecar?.(fp)) as {
+            doc?: typeof doc;
+            basePath?: string | null;
+          } | null;
+          if (cancelled) return;
+          if (loaded?.doc) {
+            doc = loaded.doc;
+            img.src = loaded.basePath ? fileUrl(loaded.basePath) : src;
+            return;
+          }
+        } catch {
+          // Corrupt sidecar -> flat open (BetterShot try? decode semantics).
+        }
+      }
+      if (!cancelled) img.src = src;
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [src]);
 
   const visible = useMemo(
@@ -200,8 +279,15 @@ function EditorApp() {
       const hit = [...annotations].reverse().find((a) => hitTest(a, p));
       if (hit) {
         setSelectedId(hit.id);
-        const handle = hitHandle(p, annotationBounds(hit)) ?? "move";
-        dragRef.current = { handle, origin: p, base: hit, snapshot: annotations };
+        const canvas = canvasRef.current;
+        const rect = canvas?.getBoundingClientRect();
+        const s = rect && canvas && canvas.width ? rect.width / canvas.width || 1 : 1;
+        const hb = annotationBounds(hit);
+        const handle = hitHandle(p, hb, s) ?? "move";
+        const grabAngle = handle === "rotate"
+          ? Math.atan2(p.y - (hb.y + hb.h / 2), p.x - (hb.x + hb.w / 2))
+          : undefined;
+        dragRef.current = { handle, origin: p, base: hit, snapshot: annotations, grabAngle };
       } else {
         setSelectedId(null);
       }
@@ -241,7 +327,22 @@ function EditorApp() {
       return;
     }
     if (dragRef.current) {
-      const { handle, origin, base } = dragRef.current;
+      const { handle, origin, base, grabAngle } = dragRef.current;
+      if (handle === "rotate") {
+        const b = annotationBounds(base);
+        const cx = b.x + b.w / 2;
+        const cy = b.y + b.h / 2;
+        const ang = Math.atan2(p.y - cy, p.x - cx);
+        let rot = (base.rotation ?? 0) + (ang - (grabAngle ?? ang));
+        // Shift snaps to 15°.
+        if (shiftRef.current) {
+          rot = Math.round(rot / (Math.PI / 12)) * (Math.PI / 12);
+        }
+        rot = Math.atan2(Math.sin(rot), Math.cos(rot));
+        const next = { ...base, rotation: rot };
+        setAnnotations((list) => list.map((a) => (a.id === base.id ? next : a)));
+        return;
+      }
       const next = applyHandle(handle, p.x - origin.x, p.y - origin.y, base);
       setAnnotations((list) => list.map((a) => (a.id === base.id ? next : a)));
       return;
@@ -291,6 +392,7 @@ function EditorApp() {
       imgRef.current = cropped;
       setImgSize({ w: cropped.naturalWidth, h: cropped.naturalHeight });
       const dx = cropRect.x, dy = cropRect.y;
+      lastCropRef.current = { x: dx, y: dy, w: cropRect.w, h: cropRect.h };
       setAnnotations((list) => list.map((a) => ({
         ...a,
         x1: a.x1 - dx, y1: a.y1 - dy, x2: a.x2 - dx, y2: a.y2 - dy,
@@ -322,8 +424,26 @@ function EditorApp() {
 
   const saveOut = async () => {
     setBusy("save");
-    try { await window.reflecto?.saveDataUrl?.(compositeDataUrl()); }
-    finally { setBusy(null); }
+    try {
+      const img = imgRef.current;
+      if (img && imgSize.w) {
+        // Pristine source (no annotations) becomes the `<stem>.base.png`
+        // companion; the composite is the display deliverable.
+        const base = document.createElement("canvas");
+        base.width = imgSize.w;
+        base.height = imgSize.h;
+        base.getContext("2d")!.drawImage(img, 0, 0);
+        await window.reflecto?.saveDocument?.({
+          dataUrl: compositeDataUrl(),
+          baseDataUrl: base.toDataURL("image/png"),
+          doc: { shapes: annotations, background: look, canvas: imgSize, crop: lastCropRef.current },
+        });
+      } else {
+        await window.reflecto?.saveDataUrl?.(compositeDataUrl());
+      }
+    } finally {
+      setBusy(null);
+    }
   };
 
   const exportOut = async () => {
@@ -335,6 +455,45 @@ function EditorApp() {
   const shareOut = async () => {
     const dataUrl = compositeDataUrl();
     await window.reflecto?.shareDataUrl?.(dataUrl);
+  };
+
+  const smartRedact = async () => {
+    const img = imgRef.current;
+    if (!img || !imgSize.w || smartBusy) return;
+    setSmartBusy(true);
+    setSmartMsg("Scanning for sensitive text…");
+    try {
+      // OCR the pristine source (annotations would confuse the recognizer).
+      const off = document.createElement("canvas");
+      off.width = imgSize.w;
+      off.height = imgSize.h;
+      off.getContext("2d")!.drawImage(img, 0, 0);
+      const res = await window.reflecto?.smartRedact?.({
+        dataUrl: off.toDataURL("image/png"),
+        width: imgSize.w,
+        height: imgSize.h,
+      }) as { boxes: Array<{ kind: string; x: number; y: number; w: number; h: number }>; wordCount: number } | undefined;
+      const boxes = res?.boxes ?? [];
+      if (!boxes.length) {
+        setSmartMsg(`No sensitive text found (${res?.wordCount ?? 0} words scanned)`);
+        return;
+      }
+      pushHistory([
+        ...annotations,
+        ...boxes.map((b) => ({
+          id: crypto.randomUUID(),
+          tool: "blur" as const,
+          x1: b.x, y1: b.y, x2: b.x + b.w, y2: b.y + b.h,
+          color: "#000000", stroke: 4,
+          redactionStrength: 0.85,
+        })),
+      ]);
+      setSmartMsg(`Smart Redact: ${boxes.length} region${boxes.length === 1 ? "" : "s"} (${res?.wordCount ?? 0} words scanned)`);
+    } catch (err) {
+      setSmartMsg(`Smart Redact failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setSmartBusy(false);
+    }
   };
 
   useEffect(() => {
@@ -476,6 +635,20 @@ function EditorApp() {
             <input type="range" min={0.2} max={1} step={0.05} value={redactionStrength} onChange={(e) => setRedactionStrength(Number(e.target.value))} style={{ width: 90 }} />
           </label>
         )}
+        <div className="divider-v" style={{ height: 24, margin: "0 6px" }} />
+        <button
+          type="button"
+          className="editor-button"
+          onClick={() => void smartRedact()}
+          disabled={smartBusy || !imgSize.w}
+          title="Smart Redact — auto-detect emails, cards, tokens and blur them"
+          aria-label="Smart Redact"
+        >
+          {smartBusy ? "Scanning…" : "Smart Redact"}
+        </button>
+        {smartMsg && (
+          <span style={{ fontSize: 11, color: "var(--reflecto-secondary)", whiteSpace: "nowrap" }}>{smartMsg}</span>
+        )}
         <div style={{ flex: 1 }} />
         <button type="button" className="editor-button" onClick={undo} disabled={!undoStack.length}>Undo</button>
         <button type="button" className="editor-button" onClick={redo} disabled={!redoStack.length}>Redo</button>
@@ -600,8 +773,147 @@ function EditorApp() {
               onChange={(v) => setLook({ ...look, border: { ...look.border, opacity: v } })}
             />
 
+            <h3 style={{ margin: "18px 0 8px", fontSize: 13 }}>Camera</h3>
+            <div style={{ fontSize: 11, color: "var(--reflecto-secondary)", marginBottom: 8 }}>
+              True perspective projection of the screenshot over its background.
+            </div>
+            {([
+              ["Tilt X", "tiltXDegrees", -45, 45, 1, "°"],
+              ["Tilt Y", "tiltYDegrees", -45, 45, 1, "°"],
+              ["Rotate X", "rotationXDegrees", -45, 45, 1, "°"],
+              ["Rotate Y", "rotationYDegrees", -45, 45, 1, "°"],
+              ["Roll", "rollDegrees", -180, 180, 1, "°"],
+              ["FOV", "fieldOfViewDegrees", 18, 80, 1, "°"],
+              ["Zoom", "zoom", 0.4, 2.5, 0.01, "×"],
+              ["Pan X", "panX", -0.5, 0.5, 0.01, ""],
+              ["Pan Y", "panY", -0.5, 0.5, 0.01, ""],
+            ] as const).map(([label, key, min, max, step, unit]) => (
+              <Slider
+                key={key}
+                label={label}
+                value={look.camera?.[key] ?? 0}
+                min={min} max={max} step={step}
+                display={`${look.camera?.[key] ?? 0}${unit}`}
+                onChange={(v) => setLook({ ...look, camera: { ...look.camera, [key]: v } })}
+              />
+            ))}
+            <button
+              type="button" className="editor-button" style={{ marginTop: 6 }}
+              onClick={() => setLook({ ...look, camera: { ...look.camera, panX: 0, panY: 0, tiltXDegrees: 0, tiltYDegrees: 0, rotationXDegrees: 0, rotationYDegrees: 0, rollDegrees: 0, fieldOfViewDegrees: 24, zoom: 1 } })}
+              disabled={!cameraHasEffect(look.camera)}
+            >
+              Reset camera
+            </button>
+
+            <h3 style={{ margin: "18px 0 8px", fontSize: 13 }}>Scene Blur</h3>
+            <label style={rowStyle}>
+              Enabled
+              <input
+                type="checkbox"
+                checked={Boolean(look.progressiveBlur?.isEnabled)}
+                onChange={(e) => setLook({ ...look, progressiveBlur: { ...look.progressiveBlur, isEnabled: e.target.checked } })}
+              />
+            </label>
+            <label style={rowStyle}>
+              Mode
+              <select
+                value={look.progressiveBlur?.mode ?? "radial"}
+                onChange={(e) => setLook({ ...look, progressiveBlur: { ...look.progressiveBlur, mode: e.target.value as "radial" | "directional" } })}
+                style={selectStyle}
+              >
+                <option value="radial">Radial</option>
+                <option value="directional">Directional</option>
+              </select>
+            </label>
+            <label style={rowStyle}>
+              Applies to
+              <select
+                value={look.progressiveBlur?.edgeMode ?? "bleed"}
+                onChange={(e) => setLook({ ...look, progressiveBlur: { ...look.progressiveBlur, edgeMode: e.target.value as "clipped" | "bleed" } })}
+                style={selectStyle}
+              >
+                <option value="bleed">Scene</option>
+                <option value="clipped">Screenshot</option>
+              </select>
+            </label>
+            <Slider label="Strength" value={look.progressiveBlur?.strength ?? 18} min={0} max={60} step={1} display={`${Math.round(look.progressiveBlur?.strength ?? 18)}`} onChange={(v) => setLook({ ...look, progressiveBlur: { ...look.progressiveBlur, strength: v } })} />
+            <Slider label="Falloff" value={look.progressiveBlur?.falloff ?? 0.55} min={0} max={1} step={0.01} display={`${Math.round((look.progressiveBlur?.falloff ?? 0.55) * 100)}%`} onChange={(v) => setLook({ ...look, progressiveBlur: { ...look.progressiveBlur, falloff: v } })} />
+            <Slider label="Focus size" value={look.progressiveBlur?.focusSize ?? 0.45} min={0} max={1} step={0.01} display={`${Math.round((look.progressiveBlur?.focusSize ?? 0.45) * 100)}%`} onChange={(v) => setLook({ ...look, progressiveBlur: { ...look.progressiveBlur, focusSize: v } })} />
+            <Slider label="Focus X" value={look.progressiveBlur?.focusPosition?.x ?? 0.5} min={0} max={1} step={0.01} display={`${Math.round((look.progressiveBlur?.focusPosition?.x ?? 0.5) * 100)}%`} onChange={(v) => setLook({ ...look, progressiveBlur: { ...look.progressiveBlur, focusPosition: { ...look.progressiveBlur.focusPosition, x: v } } })} />
+            <Slider label="Focus Y" value={look.progressiveBlur?.focusPosition?.y ?? 0.5} min={0} max={1} step={0.01} display={`${Math.round((look.progressiveBlur?.focusPosition?.y ?? 0.5) * 100)}%`} onChange={(v) => setLook({ ...look, progressiveBlur: { ...look.progressiveBlur, focusPosition: { ...look.progressiveBlur.focusPosition, y: v } } })} />
+            <Slider label="Direction" value={look.progressiveBlur?.directionDegrees ?? 0} min={-180} max={180} step={1} display={`${Math.round(look.progressiveBlur?.directionDegrees ?? 0)}°`} disabled={look.progressiveBlur?.mode !== "directional"} onChange={(v) => setLook({ ...look, progressiveBlur: { ...look.progressiveBlur, directionDegrees: v } })} />
+
+            <h3 style={{ margin: "18px 0 8px", fontSize: 13 }}>Watermark</h3>
+            <label style={rowStyle}>
+              Text
+              <input
+                type="text"
+                value={look.watermark?.text ?? ""}
+                onChange={(e) => setLook({ ...look, watermark: { ...look.watermark, text: e.target.value } })}
+                placeholder="© name"
+                style={{ ...selectStyle, width: 140 }}
+              />
+            </label>
+            <Slider label="Opacity" value={look.watermark?.opacity ?? 0.18} min={0} max={0.75} step={0.01} display={`${Math.round((look.watermark?.opacity ?? 0.18) * 100)}%`} onChange={(v) => setLook({ ...look, watermark: { ...look.watermark, opacity: v } })} />
+            <Slider label="Size" value={look.watermark?.fontSize ?? 72} min={8} max={200} step={1} display={`${Math.round(look.watermark?.fontSize ?? 72)}`} onChange={(v) => setLook({ ...look, watermark: { ...look.watermark, fontSize: v } })} />
+            <Slider label="Angle" value={look.watermark?.rotationDegrees ?? 45} min={-90} max={90} step={1} display={`${Math.round(look.watermark?.rotationDegrees ?? 45)}°`} onChange={(v) => setLook({ ...look, watermark: { ...look.watermark, rotationDegrees: v } })} />
+            <Slider label="Density" value={look.watermark?.density ?? 4} min={2} max={8} step={1} display={`${Math.round(look.watermark?.density ?? 4)}`} onChange={(v) => setLook({ ...look, watermark: { ...look.watermark, density: v } })} />
+            <label style={rowStyle}>
+              Color
+              <input
+                type="color"
+                value={look.watermark?.color ?? "#e6e6e6"}
+                onChange={(e) => setLook({ ...look, watermark: { ...look.watermark, color: e.target.value } })}
+              />
+            </label>
+
             <h3 style={{ margin: "18px 0 8px", fontSize: 13 }}>Objects</h3>
             <div style={{ fontSize: 12, color: "var(--reflecto-secondary)" }}>{annotations.length} annotations</div>
+            {(() => {
+              const selected = annotations.find((a) => a.id === selectedId);
+              if (!selected) return null;
+              const deg = Math.round(((selected.rotation ?? 0) * 180) / Math.PI);
+              const setRotation = (nextDeg: number, commit: boolean) => {
+                const rot = (nextDeg * Math.PI) / 180;
+                if (commit) {
+                  const base = rotateBaseRef.current ?? annotations;
+                  rotateBaseRef.current = null;
+                  setUndoStack((s) => [...s, base]);
+                  setRedoStack([]);
+                  setAnnotations((list) => list.map((a) => (a.id === selected.id ? { ...a, rotation: rot } : a)));
+                } else {
+                  if (!rotateBaseRef.current) rotateBaseRef.current = annotations;
+                  setAnnotations((list) => list.map((a) => (a.id === selected.id ? { ...a, rotation: rot } : a)));
+                }
+              };
+              return (
+                <div style={{ marginTop: 10 }}>
+                  <label style={{ ...rowStyle, marginBottom: 4 }}>
+                    <span>Rotation</span>
+                    <span style={{ fontSize: 11, fontVariantNumeric: "tabular-nums" }}>{deg}°</span>
+                  </label>
+                  <input
+                    type="range" min={-180} max={180} step={1} value={deg}
+                    onChange={(e) => setRotation(Number(e.target.value), false)}
+                    onMouseUp={() => setRotation(deg, true)}
+                    onTouchEnd={() => setRotation(deg, true)}
+                    onBlur={() => { if (rotateBaseRef.current) setRotation(deg, true); }}
+                    style={{ width: "100%" }}
+                    title="Rotate selected shape (drag the circle handle too)"
+                  />
+                  <button
+                    type="button" className="editor-button" style={{ marginTop: 6 }}
+                    onClick={() => {
+                      rotateBaseRef.current = null;
+                      pushHistory(annotations.map((a) => (a.id === selected.id ? { ...a, rotation: 0 } : a)));
+                    }}
+                    disabled={!selected.rotation}
+                  >
+                    Reset rotation
+                  </button>
+                </div>
+              );
+            })()}
           </aside>
         )}
         <div
@@ -651,7 +963,7 @@ function EditorApp() {
         background: "var(--reflecto-panel)",
       }}>
         <span style={{ fontSize: 12, color: "var(--reflecto-secondary)" }}>
-          {imgSize.w ? `${imgSize.w}×${imgSize.h}` : "Loading…"}
+          {imgSize.w ? `${imgSize.w}×${imgSize.h}${hasSidecar ? " · editable" : ""}` : "Loading…"}
         </span>
         <div style={{ flex: 1 }} />
         <button type="button" className="editor-button" onClick={() => void shareOut()}>Share</button>

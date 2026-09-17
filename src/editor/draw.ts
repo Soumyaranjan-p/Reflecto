@@ -167,6 +167,9 @@ export function annotationBounds(a: Annotation): { x: number; y: number; w: numb
   };
 }
 
+// NOTE: hit-testing uses the unrotated AABB (BetterShot parity for select/
+// resize is approximate on rotated shapes); drawShape rotates about the box
+// center, and the rotate handle orbits the box top-center.
 export function hitTest(a: Annotation, p: Point, pad = 8): boolean {
   const b = annotationBounds(a);
   return p.x >= b.x - pad && p.x <= b.x + b.w + pad && p.y >= b.y - pad && p.y <= b.y + b.h + pad;
@@ -174,10 +177,19 @@ export function hitTest(a: Annotation, p: Point, pad = 8): boolean {
 
 export type Handle =
   | "topLeft" | "top" | "topRight" | "right"
-  | "bottomRight" | "bottom" | "bottomLeft" | "left" | "move";
+  | "bottomRight" | "bottom" | "bottomLeft" | "left" | "move" | "rotate";
 
-export function hitHandle(p: Point, b: { x: number; y: number; w: number; h: number }): Handle | null {
-  const hs = 7;
+/** Rotate-handle anchor above the selection box (canvas pixels at scale 1). */
+export const ROTATE_HANDLE_DY = 24;
+
+export function rotateHandlePos(b: { x: number; y: number; w: number; h: number }, scale = 1): Point {
+  return { x: b.x + b.w / 2, y: b.y - ROTATE_HANDLE_DY / scale };
+}
+
+export function hitHandle(p: Point, b: { x: number; y: number; w: number; h: number }, scale = 1): Handle | null {
+  const hs = 7 / scale;
+  const rh = rotateHandlePos(b, scale);
+  if (Math.abs(p.x - rh.x) <= hs + 2 / scale && Math.abs(p.y - rh.y) <= hs + 2 / scale) return "rotate";
   const pts: Array<[Handle, number, number]> = [
     ["topLeft", b.x, b.y],
     ["top", b.x + b.w / 2, b.y],
@@ -194,13 +206,15 @@ export function hitHandle(p: Point, b: { x: number; y: number; w: number; h: num
   if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) return "move";
   return null;
 }
-
 export function applyHandle(
   handle: Handle,
   dx: number,
   dy: number,
   a: Annotation,
 ): Annotation {
+  // Rotation is driven by angle math in the editor (needs the grab angle),
+  // never by dx/dy — ignore here so a stray call can't corrupt rotation.
+  if (handle === "rotate") return a;
   if (a.tool === "numberedCircle" || a.tool === "text") {
     return { ...a, x1: a.x1 + dx, y1: a.y1 + dy, x2: a.x2 + dx, y2: a.y2 + dy };
   }
@@ -237,5 +251,16 @@ export function drawSelection(ctx: CanvasRenderingContext2D, a: Annotation, scal
     ctx.fillRect(x - hs, y - hs, hs * 2, hs * 2);
     ctx.strokeRect(x - hs, y - hs, hs * 2, hs * 2);
   }
+  // Rotate handle: stem + circle above the box top-center.
+  const rh = rotateHandlePos(b, scale);
+  const rr = 7 / scale;
+  ctx.beginPath();
+  ctx.moveTo(b.x + b.w / 2, b.y);
+  ctx.lineTo(rh.x, rh.y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(rh.x, rh.y, rr, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
   ctx.restore();
 }

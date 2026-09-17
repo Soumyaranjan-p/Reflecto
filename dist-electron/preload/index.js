@@ -33,6 +33,8 @@ var api = {
   windowPickerCancel: () => import_electron.ipcRenderer.send("windowpicker:cancel"),
   copyDataUrl: (dataUrl) => import_electron.ipcRenderer.invoke("files:copyDataUrl", dataUrl),
   saveDataUrl: (dataUrl) => import_electron.ipcRenderer.invoke("files:saveDataUrl", dataUrl),
+  saveDocument: (payload) => import_electron.ipcRenderer.invoke("files:saveDocument", payload),
+  editorLoadSidecar: (imagePath) => import_electron.ipcRenderer.invoke("editor:loadSidecar", imagePath),
   exportDataUrl: (dataUrl) => import_electron.ipcRenderer.invoke("files:exportDataUrl", dataUrl),
   shareDataUrl: (dataUrl) => import_electron.ipcRenderer.invoke("files:shareDataUrl", dataUrl),
   revealPath: (filePath) => import_electron.ipcRenderer.invoke("files:reveal", filePath),
@@ -97,6 +99,8 @@ var api = {
     return () => import_electron.ipcRenderer.removeListener("recording:state", listener);
   },
   exportVideo: (req) => import_electron.ipcRenderer.invoke("video:export", req),
+  pickAudio: () => import_electron.ipcRenderer.invoke("video:pickAudio"),
+  smartRedact: (payload) => import_electron.ipcRenderer.invoke("editor:smartRedact", payload),
   onVideoLoad: (callback) => {
     const listener = (_e, p) => callback(p);
     import_electron.ipcRenderer.on("video:load", listener);

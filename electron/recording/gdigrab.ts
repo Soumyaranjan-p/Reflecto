@@ -4,7 +4,13 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { app, screen } from "electron";
 import { even, resolveFfmpeg, runFfmpeg } from "./ffmpeg";
+import { buildCursorOverlay, isCompositedCursorStyle, type CursorSample } from "./cursors";
 import { evenRect, getWindowRect, parseCapturerHwnd, type WinRect } from "../win32";
+
+export interface GdiCursorOverlay {
+  style: string;
+  samples: CursorSample[];
+}
 
 function toPhysical(rect: { x: number; y: number; width: number; height: number }): WinRect {
   return evenRect(screen.dipToScreenRect(null, rect));
@@ -54,9 +60,17 @@ let proc: ChildProcess | null = null;
 let current: string | null = null;
 let lastInfo: GdiInfo | null = null;
 let stderrBuf = "";
+let segments: string[] = [];
+let lastStart: GdiStart | null = null;
 
 export function resetGdiInfo() {
   lastInfo = null;
+  segments = [];
+  lastStart = null;
+}
+
+export function gdiSegmentCount() {
+  return segments.length;
 }
 
 export function lastGdiInfo() {
@@ -80,7 +94,14 @@ export function needsGdiGrab(opts: {
 
 export async function startGdiGrab(start: GdiStart): Promise<GdiInfo> {
   await stopGdiGrab(false);
-  const dest = path.join(app.getPath("temp"), `reflecto-gdi-${randomUUID()}.mkv`);
+  segments = [];
+  lastStart = { ...start };
+  const info = await spawnSegment(start);
+  segments.push(info.dest);
+  return info;
+}
+
+function buildGdiArgs(start: GdiStart, dest: string): { args: string[]; expected: WinRect | null } {
   const fps = start.fps || 30;
   const args = [
     "-y",
@@ -134,6 +155,12 @@ export async function startGdiGrab(start: GdiStart): Promise<GdiInfo> {
     "-flush_packets", "1",
     dest,
   );
+  return { args, expected };
+}
+
+async function spawnSegment(start: GdiStart): Promise<GdiInfo> {
+  const dest = path.join(app.getPath("temp"), `reflecto-gdi-${randomUUID()}.mkv`);
+  const { args, expected } = buildGdiArgs(start, dest);
   stderrBuf = "";
   current = dest;
   lastInfo = { args, dest, expected, kind: start.kind };
@@ -164,12 +191,80 @@ export async function startGdiGrab(start: GdiStart): Promise<GdiInfo> {
   return lastInfo;
 }
 
-export async function stopGdiGrab(save: boolean): Promise<string | null> {
-  const file = current;
+export async function stopGdiGrab(save: boolean, cursor?: GdiCursorOverlay): Promise<string | null> {
+  await terminateProc();
+  const files = segments.filter((f) => fs.existsSync(f) && fs.statSync(f).size >= 1024);
+  segments = [];
+  lastStart = null;
+  if (!save || files.length === 0) {
+    for (const f of segments) { try { fs.unlinkSync(f); } catch { /* ignore */ } }
+    log(`discarded gdigrab segments=${files.length}`);
+    return null;
+  }
+  let source = files[0];
+  let concatTmp: string | null = null;
+  if (files.length > 1) {
+    const list = path.join(app.getPath("temp"), `reflecto-concat-${randomUUID()}.txt`);
+    fs.writeFileSync(list, files.map((f) => `file '${f.replace(/'/g, "'\\''")}'`).join("\n"), "utf8");
+    concatTmp = path.join(app.getPath("temp"), `reflecto-gdi-joined-${randomUUID()}.mkv`);
+    await runFfmpeg(["-y", "-f", "concat", "-safe", "0", "-i", list, "-c", "copy", concatTmp]);
+    try { fs.unlinkSync(list); } catch { /* ignore */ }
+    source = concatTmp;
+    log(`concatenated ${files.length} segments -> ${concatTmp} bytes=${fs.statSync(concatTmp).size}`);
+  }
+  const dest = path.join(app.getPath("userData"), "recordings", `reflecto_${randomUUID()}.mp4`);
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  try {
+    if (cursor && isCompositedCursorStyle(cursor.style) && cursor.samples.length > 0) {
+      const off = lastInfo?.expected ? { x: lastInfo.expected.x, y: lastInfo.expected.y } : { x: 0, y: 0 };
+      const { extraInputs, filter } = buildCursorOverlay("0:v", cursor.style, cursor.samples, off, "cout");
+      await runFfmpeg([
+        "-y", "-i", source, ...extraInputs,
+        "-filter_complex", filter.replace(/;$/, ""),
+        "-map", "[cout]", "-map", "0:a?",
+        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", dest,
+      ]);
+      log(`saved ${dest} cursor=${cursor.style} samples=${cursor.samples.length} segments=${files.length}`);
+    } else {
+      await runFfmpeg(["-y", "-i", source, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", dest]);
+      log(`saved ${dest} segments=${files.length}`);
+    }
+    for (const f of files) { try { fs.unlinkSync(f); } catch { /* ignore */ } }
+    if (concatTmp) { try { fs.unlinkSync(concatTmp); } catch { /* ignore */ } }
+    log(`saved ${dest} bytes=${fs.statSync(dest).size} segments=${files.length}`);
+    if (lastInfo) lastInfo.dest = dest;
+    return dest;
+  } catch (err) {
+    log(`transcode failed, keeping source: ${err}`);
+    return source;
+  }
+}
+
+/** True pause: terminate current segment; frames during pause are never captured. */
+export async function pauseGdiGrab(): Promise<void> {
+  await terminateProc();
+  log(`gdigrab paused segments=${segments.length}`);
+}
+
+/** True resume: start a fresh segment with identical params; stop concatenates. */
+export async function resumeGdiGrab(): Promise<GdiInfo | null> {
+  if (!lastStart) return null;
+  // Re-resolve live window bounds so a moved window resumes tight (occlusion-safe-ish: still desktop pixels, see WGC note).
+  if (lastStart.kind === "window" && lastStart.hwnd) {
+    const live = getWindowRect(lastStart.hwnd);
+    if (live) lastStart = { ...lastStart, rect: live };
+  }
+  const info = await spawnSegment(lastStart);
+  segments.push(info.dest);
+  log(`gdigrab resumed segment=${segments.length} -> ${info.dest}`);
+  return info;
+}
+
+async function terminateProc(): Promise<void> {
   const child = proc;
   proc = null;
   current = null;
-  if (!child) return null;
+  if (!child) return;
   await new Promise<void>((resolve) => {
     const finish = () => resolve();
     child.once("close", finish);
@@ -177,22 +272,6 @@ export async function stopGdiGrab(save: boolean): Promise<string | null> {
     setTimeout(() => { try { child.kill(); } catch { /* ignore */ } }, 2500);
     setTimeout(finish, 6000);
   });
-  if (!save || !file || !fs.existsSync(file) || fs.statSync(file).size < 1024) {
-    log(`discarded gdigrab size=${file && fs.existsSync(file) ? fs.statSync(file).size : 0}`);
-    return null;
-  }
-  const dest = path.join(app.getPath("userData"), "recordings", `reflecto_${randomUUID()}.mp4`);
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  try {
-    await runFfmpeg(["-y", "-i", file, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", dest]);
-    try { fs.unlinkSync(file); } catch { /* ignore */ }
-    log(`saved ${dest} bytes=${fs.statSync(dest).size}`);
-    if (lastInfo) lastInfo.dest = dest;
-    return dest;
-  } catch (err) {
-    log(`transcode failed, keeping mkv: ${err}`);
-    return file;
-  }
 }
 
 export function dipToPhysical(rect: { x: number; y: number; width: number; height: number }): WinRect {

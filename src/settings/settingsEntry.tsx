@@ -153,24 +153,39 @@ function SettingsApp() {
                 value={
                   prefs.defaultBeautifierConfig?.style?.kind === "gradient"
                     ? prefs.defaultBeautifierConfig.style.id
-                    : prefs.defaultBeautifierConfig?.style?.kind === "none"
-                      ? "none"
-                      : "none"
+                    : (prefs.defaultBeautifierConfig?.style?.kind ?? "none")
                 }
                 onChange={(e) => {
                   const v = e.target.value;
                   const cfg = { ...(prefs.defaultBeautifierConfig ?? {}) };
-                  cfg.style = v === "none" ? { kind: "none" } : { kind: "gradient", id: v };
+                  if (v === "none") cfg.style = { kind: "none" };
+                  else if (v === "solid") cfg.style = { kind: "solid", rgb: [245, 245, 247] };
+                  else cfg.style = { kind: "gradient", id: v };
                   void set("defaultBeautifierConfig", cfg);
                 }}
                 style={selectStyle}
               >
                 <option value="none">No Background</option>
+                <option value="solid">Solid color</option>
                 {GRADIENTS.map(([id, name]) => (
                   <option key={id} value={id}>{name}</option>
                 ))}
               </select>
             </Row>
+            {prefs.defaultBeautifierConfig?.style?.kind === "solid" && (
+              <Row label="Solid color">
+                <input
+                  type="color"
+                  value={rgbToHex(prefs.defaultBeautifierConfig.style.rgb)}
+                  onChange={(e) => {
+                    const cfg = { ...(prefs.defaultBeautifierConfig ?? {}) };
+                    cfg.style = { kind: "solid", rgb: hexToRgb(e.target.value) };
+                    void set("defaultBeautifierConfig", cfg);
+                  }}
+                  title="Solid background color"
+                />
+              </Row>
+            )}
             <Row label={`Padding (${Math.round((prefs.defaultBeautifierConfig?.padding ?? 0.08) * 100)}%)`}>
               <input
                 type="range" min={0} max={45} step={1}
@@ -207,6 +222,41 @@ function SettingsApp() {
                 style={{ width: 180 }}
               />
             </Row>
+            <Row label="Screenshot border">
+              <input
+                type="checkbox"
+                checked={Boolean(prefs.defaultBeautifierConfig?.border?.enabled)}
+                onChange={(e) => {
+                  const cfg = { ...prefs.defaultBeautifierConfig, border: { ...(prefs.defaultBeautifierConfig?.border ?? {}), enabled: e.target.checked } };
+                  void set("defaultBeautifierConfig", cfg);
+                }}
+              />
+            </Row>
+            {prefs.defaultBeautifierConfig?.border?.enabled && (
+              <>
+                <Row label="Border color">
+                  <input
+                    type="color"
+                    value={prefs.defaultBeautifierConfig?.border?.color ?? "#ffffff"}
+                    onChange={(e) => {
+                      const cfg = { ...prefs.defaultBeautifierConfig, border: { ...prefs.defaultBeautifierConfig.border, color: e.target.value } };
+                      void set("defaultBeautifierConfig", cfg);
+                    }}
+                  />
+                </Row>
+                <Row label={`Border width (${((prefs.defaultBeautifierConfig?.border?.thickness ?? 0.012) * 100).toFixed(1)}% of edge)`}>
+                  <input
+                    type="range" min={2} max={60} step={1}
+                    value={Math.round((prefs.defaultBeautifierConfig?.border?.thickness ?? 0.012) * 1000)}
+                    onChange={(e) => {
+                      const cfg = { ...prefs.defaultBeautifierConfig, border: { ...prefs.defaultBeautifierConfig.border, thickness: Number(e.target.value) / 1000 } };
+                      void set("defaultBeautifierConfig", cfg);
+                    }}
+                    style={{ width: 180 }}
+                  />
+                </Row>
+              </>
+            )}
           </Section>
         )}
 
@@ -410,6 +460,22 @@ const inputStyle: React.CSSProperties = {
   width: 260,
   maxWidth: "50%",
 };
+
+function rgbToHex(rgb: unknown): string {
+  const c = Array.isArray(rgb) ? rgb : [245, 245, 247];
+  const [r = 245, g = 245, b = 247] = c.map((n) => Math.max(0, Math.min(255, Math.round(Number(n) || 0))));
+  return `#${[r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "");
+  const v = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
+  return [
+    parseInt(v.slice(0, 2), 16) || 0,
+    parseInt(v.slice(2, 4), 16) || 0,
+    parseInt(v.slice(4, 6), 16) || 0,
+  ];
+}
 
 const kbdStyle: React.CSSProperties = {
   fontFamily: "var(--font-mono)",
