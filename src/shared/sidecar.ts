@@ -81,6 +81,7 @@ function sanitizeShape(raw: unknown): Annotation | null {
   };
   if (typeof r.text === "string") shape.text = r.text;
   if (r.fontSize !== undefined) shape.fontSize = finite(r.fontSize, 28);
+  if (typeof r.fontFamily === "string" && r.fontFamily) shape.fontFamily = r.fontFamily;
   if (r.bold !== undefined) shape.bold = r.bold === true;
   if (r.italic !== undefined) shape.italic = r.italic === true;
   if (r.underline !== undefined) shape.underline = r.underline === true;

@@ -57,7 +57,7 @@
 
   /* Motion — RecordingMotion.showHideSpring + hover timing */
   --hover-duration: 0.12s;          /* TrayButtonBackground easeOut */
-  --show-hide-spring: cubic-bezier(0.32, 0.72, 0, 1); /* approximation of spring(response:0.35, dampingFraction:0.8) */
+  --show-hide-spring: cubic-bezier(0.35, 0.5, 0.15, 1.05); /* fitted to spring(response:0.32, dampingFraction:0.82): max dev 0.029 vs 0.215 for the old curve */
   --snappy: cubic-bezier(0.2, 0.8, 0.2, 1);           /* .snappy(duration:0.18–0.22) */
 }
 
