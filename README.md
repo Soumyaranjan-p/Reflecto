@@ -153,13 +153,20 @@ History lives in `library/history.json`.
 
 ## Still catching up to BetterShot
 
-These are planned or partial relative to the macOS app:
+These are planned or partial relative to the macOS app (verified against its
+`Sources/`, not marketing copy):
 
 - Occlusion-safe window capture (needs a Windows Graphics Capture helper; current window capture reads desktop pixels)
 - Text: single-line commit (Enter), no multi-line wrap; no optical-size pinning across zoom levels
-- Zoom cues, transcription/subtitles, and teleprompter in the studio
-- In-app trash/restore (deletes currently go through the Recycle Bin)
-- Cloud share list/delete (R2 upload only for now)
+- Zoom cues, transcription/subtitles, teleprompter, and keystroke captions in the studio
+- Camera bubble compositing in studio export (a separate camera file is recorded, but never composited over the video)
+- Cursor press/ripple effects, smooth-motion and idle-hide options
+- Motion-blur export option (encode preset is fixed; no temporal sampling control)
+- Cloud share management (list/revoke/delete remote shares; upload-only today — BetterShot also trashes local deletes to the OS Trash with no in-app restore view, same as here)
+- History retention setting (fixed at 500, no UI; no crash-recovery or persisted studio projects)
+- Overlay tool-layout editor and presets (fixed standard layout today)
+- After-capture auto-upload action, wallpaper backgrounds, arrow bindings/curved arrows, mic/camera pickers in Settings (bar-only today), shutter sound, appearance/theme setting
+- Auto-updater is wired (electron-updater) but inert until a publish feed is configured
 
 ## License
 
