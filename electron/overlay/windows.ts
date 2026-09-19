@@ -1,6 +1,6 @@
 import { BrowserWindow, screen, desktopCapturer } from "electron";
 import path from "node:path";
-import { preloadPath } from "../paths";
+import { preloadPath, rendererEntry } from "../paths";
 
 /**
  * Port of Sources/Capture/RegionSelectionOverlay.swift — overlay window layer.
@@ -28,7 +28,7 @@ export function createRegionOverlayWindow(display: Electron.Display): BrowserWin
   win.setAlwaysOnTop(true, "screen-saver"); // matches maximumWindow level
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) win.loadURL(`${devURL}/src/entries/overlay.html`);
-  else win.loadFile("dist/src/entries/overlay.html");
+  else win.loadFile(rendererEntry("overlay"));
   return win;
 }
 

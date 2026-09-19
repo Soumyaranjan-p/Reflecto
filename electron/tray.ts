@@ -1,6 +1,6 @@
 import { Tray, Menu, nativeImage, BrowserWindow, screen, app, ipcMain } from "electron";
 import path from "node:path";
-import { preloadPath } from "./paths";
+import { preloadPath, rendererEntry } from "./paths";
 
 /**
  * Port of Sources/Views/MenuBarPopoverController.swift.
@@ -58,7 +58,7 @@ function showPopover() {
     });
     const devURL = process.env.VITE_DEV_SERVER_URL;
     if (devURL) popover.loadURL(`${devURL}/src/entries/tray.html`);
-    else popover.loadFile("dist/src/entries/tray.html");
+    else popover.loadFile(rendererEntry("tray"));
     popover.on("blur", () => popover?.hide()); // dismiss on focus loss, like NSPopover
   }
 

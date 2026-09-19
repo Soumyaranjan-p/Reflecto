@@ -4,6 +4,7 @@ import fs from "node:fs";
 import { createTray, setCaptureHandler, registerTrayIpc, dismissPopover } from "./tray";
 import { registerShortcuts, unregisterShortcuts, Action, onShortcut } from "./shortcuts";
 import { loadPreferences, getPref, setPref } from "./preferences";
+import { preloadPath } from "./paths";
 import { registerRegionOverlayHandlers, startRegionSelection, setRegionCompleteHandler, cancelRegionSelection } from "./overlay/regionSelection";
 import { performCapture, type CaptureKind } from "./capture/orchestrator";
 import { initUpdater, setLaunchAtLogin, getLaunchAtLogin } from "./updater";
@@ -55,13 +56,45 @@ if (!gotLock) {
         void performCapture({ kind: "window" });
       }
     });
-    registerIpc();
+registerIpc();
     registerOnboardingIpc();
     tray = createTray();
-    wireShortcuts();
-    setCaptureHandler((kind) => handleTrayCapture(kind));
-    initUpdater();
-    if (HistoryStore.shared.records.length && getPref("onboardingSeenVersion") === 0) {
+
+  function openDevWindow() {
+  const win = new BrowserWindow({
+    width: 1400,
+    height: 900,
+    minWidth: 1000,
+    minHeight: 700,
+    title: "Reflecto",
+    backgroundColor: "#111111",
+    webPreferences: {
+      preload: preloadPath(),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+
+  const devUrl = process.env.VITE_DEV_SERVER_URL;
+
+  if (devUrl) {
+    void win.loadURL(devUrl);
+    win.webContents.openDevTools();
+  } else {
+    void win.loadFile(path.join(__dirname, "../dist/index.html"));
+  }
+
+  return win;
+}
+
+if (process.env.VITE_DEV_SERVER_URL) {
+  openDevWindow();
+}
+
+wireShortcuts();
+  setCaptureHandler((kind) => handleTrayCapture(kind));
+  initUpdater();
+  if (HistoryStore.shared.records.length && getPref("onboardingSeenVersion") === 0) {
       markOnboardingSeen();
     }
     const isE2E = process.argv.some((a) => a.includes("e2e"));

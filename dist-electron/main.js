@@ -37,6 +37,9 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 function preloadPath() {
   return import_node_path.default.join(__dirname, "preload/index.js");
 }
+function rendererEntry(name) {
+  return import_node_path.default.join(__dirname, `../dist/src/entries/${name}.html`);
+}
 var import_node_path;
 var init_paths = __esm({
   "electron/paths.ts"() {
@@ -84,7 +87,7 @@ function showPopover() {
     });
     const devURL = process.env.VITE_DEV_SERVER_URL;
     if (devURL) popover.loadURL(`${devURL}/src/entries/tray.html`);
-    else popover.loadFile("dist/src/entries/tray.html");
+    else popover.loadFile(rendererEntry("tray"));
     popover.on("blur", () => popover?.hide());
   }
   const [trayX, trayY] = getTrayBounds();
@@ -16921,7 +16924,7 @@ function createRegionOverlayWindow(display) {
   win2.setAlwaysOnTop(true, "screen-saver");
   const devURL = process.env.VITE_DEV_SERVER_URL;
   if (devURL) win2.loadURL(`${devURL}/src/entries/overlay.html`);
-  else win2.loadFile("dist/src/entries/overlay.html");
+  else win2.loadFile(rendererEntry("overlay"));
   return win2;
 }
 async function captureDisplay(displayId) {
@@ -39150,6 +39153,7 @@ var import_node_fs18 = __toESM(require("node:fs"));
 init_tray();
 init_shortcuts();
 init_preferences();
+init_paths();
 init_regionSelection();
 init_orchestrator();
 
@@ -39401,6 +39405,32 @@ if (!gotLock) {
     registerIpc();
     registerOnboardingIpc();
     tray2 = createTray();
+    function openDevWindow() {
+      const win2 = new import_electron29.BrowserWindow({
+        width: 1400,
+        height: 900,
+        minWidth: 1e3,
+        minHeight: 700,
+        title: "Reflecto",
+        backgroundColor: "#111111",
+        webPreferences: {
+          preload: preloadPath(),
+          contextIsolation: true,
+          nodeIntegration: false
+        }
+      });
+      const devUrl = process.env.VITE_DEV_SERVER_URL;
+      if (devUrl) {
+        void win2.loadURL(devUrl);
+        win2.webContents.openDevTools();
+      } else {
+        void win2.loadFile(import_node_path26.default.join(__dirname, "../dist/index.html"));
+      }
+      return win2;
+    }
+    if (process.env.VITE_DEV_SERVER_URL) {
+      openDevWindow();
+    }
     wireShortcuts();
     setCaptureHandler((kind) => handleTrayCapture(kind));
     initUpdater();
